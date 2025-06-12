@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { FLEET_STATUS } = require('../constants/role');
-const {mongoose } = require('mongoose');
+const { mongoose } = require('mongoose');
 
 // Register Schema
 const registerSchema = Joi.object({
@@ -103,12 +103,23 @@ const singleUserSchema = Joi.object({
 });
 // fleet Schemas
 
-const objectId = Joi.string().custom((value, helpers) => {
-  if (!mongoose.Types.ObjectId.isValid(value)) {
-    return helpers.error("any.invalid");
-  }
-  return value;
-}, "ObjectId validation");
+// const objectId = Joi.string().custom((value, helpers) => {
+//   if (!mongoose.Types.ObjectId.isValid(value)) {
+//     return helpers.error("any.invalid");
+//   }
+//   return value;
+// }, "ObjectId validation");
+const objectId = Joi.string()
+  .length(24)
+  .hex()
+  .required()
+  .messages({
+    'string.length': 'ID must be exactly 24 characters long',
+    'string.hex': 'ID must be a valid hexadecimal string',
+    'any.required': 'ID is required',
+  });
+
+
 
 const createFleetSchema = Joi.object({
   plate_number: Joi.string().required().messages({
@@ -161,6 +172,144 @@ const fleetIdSchema = Joi.object({
     'any.invalid': 'Invalid Fleet ID format'
   })
 });
+const createFleetStatusSchema = Joi.object({
+  name: Joi.string().required().messages({
+    'string.base': 'Name must be a string',
+    'any.required': 'Name is required',
+  }),
+  color: Joi.string().required().messages({
+    'string.base': 'Color must be a string',
+    'any.required': 'Color is required',
+  }),
+  isDefault: Joi.boolean().default(false),
+  isRemovaAble: Joi.boolean().default(true),
+  usage: Joi.number().default(0)
+});
+
+// 2️⃣ Update Schema
+const updateFleetStatusSchema = Joi.object({
+  name: Joi.string(),
+  color: Joi.string(),
+  isDefault: Joi.boolean(),
+  isRemovaAble: Joi.boolean(),
+  usage: Joi.number()
+});
+
+// 3️⃣ Single ID param
+const fleetStatusIdSchema = Joi.object({
+  id: Joi.required().messages({
+    'string.base': 'ID must be a string',
+    'any.required': 'ID is required',
+    'any.invalid': 'Invalid ID format'
+  })
+});
+
+// 4️⃣ Bulk delete: array of objectIds
+const bulkDeleteFleetStatusSchema = Joi.array()
+  .items(objectId.required())
+  .min(1)
+  .required()
+  .messages({
+    'array.base': 'Body must be an array of MongoDB ObjectIds',
+    'array.min': 'At least one ID is required',
+    'any.required': 'IDs array is required'
+  });
+const createFleetTypeSchema = Joi.object({
+  name: Joi.string().required().messages({
+    'string.base': 'Name must be a string',
+    'any.required': 'Name is required',
+  }),
+  isDefault: Joi.boolean().default(false),
+  isRemoveAble: Joi.boolean().default(true)
+});
+
+const updateFleetTypeSchema = Joi.object({
+  name: Joi.string(),
+  isDefault: Joi.boolean(),
+  isRemoveAble: Joi.boolean()
+});
+
+const fleetTypeIdSchema = Joi.object({
+  id: objectId.required().messages({
+    'string.base': 'ID must be a string',
+    'any.required': 'ID is required',
+    'any.invalid': 'Invalid ID format'
+  })
+});
+
+const bulkDeleteFleetTypeSchema = Joi.array()
+  .items(objectId)
+  .min(1)
+  .required()
+  .messages({
+    'array.base': 'Body must be an array of MongoDB ObjectIds',
+    'array.min': 'At least one ID is required',
+    'any.required': 'IDs array is required'
+  });
+const createExpenseSchema = Joi.object({
+  name: Joi.string().required(),
+  usage: Joi.number().default(0)
+});
+
+const updateExpenseSchema = Joi.object({
+  name: Joi.string(),
+  usage: Joi.number()
+});
+
+const expenseIdSchema = Joi.object({
+  id: objectId,
+});
+const fuelTypeSchema = Joi.object({
+  name: Joi.string().required().messages({
+    'any.required': 'Name is required',
+    'string.base': 'Name must be a string'
+  }),
+  usage: Joi.number().optional(),
+  fuelUsage: Joi.number().optional()
+});
+const fuelTypeUpdateSchema = Joi.object({
+  name: Joi.string().messages({
+    'any.required': 'Name is required',
+    'string.base': 'Name must be a string'
+  }),
+  usage: Joi.number().optional(),
+  fuelUsage: Joi.number().optional()
+});
+const vendorSchema = Joi.object({
+  name: Joi.string().required(),
+  status: Joi.number().valid(0, 1).optional(),
+  phone: Joi.number().optional(),
+  website: Joi.string().optional(),
+  labels: Joi.array().items(Joi.string()).optional(),
+  address: Joi.string().optional(),
+  subAddrress: Joi.string().optional(),
+  city: Joi.string().optional(),
+  state: Joi.string().optional(),
+  zip: Joi.string().optional(),
+  contactName: Joi.string().optional(),
+  contactPhone: Joi.number().optional(),
+  email: Joi.string().email().optional(),
+  classification: Joi.number().valid(0, 1, 2, 3,4,5).required().default(0),
+  archived: Joi.boolean().optional()
+});
+const vendorUpdateSchema = Joi.object({
+  name: Joi.string(),
+  status: Joi.number().valid(0, 1).optional(),
+  phone: Joi.number().optional(),
+  website: Joi.string().optional(),
+  labels: Joi.array().items(Joi.string()).optional(),
+  address: Joi.string().optional(),
+  subAddrress: Joi.string().optional(),
+  city: Joi.string().optional(),
+  state: Joi.string().optional(),
+  zip: Joi.string().optional(),
+  contactName: Joi.string().optional(),
+  contactPhone: Joi.number().optional(),
+  email: Joi.string().email().optional(),
+  classification: Joi.number().valid(0, 1, 2, 3,4,5).optional().default(0),
+  archived: Joi.boolean().optional()
+});
+
 
 module.exports = {
   registerSchema,
@@ -170,4 +319,19 @@ module.exports = {
   createFleetSchema,
   updateFleetSchema,
   fleetIdSchema,
+  createFleetStatusSchema,
+  updateFleetStatusSchema,
+  fleetStatusIdSchema,
+  bulkDeleteFleetStatusSchema,
+  createFleetTypeSchema,
+  updateFleetTypeSchema,
+  fleetTypeIdSchema,
+  bulkDeleteFleetTypeSchema,
+  createExpenseSchema,
+  updateExpenseSchema,
+  expenseIdSchema,
+  fuelTypeSchema,
+  fuelTypeUpdateSchema,
+  vendorSchema,
+  vendorUpdateSchema
 };

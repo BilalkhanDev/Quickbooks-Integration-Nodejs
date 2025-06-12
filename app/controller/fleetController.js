@@ -11,7 +11,7 @@ const createFleetController = async (req, res) => {
 
 const getAllFleetsController = async (req, res) => {
   try {
-    const fleets = await fleetService.getAllFleets(req.query);
+    const fleets = await fleetService.getAllFleets(req);
     res.status(200).json(fleets);
   } catch (error) {
     res.status(500).json({ error: error.message });

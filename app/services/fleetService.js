@@ -10,9 +10,11 @@ const createFleet = async (data) => {
   return await createFleetDal(data);
 };
 
-const getAllFleets = async (query) => {
-  const { page = 1, limit = 20, ...filter } = query;
-  return await getAllFleetsDal(filter, parseInt(page), parseInt(limit));
+const getAllFleets = async (req) => {
+  const { page = 1, limit = 20, ...filter } = req.query;
+  const {token}=req.body
+  console.log("Token", token)
+  return await getAllFleetsDal(token, filter, parseInt(page), parseInt(limit));
 };
 
 const getFleetById = async (id) => {

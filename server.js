@@ -8,6 +8,9 @@ const  routes  = require('./app/routes/index');
 const app = express();
 const { initializeRedis } = require('./app/utils/redis');
 const { createAdminUser } = require('./app/seeder/adminSeeder');
+const seedFleetStatuses = require('./app/seeder/statusSeeder');
+const seedFleetTypes = require('./app/seeder/typeSeeder');
+const seedExpenses = require('./app/seeder/expenseSeeder');
 app.use(cors());
 app.use(express.json());
 
@@ -24,7 +27,10 @@ const startServer = async () => {
 
     await initializeRedis();
 
-    await createAdminUser();
+    // await createAdminUser();
+    // await seedFleetStatuses();
+    // await seedFleetTypes()
+    // await seedExpenses()
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

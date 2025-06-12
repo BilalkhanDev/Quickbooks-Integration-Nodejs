@@ -14,7 +14,7 @@ router.post(
   createFleetController
 );
 
-router.get(
+router.post(
   '/all',
   useAuth,
   getAllFleetsController

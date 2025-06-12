@@ -56,21 +56,33 @@ const refreshAccessToken = (req, res) => {
   }
 };
 
-const externalLogin=async(req,res)=>{
-   console.log("Req.body",req.body)
-   const { token } = req.body;
+const externalLogin = async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) return res.status(400).json({ error: 'Token not provided' });
 
   try {
+    // Optional: check if token is expired using jwt.decode
+    const decoded = jwt.decode(token, { complete: true });
+    if (!decoded) throw new Error("Invalid token");
+
+    const exp = decoded.payload.exp;
+    if (Date.now() >= exp * 1000) {
+      return res.status(401).json({ error: 'Token expired' });
+    }
+
+    // Now verify by calling external endpoint
     const response = await axios.get(`${process.env.NEMT_URL}/me`, {
       headers: { Authorization: `JWT ${token}` }
     });
 
-    const user = response.data?.user || null;
+    const user = response.data?.user;
+    if (!user) throw new Error("User not found");
 
     const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-    res.json({
+    return res.json({
       user,
       accessToken,
       refreshToken
@@ -78,10 +90,10 @@ const externalLogin=async(req,res)=>{
 
   } catch (error) {
     console.error('Token validation error:', error.message);
-    res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized or expired token' });
   }
+};
 
-}
 module.exports = {
   externalLogin,
   register,
