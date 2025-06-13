@@ -14,7 +14,6 @@ const reqValidator = (schemaName, source = 'body') => {
     }
 
     let data;
-    console.log("Req", req.body);
     
     switch (source) {
       case 'query':

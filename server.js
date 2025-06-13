@@ -6,17 +6,16 @@ const cors = require('cors');
 const activityLogger = require('./app/middleware/activityLogger');
 const  routes  = require('./app/routes/index');
 const app = express();
+const path =require("path")
 const { initializeRedis } = require('./app/utils/redis');
-const { createAdminUser } = require('./app/seeder/adminSeeder');
-const seedFleetStatuses = require('./app/seeder/statusSeeder');
-const seedFleetTypes = require('./app/seeder/typeSeeder');
-const seedExpenses = require('./app/seeder/expenseSeeder');
+
 app.use(cors());
 app.use(express.json());
 
 app.use(activityLogger);
 
 app.use('/api', routes);
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -26,11 +25,6 @@ const startServer = async () => {
     console.log("✅ MongoDB connected.");
 
     await initializeRedis();
-
-    // await createAdminUser();
-    // await seedFleetStatuses();
-    // await seedFleetTypes()
-    // await seedExpenses()
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

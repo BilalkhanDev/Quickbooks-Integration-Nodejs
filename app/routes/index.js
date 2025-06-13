@@ -6,6 +6,8 @@ const statusRoutes = require('./fleetStatusRoutes')
 const typeRoutes = require('./typeRoutes')
 const expenseRoutes = require('./expenseRoutes')
 const vendorRoutes = require('./vendorRoutes')
+const specficationRoutes=require('./fleetSpecRoutes')
+const serviceRoutes=require("./serviceRoutes")
 
 const router = express.Router();
 
@@ -16,7 +18,8 @@ router.use("/status", statusRoutes)
 router.use("/type", typeRoutes)
 router.use("/expense", expenseRoutes)
 router.use("/vendor", vendorRoutes)
-
+router.use("/specification", specficationRoutes)
+router.use("/service",serviceRoutes)
 
 module.exports = router;
 

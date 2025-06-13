@@ -236,6 +236,13 @@ const fleetTypeIdSchema = Joi.object({
     'any.invalid': 'Invalid ID format'
   })
 });
+const fleetServiceIdSchema = Joi.object({
+  fleetId: objectId.required().messages({
+    'string.base': 'ID must be a string',
+    'any.required': 'ID is required',
+    'any.invalid': 'Invalid ID format'
+  })
+});
 
 const bulkDeleteFleetTypeSchema = Joi.array()
   .items(objectId)
@@ -310,7 +317,13 @@ const vendorUpdateSchema = Joi.object({
   archived: Joi.boolean().optional()
 });
 
-
+const updateFleetSpecSchema = Joi.object({
+  engine: Joi.object().optional(),
+  wheel: Joi.object().optional(),
+  transmission: Joi.object().optional(),
+  weight: Joi.object().optional(),
+  fuelEconomy: Joi.object().optional()
+});
 module.exports = {
   registerSchema,
   loginSchema,
@@ -326,6 +339,7 @@ module.exports = {
   createFleetTypeSchema,
   updateFleetTypeSchema,
   fleetTypeIdSchema,
+  fleetServiceIdSchema,
   bulkDeleteFleetTypeSchema,
   createExpenseSchema,
   updateExpenseSchema,
@@ -333,5 +347,6 @@ module.exports = {
   fuelTypeSchema,
   fuelTypeUpdateSchema,
   vendorSchema,
-  vendorUpdateSchema
+  vendorUpdateSchema,
+  updateFleetSpecSchema
 };
