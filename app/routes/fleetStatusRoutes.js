@@ -15,12 +15,12 @@ router.get('/',
     getAllStatuses);
 router.get('/:id',
     useAuth,
-    reqValidator('fleetStatusIdSchema', 'params'),
+    reqValidator('generiIdSchema', 'params'),
     getStatusById
 );
 router.put('/:id',
     useAuth,
-    reqValidator('fleetStatusIdSchema', 'params'),
+    reqValidator('generiIdSchema', 'params'),
     reqValidator('updateFleetStatusSchema', 'body'),
     updateStatus);
 router.delete('/delete',
@@ -31,7 +31,7 @@ router.delete('/delete',
 
 router.delete('/:id',
     useAuth,
-    reqValidator('fleetStatusIdSchema', 'params'),
+    reqValidator('generiIdSchema', 'params'),
     removeStatusById);
 
 module.exports = router;

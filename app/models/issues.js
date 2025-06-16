@@ -2,8 +2,13 @@ const mongoose = require('mongoose');
 
 const issueSchema = new mongoose.Schema(
     {
-        assetId: {
+        fleetId: {
             type: String,
+            required: true,
+        },
+        serviceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'ServiceEntry',
             required: true,
         },
         priority: {
@@ -49,17 +54,17 @@ const issueSchema = new mongoose.Schema(
             type: Number,
         },
         photos: [{
-            type: String, 
+            type: String,
         }],
         documents: [{
-            type: String, 
+            type: String,
         }],
     },
     {
-        timestamps: true, 
+        timestamps: true,
     }
 );
 
-const Issues = mongoose.model('Issue', issueSchema);
+const Issues = mongoose.model('Issues', issueSchema);
 
 module.exports = Issues;

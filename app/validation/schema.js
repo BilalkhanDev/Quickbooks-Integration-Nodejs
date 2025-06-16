@@ -46,7 +46,6 @@ const registerSchema = Joi.object({
     return value;
   });
 
-// Login Schema
 const loginSchema = Joi.object({
   email: Joi.string()
     .email()
@@ -101,14 +100,7 @@ const singleUserSchema = Joi.object({
       'any.required': 'User ID is required',
     }),
 });
-// fleet Schemas
 
-// const objectId = Joi.string().custom((value, helpers) => {
-//   if (!mongoose.Types.ObjectId.isValid(value)) {
-//     return helpers.error("any.invalid");
-//   }
-//   return value;
-// }, "ObjectId validation");
 const objectId = Joi.string()
   .length(24)
   .hex()
@@ -119,8 +111,12 @@ const objectId = Joi.string()
     'any.required': 'ID is required',
   });
 
-
-
+const generiIdSchema = Joi.object({
+  id: objectId,
+});
+const genericfleetIdSchema=Joi.object({
+  fleetId: objectId,
+});
 const createFleetSchema = Joi.object({
   plate_number: Joi.string().required().messages({
     'string.empty': 'Plate number is required',
@@ -167,6 +163,13 @@ const updateFleetSchema = Joi.object({
 
 const fleetIdSchema = Joi.object({
   id: objectId.required().messages({
+    'string.base': 'Fleet ID must be a string',
+    'any.required': 'Fleet ID is required',
+    'any.invalid': 'Invalid Fleet ID format'
+  })
+});
+const getfleetSpecfSchema = Joi.object({
+  fleetId: objectId.required().messages({
     'string.base': 'Fleet ID must be a string',
     'any.required': 'Fleet ID is required',
     'any.invalid': 'Invalid Fleet ID format'
@@ -296,7 +299,7 @@ const vendorSchema = Joi.object({
   contactName: Joi.string().optional(),
   contactPhone: Joi.number().optional(),
   email: Joi.string().email().optional(),
-  classification: Joi.number().valid(0, 1, 2, 3,4,5).required().default(0),
+  classification: Joi.number().valid(0, 1, 2, 3, 4, 5).required().default(0),
   archived: Joi.boolean().optional()
 });
 const vendorUpdateSchema = Joi.object({
@@ -313,7 +316,7 @@ const vendorUpdateSchema = Joi.object({
   contactName: Joi.string().optional(),
   contactPhone: Joi.number().optional(),
   email: Joi.string().email().optional(),
-  classification: Joi.number().valid(0, 1, 2, 3,4,5).optional().default(0),
+  classification: Joi.number().valid(0, 1, 2, 3, 4, 5).optional().default(0),
   archived: Joi.boolean().optional()
 });
 
@@ -324,7 +327,73 @@ const updateFleetSpecSchema = Joi.object({
   weight: Joi.object().optional(),
   fuelEconomy: Joi.object().optional()
 });
+const issueCreateSchema = Joi.object({
+  fleetId:Joi.string().required().messages({
+    'string.base': 'ID must be a string',
+    'any.required': 'ID is required',
+    'any.invalid': 'Invalid ID format'
+  }),
+  serviceId:Joi.string().required().messages({
+    'string.base': 'ID must be a string',
+    'any.required': 'ID is required',
+    'any.invalid': 'Invalid ID format'
+  }),
+  priority: Joi.number().valid(0, 1, 2, 3, 4).default(0),
+  reportedDate: Joi.date().required(),
+  summary: Joi.string().required(),
+  description: Joi.string().optional(),
+  labels: Joi.number().valid(0, 1, 2, 3).optional(),
+  primaryMeter: Joi.number().optional(),
+  void: Joi.boolean().default(false),
+  reportedBy: Joi.string().required(),
+  assignedTo: Joi.string().optional(),
+  dueDate: Joi.date().optional(),
+  primaryMeterDue: Joi.number().optional(),
+  photos: Joi.array().items(Joi.string()).optional(),
+  documents: Joi.array().items(Joi.string()).optional(),
+});
+
+// Schema to validate the issue ID in the URL
+const issueIdSchema = Joi.object({
+  issueId: Joi.string().required(),
+});
+
+// Schema to validate service ID in the URL
+const serviceIdSchema = Joi.object({
+  serviceId: Joi.string().required(),
+});
+
+// Schema to validate issue update data
+const issueUpdateSchema = Joi.object({
+  priority: Joi.number().valid(0, 1, 2, 3, 4).optional(),
+  summary: Joi.string().optional(),
+  description: Joi.string().optional(),
+  labels: Joi.number().valid(0, 1, 2, 3).optional(),
+  assignedTo: Joi.string().optional(),
+  dueDate: Joi.date().optional(),
+  photos: Joi.array().items(Joi.string()).optional(),
+  documents: Joi.array().items(Joi.string()).optional(),
+});
+
+const updateServiceEntrySchema = Joi.object({
+  repairPriorityClass: Joi.string().valid('0', '1', '2').optional(),
+  odometer: Joi.number().optional(),
+  void: Joi.boolean().optional(),
+  completionDate: Joi.date().optional(),
+  isStartDate: Joi.boolean().optional(),
+  startDate: Joi.date().optional(),
+  vendor: Joi.string().optional(),
+  reference: Joi.string().optional(),
+  labels: Joi.number().valid(0, 1, 2, 3).optional(),
+  issues: Joi.string().optional(),
+  photos: Joi.array().items(Joi.string()).optional(),
+  documents: Joi.array().items(Joi.string()).optional(),
+  comments: Joi.string().optional(),
+});
+
 module.exports = {
+  generiIdSchema,
+  genericfleetIdSchema,
   registerSchema,
   loginSchema,
   userSchema,
@@ -335,6 +404,7 @@ module.exports = {
   createFleetStatusSchema,
   updateFleetStatusSchema,
   fleetStatusIdSchema,
+  updateServiceEntrySchema,
   bulkDeleteFleetStatusSchema,
   createFleetTypeSchema,
   updateFleetTypeSchema,
@@ -348,5 +418,10 @@ module.exports = {
   fuelTypeUpdateSchema,
   vendorSchema,
   vendorUpdateSchema,
-  updateFleetSpecSchema
+  updateFleetSpecSchema,
+  getfleetSpecfSchema,
+  issueCreateSchema,
+  issueIdSchema,
+  serviceIdSchema,
+  issueUpdateSchema,
 };

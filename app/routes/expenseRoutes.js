@@ -23,20 +23,20 @@ router.get('/',
 
 router.get('/:id',
   useAuth,
-  reqValidator('expenseIdSchema', 'params'),
+  reqValidator('generiIdSchema', 'params'),
   getById
 );
 
 router.put('/:id',
   useAuth,
-  reqValidator('expenseIdSchema', 'params'),
+  reqValidator('generiIdSchema', 'params'),
   reqValidator('updateExpenseSchema', 'body'),
   update
 );
 
 router.delete('/:id',
   useAuth,
-  reqValidator('expenseIdSchema', 'params'),
+  reqValidator('generiIdSchema', 'params'),
   remove
 );
 

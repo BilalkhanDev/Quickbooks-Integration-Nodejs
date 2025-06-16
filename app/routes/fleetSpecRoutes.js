@@ -8,7 +8,7 @@ const { useAuth } = require('../middleware/useAuth');
 
 router.put('/:id',
   useAuth,
-  reqValidator("expenseIdSchema", 'params'),
+  reqValidator("generiIdSchema", 'params'),
   reqValidator("updateFleetSpecSchema", 'body'),
   update
 );

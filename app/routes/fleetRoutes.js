@@ -3,7 +3,7 @@ const express = require('express');
 const { useAuth, adminOnly } = require('../middleware/useAuth');
 const { USER_ROLES } = require('../constants/role');
 const reqValidator = require('../middleware/reqValidator');
-const { createFleetController, getAllFleetsController, getFleetByIdController, updateFleetController, deleteFleetController } = require('../controller/fleetController');
+const { createFleetController, getAllFleetsController, getFleetByIdController, updateFleetController, deleteFleetController, getFleetSpecController } = require('../controller/fleetController');
 
 const router = express.Router();
 router.post(
@@ -19,7 +19,13 @@ router.post(
   useAuth,
   getAllFleetsController
 );
+router.get(
+  '/specf/:fleetId',
+  useAuth,
+  reqValidator("getfleetSpecfSchema", 'params'),
+  getFleetSpecController
 
+)
 router.get(
   '/:id',
   useAuth,

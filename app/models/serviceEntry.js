@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
+
 const serviceEntrySchema = new mongoose.Schema(
     {
         fleetId: {
             type: String,
             required: true,
-            unique: true,
         },
         repairPriorityClass: {
             type: String,
             enum: [0, 1, 2],
             //   enum: ['Scheduled', 'Non-Scheduled', 'Emergency'],
             required: true,
-
         },
         odometer: {
             type: Number,
@@ -35,20 +34,21 @@ const serviceEntrySchema = new mongoose.Schema(
         },
         vendor: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Vendor'
+            ref: 'Vendor',
         },
         reference: {
             type: String,
-            default: ""
+            default: "",
         },
         labels: {
             type: Number,
             enum: [0, 1, 2, 3],
         },
-        issues: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Issues'
-        },
+        // Remove this array since we're using virtual population
+        // issues: [{
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: 'Issues',
+        // }],
         photos: [{
             type: String,
         }],
@@ -57,12 +57,24 @@ const serviceEntrySchema = new mongoose.Schema(
         }],
         comments: {
             type: String,
+            default: null,
         },
     },
     {
         timestamps: true, // Automatically adds `createdAt` and `updatedAt` timestamps
     }
 );
+
+// Virtual populate for issues
+serviceEntrySchema.virtual('issues', {
+    ref: 'Issues',
+    localField: '_id',
+    foreignField: 'serviceId'
+});
+
+// Ensure virtual fields are serialized when converting to JSON
+serviceEntrySchema.set('toJSON', { virtuals: true });
+serviceEntrySchema.set('toObject', { virtuals: true });
 
 // Create the model from the schema
 const ServiceEntry = mongoose.model('ServiceEntry', serviceEntrySchema);

@@ -1,28 +1,62 @@
 const ServiceEntry = require('../models/serviceEntry');
 
-// Create a new ServiceEntry
 const createServiceEntryDAL = async (data) => {
   try {
     const newServiceEntry = new ServiceEntry(data);
     await newServiceEntry.save();
     return newServiceEntry;
   } catch (error) {
-    console.log("Error", error)
-    throw new Error("Error saving service entry");
+    throw new Error(error);
   }
 };
 
-// Get ServiceEntry by ID
 const getServiceEntryByIdDAL = async (fleetId) => {
   try {
-    const serviceEntry = await ServiceEntry.findOne({fleetId:fleetId}).populate('vendor').populate('issues');
+    const serviceEntry = await ServiceEntry.find({ fleetId })
+      .populate('vendor')
+      .populate('issues', '-fleetId')
+
+    return serviceEntry;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+const getSingleServiceEntryByIdDAL = async (id) => {
+  try {
+    const serviceEntry = await ServiceEntry.findById(id)
+      .populate('vendor')
+      .populate('issues', '-fleetId')
+    console.log(serviceEntry);
+
     return serviceEntry;
   } catch (error) {
     throw new Error("Error fetching service entry");
   }
 };
+const updateServiceEntryDAL = async (Id, data) => {
+  try {
+    const existingServiceEntry = await ServiceEntry.findById(Id);
+
+    if (!existingServiceEntry) {
+      throw new Error('Service entry not found');
+    }
+    Object.keys(data).forEach(key => {
+      if (data[key] !== undefined && data[key] !== null) {
+        existingServiceEntry[key] = data[key];
+      }
+    });
+
+    await existingServiceEntry.save();
+    return existingServiceEntry;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 
 module.exports = {
   createServiceEntryDAL,
-  getServiceEntryByIdDAL
+  getServiceEntryByIdDAL,
+  updateServiceEntryDAL,
+  getSingleServiceEntryByIdDAL
 };

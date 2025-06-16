@@ -8,6 +8,7 @@ const expenseRoutes = require('./expenseRoutes')
 const vendorRoutes = require('./vendorRoutes')
 const specficationRoutes=require('./fleetSpecRoutes')
 const serviceRoutes=require("./serviceRoutes")
+const issuesRoutes=require("./issueRoutes")
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.use("/expense", expenseRoutes)
 router.use("/vendor", vendorRoutes)
 router.use("/specification", specficationRoutes)
 router.use("/service",serviceRoutes)
+router.use("/issue",issuesRoutes)
 
 module.exports = router;
 

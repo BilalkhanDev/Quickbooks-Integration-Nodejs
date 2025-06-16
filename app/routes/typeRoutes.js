@@ -26,17 +26,10 @@ router.get(
   getAll
 );
 
-// router.get(
-//   '/:id',
-//   useAuth,
-//   reqValidator('fleetTypeIdSchema', 'params'),
-//   getById
-// );
-
 router.put(
   '/:id',
   useAuth,
-  reqValidator('fleetTypeIdSchema', 'params'),
+  reqValidator('generiIdSchema', 'params'),
   reqValidator('updateFleetTypeSchema', 'body'),
   update
 );
@@ -49,7 +42,7 @@ router.delete('/delete',
 
 router.delete('/:id',
   useAuth,
-  reqValidator('fleetTypeIdSchema', 'params'),
+  reqValidator('generiIdSchema', 'params'),
   remove
 );
 

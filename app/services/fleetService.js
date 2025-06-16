@@ -4,6 +4,7 @@ const {
   getFleetByIdDal,
   updateFleetDal,
   deleteFleetDal,
+  fetchFleetSpecs,
 } = require('../dal/fleetDal');
 
 const createFleet = async (data) => {
@@ -16,6 +17,11 @@ const getAllFleets = async (req) => {
   return await getAllFleetsDal(token, filter, parseInt(page), parseInt(limit));
 };
 
+const getFleetSpec = async (req) => {
+  const {fleetId} = req.params;
+
+  return await fetchFleetSpecs(fleetId);
+};
 const getFleetById = async (id) => {
   return await getFleetByIdDal(id);
 };
@@ -34,4 +40,5 @@ module.exports = {
   getFleetById,
   updateFleet,
   deleteFleet,
+  getFleetSpec
 };
