@@ -7,6 +7,7 @@ const seedFleetTypes = require('./typeSeeder');
 const seedExpenses = require('./expenseSeeder');
 const seedFuelTypes = require('./fuelTypeSeeder');
 const seedVendors = require('./vendorSeeder');
+const seedInspections = require('./inspectionSeeder');
 
 const runSeeders = async () => {
   try {
@@ -23,6 +24,7 @@ const runSeeders = async () => {
     await seedExpenses();
     await seedFuelTypes()
     await seedVendors()
+    await seedInspections()
 
     console.log("✅ All seeders executed successfully");
     mongoose.disconnect();

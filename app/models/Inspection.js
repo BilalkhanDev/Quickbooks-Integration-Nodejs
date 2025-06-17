@@ -1,89 +1,84 @@
 const mongoose = require('mongoose');
-const InspectionItemSchema = new mongoose.Schema({
-  name: {
+
+// Section schema for flattened structure
+const SectionSchema = new mongoose.Schema({
+  sectionId: {
     type: String,
     required: true,
+
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  order: {
+    type: Number,
+    required: true
+  },
+  parentSectionId: {
+    type: String,
+    default: null
+  }
+}, { _id: false });
+
+// Item schema for flattened structure
+const ItemSchema = new mongoose.Schema({
+  itemId: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
   },
   type: {
     type: String,
     required: true,
-    enum: ['text', 'number', 'checkbox', 'datetime', 'photo', 'signature', 'section'], 
+    enum: ['text', 'number', 'checkbox', 'dropdown', 'date', 'photo', 'signature', 'meter']
   },
-  required: {
-    type: Boolean,
-    default: false, 
+  sectionId: {
+    type: String,
+    default: null
   },
   order: {
     type: Number,
-    required: true, 
+    required: true
   },
-  value: {
-    type: mongoose.Schema.Types.Mixed, 
-    default: null, 
-  },
-  description: {
-    type: String,
-    default: '', 
+  required: {
+    type: Boolean,
+    default: false
   },
   options: {
-    type: Map,
-    of: String,
-    default: {},
-  },
-
-  items: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'InspectionItem'
-  }]
-}, {
-  _id: true, 
-  timestamps: true,
-});
+    type: mongoose.Schema.Types.Mixed,
+    default: undefined
+  }
+}, { _id: false });
 
 const InspectionSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true, 
+  
   },
   description: {
     type: String,
-    default: '', 
+    default: ''
   },
-  items: [InspectionItemSchema], 
+  sections: [SectionSchema],
+  items: [ItemSchema],
   assignedTo: {
-    type: String,
-    required: true,
+    type: String
   },
   status: {
-    type: String,
-    enum: ['pending', 'completed', 'in-progress'], // Possible statuses
-    default: 'pending', 
+    type: Number,
+    enum: [0, 1],
+    default: 0
   },
-  assetId: {
-    type: String,
-    // required: true, // You can enable this if asset ID is mandatory
-  },
-  inspector: {
-    name: {
-      type: String,
-      // required: true, // Inspector's name is required
-    },
-    role: {
-      type: String,
-      default: 'Inspector', // Default role is 'Inspector'
-    },
-    email: {
-      type: String,
-      // required: false, // Email is optional
-    },
-    signature: {
-      type: String,
-      required: false, // Optional base64 signature for the inspector
-    },
-  },
+  fleetId: {
+    type: String
+  }
 }, {
-  timestamps: true, // Automatically create `createdAt` and `updatedAt`
+  timestamps: true
 });
 
 module.exports = mongoose.model('Inspection', InspectionSchema);
