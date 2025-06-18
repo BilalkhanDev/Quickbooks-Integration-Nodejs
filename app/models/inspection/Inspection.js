@@ -19,7 +19,7 @@ const SectionSchema = new mongoose.Schema({
     type: String,
     default: null
   }
-}, { _id: false });
+}, { _id: true });
 
 // Item schema for flattened structure
 const ItemSchema = new mongoose.Schema({
@@ -35,6 +35,10 @@ const ItemSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ['text', 'number', 'checkbox', 'dropdown', 'date', 'photo', 'signature', 'meter']
+  },
+  value: {
+    type: String,
+    default: ''
   },
   sectionId: {
     type: String,
@@ -52,7 +56,7 @@ const ItemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     default: undefined
   }
-}, { _id: false });
+}, { _id: true });
 
 const InspectionSchema = new mongoose.Schema({
   name: {
@@ -66,19 +70,18 @@ const InspectionSchema = new mongoose.Schema({
   },
   sections: [SectionSchema],
   items: [ItemSchema],
-  assignedTo: {
-    type: String
-  },
+
   status: {
     type: Number,
     enum: [0, 1],
     default: 0
   },
-  fleetId: {
-    type: String
-  }
+
 }, {
   timestamps: true
 });
 
 module.exports = mongoose.model('Inspection', InspectionSchema);
+
+
+

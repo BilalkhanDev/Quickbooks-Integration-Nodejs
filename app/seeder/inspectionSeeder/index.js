@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Inspection = require('../../models/Inspection');
+const Inspection = require('../../models/inspection/Inspection');
 const { InspectionData } = require('./InspectionData');
 
 
@@ -7,8 +7,7 @@ const seedInspections = async () => {
   try {
     const count = await Inspection.countDocuments();
     if (count === 0) {
-      console.log(InspectionData);
-      // Insert ea
+    
       await Inspection.insertMany(InspectionData);
       console.log('✅ Flattened inspections seeded successfully');
     } else {

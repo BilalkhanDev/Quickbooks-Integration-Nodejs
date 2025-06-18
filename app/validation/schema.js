@@ -391,6 +391,56 @@ const updateServiceEntrySchema = Joi.object({
   comments: Joi.string().optional(),
 });
 
+const inspectionSubmissionSchema = Joi.object({
+  inspectionId: objectId.required(),
+  fleetId: objectId.required(),
+  inspectedBy: Joi.object({
+    userId: objectId.required(),
+    name: Joi.string().allow('').optional(),
+    email: Joi.string().email().allow('').optional()
+  }).required(),
+  inspectionDate: Joi.date().optional(),
+  itemValues: Joi.array().items(
+    Joi.object({
+      itemId: Joi.string().required(),
+      value: Joi.any().optional()
+    })
+  ).required(),
+  status: Joi.number().valid(0, 1).optional()
+});
+const getInspectionSubmissionSchema = Joi.object({
+  inspectionId: objectId.required(),
+  fleetId: objectId.required(),
+});
+
+const createInspectionSchema = Joi.object({
+  name: Joi.string().required(),
+  description: Joi.string().allow('').optional(),
+  sections: Joi.array().items(
+    Joi.object({
+      sectionId: Joi.string().required(),
+      name: Joi.string().required(),
+      order: Joi.number().required(),
+      parentSectionId: Joi.string().allow(null).optional(),
+      _id: Joi.any().optional()
+    })
+  ).optional(),
+  items: Joi.array().items(
+    Joi.object({
+      itemId: Joi.string().required(),
+      name: Joi.string().required(),
+      type: Joi.string().valid('text', 'number', 'checkbox', 'dropdown', 'date', 'photo', 'signature', 'meter').required(),
+      value: Joi.any().optional(),
+      sectionId: Joi.string().allow(null).optional(),
+      order: Joi.number().required(),
+      required: Joi.boolean().optional(),
+      options: Joi.any().optional(),
+      _id: Joi.any().optional()
+    })
+  ).optional(),
+  status: Joi.number().valid(0, 1).optional()
+});
+
 module.exports = {
   generiIdSchema,
   genericfleetIdSchema,
@@ -424,4 +474,7 @@ module.exports = {
   issueIdSchema,
   serviceIdSchema,
   issueUpdateSchema,
+  inspectionSubmissionSchema,
+  getInspectionSubmissionSchema,
+  createInspectionSchema,
 };

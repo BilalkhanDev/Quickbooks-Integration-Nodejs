@@ -8,7 +8,7 @@ exports.getAllStatuses = () => fleetStatus.find();
 
 exports.getStatusById = (id) => fleetStatus.findById(id);
 
-exports.updateStatusById = (id, update) => FleetStatus.findByIdAndUpdate(id, update, { new: true });
+exports.updateStatusById = (id, update) => fleetStatus.findByIdAndUpdate(id, update, { new: true });
 
 exports.deleteStatusById = async (id) => {
   const status = await fleetStatus.findById(id);
