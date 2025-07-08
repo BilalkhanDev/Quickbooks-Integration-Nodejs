@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { createUser} = require('../dal/authDal');
-const { incrementFailedAttempts, resetFailedAttempts, isUserBlocked } = require('../utils/redis');
+
 const { findUserDal } = require('../dal/userDal');
 
 const createNewUser = async ({ username, email, password }) => {

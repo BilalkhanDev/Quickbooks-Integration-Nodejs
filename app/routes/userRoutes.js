@@ -14,7 +14,7 @@ router.get('/all',
 // single user 
 router.get('/:id',
     useAuth,
-    reqValidator("singleUserSchema", "params"),
+    reqValidator("generiIdSchema", "params"),
     adminOrSelf,
     getSingleUser);
 module.exports = router;
