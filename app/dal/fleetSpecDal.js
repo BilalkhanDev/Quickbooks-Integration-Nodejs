@@ -32,7 +32,7 @@ const updateOrCreateSubSpec = async (model, existingSubId, data) => {
 };
 
 const updateFleetSpecAndSubSpecs = async (fleetId, body) => {
-  console.log("body", body)
+ 
   if (!fleetId) {
     throw new Error('FleetId is required.');
   }
@@ -78,9 +78,28 @@ const updateFleetSpecAndSubSpecs = async (fleetId, body) => {
     return updatedFleetSpec;
   
 };
+const getFleetSpecs = async (fleetId) => {
+  try {
+
+    const specs = await FleetSpec.find({ fleetId })
+      .populate("engine")
+      .populate("wheel")
+      .populate("transmission")
+      .populate("weight")
+      .populate("fuelEconomy");
+
+    const fleetSpec = specs.length ? specs[0].toJSON() : null;
+    console.log(fleetId,specs)
+    return fleetSpec
+  } catch (error) {
+    console.error("❌ Error in fetchFleetSpecs:", error.message);
+    throw new Error("❌ Error in fetchFleetSpecs:", error.message);
+  }
+};
 
 module.exports = {
   updateFleetSpecAndSubSpecs,
+  getFleetSpecs
 };
 
 

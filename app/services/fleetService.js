@@ -8,7 +8,8 @@ const {
 } = require("../dal/fleetDal");
 
 const createFleet = async (data) => {
-  return await createFleetDal(data);
+  const { token, ...payload } = data;
+  return await createFleetDal(payload, token);
 };
 
 const getAllFleets = async (req) => {
@@ -18,17 +19,14 @@ const getAllFleets = async (req) => {
   return await getAllFleetsDal(token, filter, parseInt(page), parseInt(limit));
 };
 
-const getFleetSpec = async (req) => {
-  const { fleetId, token } = req.body;
-
-  return await fetchFleetSpecs(fleetId, token);
-};
-const getFleetById = async (id) => {
-  return await getFleetByIdDal(id);
+const getFleetById = async (data) => {
+  const { token, id } = data;
+  return await getFleetByIdDal(id, token);
 };
 
 const updateFleet = async (id, data) => {
-  return await updateFleetDal(id, data);
+  const { token, ...payload } = data;
+  return await updateFleetDal(id, payload, token);
 };
 
 const deleteFleet = async (id) => {
@@ -41,5 +39,5 @@ module.exports = {
   getFleetById,
   updateFleet,
   deleteFleet,
-  getFleetSpec,
+
 };

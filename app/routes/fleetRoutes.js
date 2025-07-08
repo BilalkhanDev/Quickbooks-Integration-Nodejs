@@ -36,32 +36,31 @@ router.post(
 router.post(
   '/create',
   useAuth,
-  adminOnly(USER_ROLES?.ADMIN),
   reqValidator("createFleetSchema", 'body'),
   createFleetController
 );
-
+router.put(
+  '/update/:id',
+  useAuth,
+  reqValidator("fleetIdSchema", 'params'),
+  reqValidator("createFleetSchema", 'body'),
+  updateFleetController
+);
+// get all fleets
 router.post(
   '/all',
   useAuth,
   getAllFleetsController
 );
 
-router.get(
-  '/:id',
+router.post(
+  '/get-specific',
   useAuth,
-  reqValidator("fleetIdSchema", 'params'),
+  reqValidator("getSpecificFleetSchema", 'body'),
   getFleetByIdController
 );
 
-router.put(
-  '/:id',
-  useAuth,
-  adminOnly(USER_ROLES?.ADMIN),
-  reqValidator("fleetIdSchema", 'params'),
-  reqValidator("updateFleetSchema", 'body'),
-  updateFleetController
-);
+
 
 router.delete(
   '/:id',

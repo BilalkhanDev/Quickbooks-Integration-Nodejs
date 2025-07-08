@@ -3,7 +3,7 @@ const router = express.Router();
 const reqValidator = require('../middleware/reqValidator');
 
 const { useAuth } = require('../middleware/useAuth');
-const { update } = require('../controller/fleetSpecController');
+const { update, get } = require('../controller/fleetSpecController');
 
 
 
@@ -14,4 +14,10 @@ router.put('/:id',
   update
 );
 
+router.get('/:id',
+  useAuth,
+  reqValidator("generiIdSchema", 'params'),
+  get
+  
+);
 module.exports = router;

@@ -28,7 +28,7 @@ const getFleetSpecController = async (req, res) => {
 };
 const getFleetByIdController = async (req, res) => {
   try {
-    const fleet = await fleetService.getFleetById(req.params.id);
+    const fleet = await fleetService.getFleetById(req.body);
     if (!fleet) return res.status(404).json({ message: 'Fleet not found' });
     res.status(200).json(fleet);
   } catch (error) {

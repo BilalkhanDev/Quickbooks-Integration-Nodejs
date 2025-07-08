@@ -118,35 +118,45 @@ const genericfleetIdSchema=Joi.object({
   fleetId: objectId,
 });
 const createFleetSchema = Joi.object({
-  plate_number: Joi.string().required().messages({
-    'string.empty': 'Plate number is required',
-    'any.required': 'Plate number is required'
+  token:Joi.string().required(),
+  setiDecall:Joi.string().required(),
+  vin: Joi.string().required(),
+  bodyType: Joi.string().required(),
+  driverCarNumber: Joi.string().required(),
+  driverCarModel: Joi.string().required(),
+  driverCarYear: Joi.string().required(),
+  driverCarColor: Joi.string().required(),
+  fuelType: Joi.string().required(),
+  capacity:Joi.string().required(),
+  gasCardNumber: Joi.string().required(),
+  realOdometer: Joi.string().required(),
+  limitation: Joi.string().allow(""),
+  status: Joi.string().valid("active", "inactive").required(),
+  serviceAreas: Joi.array().items(objectId).required(),
+  equipments: Joi.array().items(objectId).required(),
+  fundingSources: Joi.array().items(objectId).required(),
+
+  los: objectId.required(),
+  losDetails: Joi.object({
+    title: Joi.string().required(),
   }),
-  make: Joi.string().required().messages({
-    'string.empty': 'Make is required',
-    'any.required': 'Make is required'
+
+  spaceType: objectId.required(),
+  spaceTypeDetails: Joi.object({
+    title: Joi.string().required(),
   }),
-  model: Joi.string().required().messages({
-    'string.empty': 'Model is required',
-    'any.required': 'Model is required'
+  dimensions: Joi.object({
+    width: Joi.string().allow(""),
+    height: Joi.string().allow(""),
+    length: Joi.string().allow(""),
+    groundClearance: Joi.string().allow(""),
+    bedLength: Joi.string().allow(""),
+    rampWidth: Joi.string().allow(""),
   }),
-  color: Joi.string().required().messages({
-    'string.empty': 'Color is required',
-    'any.required': 'Color is required'
-  }),
-  year: Joi.number().required().messages({
-    'number.base': 'Year must be a number',
-    'any.required': 'Year is required'
-  }),
-  odometer: Joi.number().required().messages({
-    'number.base': 'Odometer must be a number',
-    'any.required': 'Odometer is required'
-  }),
-  assigned_driver: objectId.allow(null, ''),
-  status: Joi.number().valid(...Object.values(FLEET_STATUS)).default(FLEET_STATUS.ACTIVE),
-  insurance_expiry: Joi.date().allow(null, ''),
-  service_due_date: Joi.date().allow(null, ''),
+
+  notes: Joi.string().allow(""),
 });
+
 
 const updateFleetSchema = Joi.object({
   plate_number: Joi.string(),
@@ -244,6 +254,14 @@ const fleetTypeIdSchema = Joi.object({
     'any.invalid': 'Invalid ID format'
   })
 });
+const getSpecificFleetSchema=Joi.object({
+   id: objectId.required().messages({
+    'string.base': 'ID must be a string',
+    'any.required': 'ID is required',
+    'any.invalid': 'Invalid ID format'
+  }),
+  token:Joi.string().required()
+})
 const fleetServiceIdSchema = Joi.object({
   fleetId: objectId.required().messages({
     'string.base': 'ID must be a string',
@@ -445,7 +463,10 @@ const createInspectionSchema = Joi.object({
   ).optional(),
   status: Joi.number().valid(0, 1).optional()
 });
+const tokenSchema=Joi.object({
+  token:Joi.string().required(),
 
+})
 module.exports = {
   generiIdSchema,
   genericfleetIdSchema,
@@ -482,4 +503,6 @@ module.exports = {
   inspectionSubmissionSchema,
   getInspectionSubmissionSchema,
   createInspectionSchema,
+  getSpecificFleetSchema,
+  tokenSchema
 };

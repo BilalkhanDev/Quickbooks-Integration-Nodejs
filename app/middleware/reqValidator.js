@@ -1,46 +1,54 @@
 const schemas = require('../validation/schema'); // Ensure this is correctly imported
 
 const reqValidator = (schemaName, source = 'body') => {
-
   return (req, res, next) => {
-    console.log(`Validating schema: ${schemaName}, source: ${source}`);
     if (!req) {
-      return res.status(400).json({ error: 'Request object is undefined' });
+      return res.status(400).json({ error: 'Request object is missing' });
     }
+
     const schema = schemas[schemaName];
-
-    // If schema is not found, return an error
     if (!schema) {
-      return res.status(400).json({ error: `Schema ${schemaName} not found` });
+      return res.status(400).json({ error: `Schema '${schemaName}' not found` });
     }
 
-    // Validate based on the source
+    // Determine source of data
     let data;
     switch (source) {
-      case 'query':
-        data = req.query;
-        break;
       case 'params':
+        if (!req.params || Object.keys(req.params).length === 0) {
+          return res.status(400).json({ error: 'Missing URL parameters' });
+        }
         data = req.params;
         break;
+
+      case 'query':
+        if (!req.query || Object.keys(req.query).length === 0) {
+          return res.status(400).json({ error: 'Missing query parameters' });
+        }
+        data = req.query;
+        break;
+
       case 'body':
       default:
+        if (!req.body || Object.keys(req.body).length === 0) {
+          return res.status(400).json({ error: 'Missing request body' });
+        }
         data = req.body;
         break;
     }
 
-    const { error } = schema.validate(data, { abortEarly: false }); // Abort early set to false for full error details
+    // Validate using the Joi schema
+    const { error } = schema.validate(data, { abortEarly: false });
 
-    // If there are validation errors, send a response
     if (error) {
-      const errorMessages = error.details.map(err => err.message);
-      console.log("Validation Errors:", errorMessages);
+      const errorMessages = error.details.map(detail => detail.message);
       return res.status(400).json({ error: errorMessages });
     }
 
-    next(); // If validation passes, proceed to the next middleware
+    next(); 
   };
 };
+
 
 
 module.exports = reqValidator;
