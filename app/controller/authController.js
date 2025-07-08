@@ -38,23 +38,36 @@ const refreshAccessToken = (req, res) => {
 
   console.log("↩️ Received refresh token:", refreshToken);
 
-
   try {
-    const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    // Verify the refresh token
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     console.log("✅ Token verified for user:", payload?.id);
 
+    // Issue a new access token
     const accessToken = jwt.sign(
       { id: payload.id, role: payload.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '15m' }
     );
 
-    res.status(200).json({ accessToken });
+    // Issue a new refresh token (rotation)
+    const newRefreshToken = jwt.sign(
+      { id: payload.id, role: payload.role },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.status(200).json({
+      accessToken,
+      refreshToken: newRefreshToken
+    });
+
   } catch (err) {
-    console.error("❌ Token expired or invalid", err);
+    console.error("❌ Invalid or expired refresh token", err);
     return res.status(403).json({ error: 'Invalid or expired refresh token' });
   }
 };
+
 
 const externalLogin = async (req, res) => {
   const { token } = req.body;

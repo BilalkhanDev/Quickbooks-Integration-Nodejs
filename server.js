@@ -7,7 +7,7 @@ const activityLogger = require('./app/middleware/activityLogger');
 const  routes  = require('./app/routes/index');
 const app = express();
 const path =require("path")
-const { initializeRedis } = require('./app/utils/redis');
+
 
 app.use(cors());
 app.use(express.json());
@@ -24,7 +24,7 @@ const startServer = async () => {
     });
     console.log("✅ MongoDB connected.");
 
-    await initializeRedis();
+  
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

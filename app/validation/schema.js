@@ -173,6 +173,11 @@ const getfleetSpecfSchema = Joi.object({
     'string.base': 'Fleet ID must be a string',
     'any.required': 'Fleet ID is required',
     'any.invalid': 'Invalid Fleet ID format'
+  }),
+  token: Joi.string().required().messages({
+    'string.base': 'Token must be a string',
+    'any.required': 'Token is required',
+    'any.invalid': 'Invalid Token format'
   })
 });
 const createFleetStatusSchema = Joi.object({

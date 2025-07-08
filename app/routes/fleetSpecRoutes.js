@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const reqValidator = require('../middleware/reqValidator');
-const { update } = require('../controller/fleetSpecController');
+
 const { useAuth } = require('../middleware/useAuth');
+const { update } = require('../controller/fleetSpecController');
 
 
 
