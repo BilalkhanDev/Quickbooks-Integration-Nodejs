@@ -1,4 +1,4 @@
-const { create, updateById, deleteById, bulkDelete, findAll } = require("../dal/VendorDal");
+const { create, updateById, deleteById, bulkDelete, findAll } = require("../dal/vendorDal");
 
 const createVendor = async (data) => create(data);
 const getVendors = async (query) => {
