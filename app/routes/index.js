@@ -11,7 +11,7 @@ const serviceRoutes=require("./serviceRoutes")
 const issuesRoutes=require("./issueRoutes")
 const inspectionRoutes=require("./inspectionRoutes")
 const inspectionSubmissionRoutes=require("./inspectionSubmissionRoutes")
-
+const commonRoutes=require('./commonRoutes')
 const router = express.Router();
 
 router.use('/auth', authRoutes);
@@ -26,6 +26,7 @@ router.use("/service",serviceRoutes)
 router.use("/issue",issuesRoutes)
 router.use("/inspection",inspectionRoutes)
 router.use("/inspection-submission",inspectionSubmissionRoutes)
+router.use("/common",commonRoutes)
 
 module.exports = router;
 
