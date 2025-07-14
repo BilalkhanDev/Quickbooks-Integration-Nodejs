@@ -22,15 +22,19 @@ const FleetSpecSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Weight'
   },
-  fuelEconomy: {
+  fuel: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'FuelEconomy'
+    ref: 'Fuel'
+  },
+  performance: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Performance'
   }
 }, {
   timestamps: true
 });
 
-// Define virtual fields to populate
+
 FleetSpecSchema.virtual('engineDetails', {
   ref: 'Engine',
   localField: 'engine',
@@ -59,9 +63,16 @@ FleetSpecSchema.virtual('weightDetails', {
   justOne: true
 });
 
-FleetSpecSchema.virtual('fuelEconomyDetails', {
-  ref: 'FuelEconomy',
-  localField: 'fuelEconomy',
+FleetSpecSchema.virtual('fuelDetails', {
+  ref: 'Fuel',
+  localField: 'fuel',
+  foreignField: '_id',
+  justOne: true
+});
+
+FleetSpecSchema.virtual('performanceDetails', {
+  ref: 'Performance',
+  localField: 'performance',
   foreignField: '_id',
   justOne: true
 });

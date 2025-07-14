@@ -66,6 +66,9 @@ const loginSchema = Joi.object({
 
 })
 
+const getProfile= Joi.object({
+  token:Joi.string().required()
+})
 
 // user data
 const userSchema = Joi.object({
@@ -344,12 +347,69 @@ const vendorUpdateSchema = Joi.object({
 });
 
 const updateFleetSpecSchema = Joi.object({
-  engine: Joi.object().optional(),
-  wheel: Joi.object().optional(),
-  transmission: Joi.object().optional(),
-  weight: Joi.object().optional(),
-  fuelEconomy: Joi.object().optional()
+  engine: Joi.object({
+    engineSummary: Joi.string().optional(),
+    engineBrand: Joi.string().optional(),
+    aspiration: Joi.number().optional(),
+    blockType: Joi.number().optional(),
+    bore: Joi.number().optional(),
+    camType: Joi.number().optional(),
+    compression: Joi.number().optional(),
+    cylinders: Joi.number().optional(),
+    displacement: Joi.number().optional(),
+    fuelInduction: Joi.number().optional(),
+    maxHP: Joi.number().optional(),
+    maxTorque: Joi.number().optional(),
+    redlineRPM: Joi.number().optional(),
+    stroke: Joi.number().optional(),
+    valves: Joi.number().optional()
+  }).optional(),
+
+  wheel: Joi.object({
+    driveType: Joi.number().optional(),
+    brakeSystem: Joi.number().optional(),
+    frontTrackWidth: Joi.number().optional(),
+    rearTrackWidth: Joi.number().optional(),
+    wheelbase: Joi.number().optional(),
+    frontWheelDiameter: Joi.string().optional(),
+    rearWheelDiameter: Joi.string().optional(),
+    rearAxle: Joi.string().optional(),
+    frontTireType: Joi.string().optional(),
+    frontTirePSI: Joi.number().optional(),
+    rearTireType: Joi.string().optional(),
+    rearTirePSI: Joi.number().optional()
+  }).optional(),
+
+  transmission: Joi.object({
+    transmissionSummary: Joi.string().optional(),
+    transmissionBrand: Joi.string().optional(),
+    transmissionType: Joi.number().optional(),
+    transmissionGears: Joi.number().optional()
+  }).optional(),
+
+  weight: Joi.object({
+    curbWeight: Joi.number().optional(),
+    grossRating: Joi.number().optional()
+  }).optional(),
+
+  fuel: Joi.object({
+    quality: Joi.number().optional(),
+    primary_tank_capacity: Joi.number().optional(),
+    secondary_tank_capacity: Joi.number().optional(),
+    fuelEconomy: Joi.object({
+      epa_city: Joi.number().optional(),
+      epa_highway: Joi.number().optional(),
+      epa_combined: Joi.number().optional()
+    }).optional(),
+    oilCapacity: Joi.number().optional()
+  }).optional(),
+
+  performance: Joi.object({
+    towingCapacity: Joi.number().optional(),
+    maxPayload: Joi.number().optional()
+  }).optional()
 });
+
 const issueCreateSchema = Joi.object({
   fleetId:Joi.string().required().messages({
     'string.base': 'ID must be a string',
@@ -473,6 +533,7 @@ module.exports = {
   registerSchema,
   loginSchema,
   userSchema,
+  getProfile,
   singleUserSchema,
   createFleetSchema,
   updateFleetSchema,

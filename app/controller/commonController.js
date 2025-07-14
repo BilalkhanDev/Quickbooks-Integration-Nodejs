@@ -17,17 +17,20 @@ const fundingSource = async (req, res) => {
       }
     );
 
-    return response.data;
+    return res.status(200).json(response.data);
   } catch (error) {
-    console.error("ERROR Fetching FS:", error?.response?.data || error.message);
-    throw new Error(
-      error?.response?.data || error.message || "Error fetching funding sources"
-    );
+    
+    return res.status(500).json({
+      error:
+        error?.response?.data?.message ||
+        error.message ||
+        "Error fetching funding sources",
+    });
   }
 };
 
 // Service Areas
-const serviceAreas = async (req) => {
+const serviceAreas = async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -40,21 +43,20 @@ const serviceAreas = async (req) => {
         },
       }
     );
-
-    return response.data;
+    return res.status(200).json(response.data);
   } catch (error) {
-    console.error(
-      "ERROR Fetching Service Area:",
-      error?.response?.data || error.message
-    );
-    throw new Error(
-      error?.response?.data || error.message || "Error fetching service areas"
-    );
+
+    return res.status(500).json({
+      error:
+        error?.response?.data?.message ||
+        error.message ||
+        "Error fetching Service Area",
+    });
   }
 };
 
 // Space Types
-const spaceTypes = async (req) => {
+const spaceTypes = async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -68,20 +70,19 @@ const spaceTypes = async (req) => {
       }
     );
 
-    return response.data;
+      return res.status(200).json(response.data);
   } catch (error) {
-    console.error(
-      "ERROR Fetching Space Types:",
-      error?.response?.data || error.message
-    );
-    throw new Error(
-      error?.response?.data || error.message || "Error fetching space types"
-    );
+    return res.status(500).json({
+      error:
+        error?.response?.data?.message ||
+        error.message ||
+        "Error fetching Space Types",
+    });
   }
 };
 
 // Equipments
-const equipments = async (req) => {
+const equipments = async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -94,21 +95,19 @@ const equipments = async (req) => {
         },
       }
     );
-
-    return response.data;
+     return res.status(200).json(response.data);
   } catch (error) {
-    console.error(
-      "ERROR Fetching Equipments:",
-      error?.response?.data || error.message
-    );
-    throw new Error(
-      error?.response?.data || error.message || "Error fetching equipments"
-    );
+    return res.status(500).json({
+      error:
+        error?.response?.data?.message ||
+        error.message ||
+        "Error fetching equipment",
+    });
   }
 };
 
 // Level of Service
-const los = async (req) => {
+const los = async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -122,15 +121,14 @@ const los = async (req) => {
       }
     );
 
-    return response.data;
+    return res.status(200).json(response.data);
   } catch (error) {
-    console.error(
-      "ERROR Fetching LOS:",
-      error?.response?.data || error.message
-    );
-    throw new Error(
-      error?.response?.data || error.message || "Error fetching LOS"
-    );
+    return res.status(500).json({
+      error:
+        error?.response?.data?.message ||
+        error.message ||
+        "Error fetching Los",
+    });
   }
 };
 

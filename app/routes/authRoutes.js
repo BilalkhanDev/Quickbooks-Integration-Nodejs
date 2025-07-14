@@ -1,6 +1,6 @@
 const express = require('express');
 const reqValidator = require('../middleware/reqValidator');
-const { register, login, refreshAccessToken, externalLogin } = require('../controller/authController');
+const { register, login, refreshAccessToken, externalLogin, me } = require('../controller/authController');
 
 const router = express.Router();
 router.post ('/token', externalLogin)
@@ -11,6 +11,10 @@ router.post('/register',
 router.post('/login',
     reqValidator("loginSchema", "body"),
     login
+);
+router.post('/me',
+    reqValidator("getProfile", "body"),
+    me
 );
 router.post('/refresh-token', refreshAccessToken);
 

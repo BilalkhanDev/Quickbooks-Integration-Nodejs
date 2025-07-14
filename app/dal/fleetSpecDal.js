@@ -3,22 +3,22 @@ const FleetSpec = require('../models/specfication/index');
 const weight = require('../models/specfication/weight');
 const wheel = require('../models/specfication/wheel');
 const transmission = require('../models/specfication/trasmission');
-// const FuelEconomy=require("../models/specfication/")
-
+const fuel = require('../models/specfication/fuel');
+const performance = require('../models/specfication/performance');
 
 const subModels = {
   engine: engine,       
   wheel: wheel,           
   transmission: transmission,
-  weight: weight,           
-  // fuelEconomy: FuelEconomy,
+  weight: weight,    
+  fuel:fuel,
+  performance: performance      
+
 };
 
 const updateOrCreateSubSpec = async (model, existingSubId, data) => {
   if (data) {
-
-    if (existingSubId) {
-    
+    if (existingSubId) { 
       return model.findByIdAndUpdate(existingSubId, { ...data }, { new: true });
     } else {
       // Create new sub-spec
@@ -74,7 +74,7 @@ const updateFleetSpecAndSubSpecs = async (fleetId, body) => {
         { new: true }
       ).populate(Object.keys(subModels));
     }
-
+  
     return updatedFleetSpec;
   
 };
@@ -86,13 +86,15 @@ const getFleetSpecs = async (fleetId) => {
       .populate("wheel")
       .populate("transmission")
       .populate("weight")
-      .populate("fuelEconomy");
+      .populate("fuel")
+      .populate("performance")
+
 
     const fleetSpec = specs.length ? specs[0].toJSON() : null;
-    console.log(fleetId,specs)
+    
     return fleetSpec
   } catch (error) {
-    console.error("❌ Error in fetchFleetSpecs:", error.message);
+   
     throw new Error("❌ Error in fetchFleetSpecs:", error.message);
   }
 };

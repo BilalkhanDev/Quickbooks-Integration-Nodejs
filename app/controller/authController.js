@@ -29,6 +29,34 @@ const login = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+// me 
+const me =async(req,res)=>{
+    try {
+      const { token } = req.body;
+  
+      const response = await axios.get(
+        `${process.env.FLEET_URL}/users/me`,
+        {
+          headers: {
+            Authorization: `JWT ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      return res.status(200).json(response.data);
+    } catch (error) {
+      
+      return res.status(500).json({
+        error:
+          error?.response?.data?.message ||
+          error.message ||
+          "Error Fecthing User",
+      });
+    }
+}
+
 const refreshAccessToken = (req, res) => {
   const { refreshToken } = req.body;
 
@@ -111,6 +139,7 @@ module.exports = {
   externalLogin,
   register,
   login,
+  me,
   refreshAccessToken,
 
 };

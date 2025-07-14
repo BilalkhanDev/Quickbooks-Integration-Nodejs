@@ -13,7 +13,7 @@ const TransmissionSchema = new mongoose.Schema({
     },
     transmissionGears: { type: Number, default: 0 }
 }, {
-    timestamps: true
+    timestamps: false
 });
 
 module.exports = mongoose.model('Transmission', TransmissionSchema);

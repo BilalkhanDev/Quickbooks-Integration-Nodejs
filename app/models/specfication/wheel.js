@@ -33,7 +33,7 @@ const WheelSchema = new mongoose.Schema({
     rearTireType: { type: String, default: "" },
     rearTirePSI: { type: Number, default: 0 }
 }, {
-    timestamps: true
+    timestamps: false
 });
 
 module.exports = mongoose.model('Wheel', WheelSchema);

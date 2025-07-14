@@ -52,7 +52,7 @@ const EngineSchema = new mongoose.Schema({
     stroke: { type: Number, default: 0 },
     valves: { type: Number, default: 0 }
 }, {
-    timestamps: true
+    timestamps: false
 });
 
 module.exports = mongoose.model('Engine', EngineSchema);

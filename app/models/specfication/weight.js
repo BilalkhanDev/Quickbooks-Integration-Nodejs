@@ -5,7 +5,7 @@ const WeightSchema = new mongoose.Schema({
     grossRating: { type: Number, default: 0 },
 
 }, {
-    timestamps: true
+    timestamps: false
 });
 
 module.exports = mongoose.model('Weight', WeightSchema);
