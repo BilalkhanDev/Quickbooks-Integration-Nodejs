@@ -32,13 +32,12 @@ const getSingleServiceEntryService = async (req) => {
 };
 // Update ServiceEntry by fleetId
 
-const updateServiceEntryService = async (req) => {
+const updateServiceEntryService = async (req,res) => {
   const { id } = req.params;
   const data = req.body;
   let photos = req.files?.photos?.map(file => file.filename);
   let documents = req.files?.documents?.map(file => file.filename);
   try {
-
 
     // Fetch the existing service entry to get the current photos and documents
     const existingServiceEntry = await ServiceEntry.findById(id);

@@ -13,7 +13,6 @@ const defaultVendors = [
   { name: "Avo's Automotive", address: '2740 E Olympic Blvd', subAddrress: 'Unit C', city: 'Los Angeles', state: 'CA' },
   { name: 'L.A Auto Center', address: '1129 W Washington Blvd', city: 'Los Angeles', state: 'CA' },
   { name: 'La Cdjr', address: '2025 South Figueroa Street', city: 'Los Angeles', state: 'CA' },
-  { name: 'Ford Of Downtown La', address: '1929 South Figueroa Street', city: 'Los Angeles', state: 'CA' },
   { name: 'Volkswagen Of Downtown L.A.', address: '1900 S. FIGUEROA ST.', city: 'Los Angeles', state: 'CA' },
   { name: 'Toyota Of Downtown La', address: '1901 South Figueroa Street', city: 'Los Angeles', state: 'CA' },
   { name: 'J & S Auto Service', address: '2028 S SAN PEDRO ST', city: 'Los Angeles', state: 'CA' },
@@ -28,7 +27,6 @@ const defaultVendors = [
   { name: 'Midas', address: '2424 S FIGUEROA ST', city: 'Los Angeles', state: 'CA', status: 1 },
   { name: 'Hovson Tires & Automotive Center', address: '4385 W SUNSET BLVD', city: 'Los Angeles', state: 'CA' },
   { name: 'Jiffy Lube', address: '4020 SUNSET BLVD.', city: 'Los Angeles', state: 'CA', status: 1 },
-  { name: 'Pep Boys', address: '1200 W WASHINGTON BLVD', city: 'Los Angeles', state: 'CA', status: 1 },
   { name: 'Chrysler Servicenet', address: '2025 S Figueroa St', city: 'Los Angeles', state: 'CA', status: 1 },
   { name: 'J T Mechanic & Body Shop', address: '2729 North Main Street', city: 'Los Angeles', state: 'CA', status: 1 },
 ];

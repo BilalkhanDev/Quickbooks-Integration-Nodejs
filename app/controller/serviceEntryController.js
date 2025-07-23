@@ -31,7 +31,6 @@ const getServiceEntryByFleetId = async (req, res) => {
 };
 const getServiceById = async (req, res) => {
   try {
-    console.log("Request received:", req.params); // Log the params to make sure the id is being captured
     const serviceEntry = await getSingleServiceEntryService(req);
 
     if (!serviceEntry) {
@@ -49,7 +48,7 @@ const getServiceById = async (req, res) => {
 const updateServiceEntry = async (req, res) => {
   try {
 
-    const updatedServiceEntry = await updateServiceEntryService(req);
+    const updatedServiceEntry = await updateServiceEntryService(req,res);
 
     return res.status(200).json({
       message: "Service entry updated successfully!",

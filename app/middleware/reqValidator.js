@@ -1,6 +1,6 @@
 const schemas = require('../validation/schema'); // Ensure this is correctly imported
 
-const reqValidator = (schemaName, source = 'body') => {
+const reqValidator = (schemaName, source = 'body') => { 
   return (req, res, next) => {
     if (!req) {
       return res.status(400).json({ error: 'Request object is missing' });

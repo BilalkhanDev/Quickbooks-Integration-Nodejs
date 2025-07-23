@@ -12,13 +12,68 @@ const createServiceEntryDAL = async (data) => {
 
 const getServiceEntryByIdDAL = async (fleetId) => {
   try {
-    const serviceEntry = await ServiceEntry.find({ fleetId })
-      .populate('vendor')
-      .populate('issues', '-fleetId')
+    const serviceEntries = await ServiceEntry.aggregate([
+      // Filter by fleetId
+      { $match: { fleetId: fleetId } },
 
-    return serviceEntry;
+      // Populate vendor
+      {
+        $lookup: {
+          from: 'vendors', // your Vendor collection name
+          localField: 'vendor',
+          foreignField: '_id',
+          as: 'vendorData'
+        }
+      },
+      { $unwind: { path: '$vendorData', preserveNullAndEmptyArrays: true } },
+
+      // Lookup issues to count them
+      {
+        $lookup: {
+          from: 'issues', // your Issues collection name
+          localField: '_id',
+          foreignField: 'serviceId',
+          as: 'issuesArray'
+        }
+      },
+
+      // Add a field for issues count
+      {
+        $addFields: {
+          issuesCount: { $size: { $ifNull: ['$issuesArray', []] } }
+        }
+      },
+
+      // Include both service entry data and vendor/issuesCount
+      {
+        $project: {
+          // ServiceEntry fields you want
+          repairPriorityClass: 1,
+          odometer: 1,
+          void: 1,
+          completionDate: 1,
+          isStartDate: 1,
+          startDate: 1,
+          reference: 1,
+          labels: 1,
+          photos: 1,
+          documents: 1,
+          comments: 1,
+          createdAt: 1,
+          updatedAt: 1,
+
+          // Populated vendor
+          vendor: '$vendorData',
+
+          // Computed issues count
+          issuesCount: 1
+        }
+      }
+    ]);
+
+    return serviceEntries;
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error.message || error);
   }
 };
 const getSingleServiceEntryByIdDAL = async (id) => {

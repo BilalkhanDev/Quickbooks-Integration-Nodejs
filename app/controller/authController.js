@@ -64,12 +64,10 @@ const refreshAccessToken = (req, res) => {
     return res.status(401).json({ error: 'Refresh token is required' });
   }
 
-  console.log("↩️ Received refresh token:", refreshToken);
 
   try {
     // Verify the refresh token
     const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    console.log("✅ Token verified for user:", payload?.id);
 
     // Issue a new access token
     const accessToken = jwt.sign(
@@ -91,7 +89,6 @@ const refreshAccessToken = (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Invalid or expired refresh token", err);
     return res.status(403).json({ error: 'Invalid or expired refresh token' });
   }
 };

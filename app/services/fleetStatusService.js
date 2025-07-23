@@ -28,7 +28,6 @@ exports.deleteStatus = async (id) => {
 
 exports.bulkDeleteStatuses = async (ids) => {
   const statuses = await fleetDAL.findStatusesByIds(ids);
-   console.log("Status", statuses)
   const nonRemovables = statuses.filter(s => !s.isRemoveAble);
   if (nonRemovables.length > 0) {
     const names = nonRemovables.map(s => s.name).join(', ');

@@ -4,7 +4,6 @@ const issueService = require('../services/issueService');
 const createIssue = async (req, res) => {
   try {
     const issueData = req.body;
-    console.log("Req.Body", req.body)
     const issue = await issueService.createIssue(issueData);
     return res.status(201).json({
       message: 'Issue created successfully',

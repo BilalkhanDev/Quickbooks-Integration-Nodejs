@@ -3,11 +3,16 @@ const express = require('express');
 const reqValidator = require('../middleware/reqValidator');
 const { useAuth } = require('../middleware/useAuth');
 const {createIssue, getIssueById, getAllIssues, getIssuesByServiceId, updateIssueById, deleteIssueById } = require('../controller/issueController');
+const upload = require('../middleware/multer');
 
 const router = express.Router();
 
 router.post('/create', 
   useAuth, 
+  upload.fields([
+    { name: 'photos', maxCount: 5 },
+    { name: 'documents', maxCount: 3 }
+  ]),
   reqValidator('issueCreateSchema', 'body'), 
   createIssue
 );
@@ -31,6 +36,10 @@ router.get('/service/:serviceId',
 
 router.patch('/:issueId', 
   useAuth,  
+  upload.fields([
+    { name: 'photos', maxCount: 5 },
+    { name: 'documents', maxCount: 3 }
+  ]),
   reqValidator('issueIdSchema', 'params'),  
   reqValidator('issueUpdateSchema', 'body'),
   updateIssueById

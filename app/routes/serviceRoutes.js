@@ -5,7 +5,7 @@ const { createServiceEntry, getServiceEntryById, updateServiceEntry, getServiceE
 const { useAuth } = require('../middleware/useAuth');
 const reqValidator = require('../middleware/reqValidator');
 
-router.get('/service/:id', 
+router.get('/:id',
   useAuth,
   reqValidator('generiIdSchema', 'params'),
   getServiceById
@@ -19,18 +19,18 @@ router.post('/',
   ]),
   createServiceEntry
 );
-router.put('/service/:id',
+router.put('/:id',
   useAuth,
   reqValidator('generiIdSchema', 'params'),
-  reqValidator('updateServiceEntrySchema', 'body'),
   upload.fields([
     { name: 'photos', maxCount: 5 },
     { name: 'documents', maxCount: 3 }
   ]),
+  reqValidator('updateServiceEntrySchema', 'body'),
   updateServiceEntry
 );
 
-router.get('/fleet/:fleetId', 
+router.get('/fleet/:fleetId',
   useAuth,
   reqValidator('genericfleetIdSchema', 'params'),
   getServiceEntryByFleetId

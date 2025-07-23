@@ -28,12 +28,10 @@ exports.countStatuses = () => fleetStatus.countDocuments();
 
 // DAL
 exports.findStatusesByIds = (ids) => {
-  console.log("Ids", ids);
   const objectIds = ids
     .filter(id => mongoose.Types.ObjectId.isValid(id))
     .map(id => new mongoose.Types.ObjectId(id));
 
-  console.log("Converted ObjectIds", objectIds);
 
   return fleetStatus.find({ _id: { $in: objectIds } });
 };
