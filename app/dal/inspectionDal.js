@@ -7,7 +7,13 @@ const getAllInspections = async () => {
         throw error;
     }
 };
-
+const getNameDal = async () => {
+    try {
+        return await Inspection.find({}, { name: 1 }).lean();
+    } catch (error) {
+        throw error;
+    }
+};
 const updateInspectionById = async (inspectionId, updateData) => {
     try {
         return await Inspection.findByIdAndUpdate(
@@ -41,5 +47,6 @@ module.exports = {
     getAllInspections,
     updateInspectionById,
     getInspectionById,
-    createInspection
+    createInspection,
+    getNameDal
 }; 

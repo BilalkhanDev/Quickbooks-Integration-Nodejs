@@ -1,4 +1,4 @@
-const { getAllInspections, updateInspectionById, getInspectionById, createInspection } = require('../dal/inspectionDal');
+const { getAllInspections, updateInspectionById, getInspectionById, createInspection, getNameDal } = require('../dal/inspectionDal');
 
 const getAllInspectionService = async () => {
     try {
@@ -7,6 +7,10 @@ const getAllInspectionService = async () => {
         throw error;
     }
 };
+
+const getNameService=async ()=>{
+    return await getNameDal()
+}
 
 const updateInspectionService = async (inspectionId, updateData) => {
     try {
@@ -36,5 +40,6 @@ module.exports = {
     getAllInspectionService,
     updateInspectionService,
     getInspectionByIdService,
-    createInspectionService
+    createInspectionService,
+    getNameService
 }; 

@@ -8,13 +8,12 @@ const serviceEntrySchema = new mongoose.Schema(
         },
         repairPriorityClass: {
             type: String,
-            enum: [0, 1, 2],
-            //   enum: ['Scheduled', 'Non-Scheduled', 'Emergency'],
+           enum: ['scheduled', 'non-scheduled', 'emergency'],
             required: true,
         },
         odometer: {
             type: Number,
-            default: null,
+            default: 0,
         },
         void: {
             type: Boolean,
@@ -57,7 +56,7 @@ const serviceEntrySchema = new mongoose.Schema(
         }],
         comments: {
             type: String,
-            default: null,
+            default: "",
         },
     },
     {

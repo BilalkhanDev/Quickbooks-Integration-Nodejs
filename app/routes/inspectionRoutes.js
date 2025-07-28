@@ -2,12 +2,16 @@ const express = require('express');
 const router = express.Router();
 const reqValidator = require('../middleware/reqValidator');
 const { useAuth } = require('../middleware/useAuth');
-const { getAll, updateInspection, getInspectionById, createInspection } = require('../controller/inspectionController');
+const { getAll, updateInspection, getInspectionById, createInspection, getName } = require('../controller/inspectionController');
 
 
 router.get('/',
   useAuth,
   getAll);
+
+router.get('/specific-detail',
+  useAuth,
+  getName);
 
 router.put('/:id',
   useAuth,

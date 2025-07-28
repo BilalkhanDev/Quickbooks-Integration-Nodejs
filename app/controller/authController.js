@@ -1,4 +1,4 @@
-const { createNewUser, authenticateUser, checkIfUserIsBlocked} = require('../services/authService'); // Import service layer
+const { createNewUser, authenticateUser} = require('../services/authService'); // Import service layer
 const jwt = require('jsonwebtoken');
 const axios=require("axios")
 // Signup Controller
@@ -14,13 +14,8 @@ const register = async (req, res) => {
 // Signin Controller
 const login = async (req, res) => {
   const { email, password } = req.body;
-
+ console.log("Email", email,password)
   try {
-    const isBlocked = await checkIfUserIsBlocked(email);
-    if (isBlocked) {
-      return res.status(429).json({ error: 'Too many failed attempts. Try again later.' });
-    }
-
     const { accessToken, refreshToken } = await authenticateUser(email, password);
     return res.status(200).json({ message: 'Login successful', accessToken, refreshToken });
 
@@ -113,7 +108,7 @@ const externalLogin = async (req, res) => {
     const response = await axios.get(`${process.env.NEMT_URL}/me`, {
       headers: { Authorization: `JWT ${token}` }
     });
-
+     console.log("Respo",response?.data)
     const user = response.data?.user;
     if (!user) throw new Error("User not found");
 

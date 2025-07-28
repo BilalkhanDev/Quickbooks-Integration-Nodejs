@@ -1,4 +1,4 @@
-const { getAllInspectionService, updateInspectionService, getInspectionByIdService, createInspectionService } = require('../services/inspectionService');
+const { getAllInspectionService, updateInspectionService, getInspectionByIdService, createInspectionService, getNameService } = require('../services/inspectionService');
 
 const getAll = async (req, res) => {
     try {
@@ -8,6 +8,16 @@ const getAll = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+const getName = async (req, res) => {
+    try {
+        const inspections = await getNameService();
+        res.status(200).json({ success: true, data: inspections });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 const updateInspection = async (req, res) => {
     try {
@@ -44,5 +54,6 @@ module.exports = {
     getAll,
     updateInspection,
     getInspectionById,
+    getName,
     createInspection
 };

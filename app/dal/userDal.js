@@ -29,7 +29,7 @@ const findUserByIdDal = async (id) => {
 // Find user by username OR email
 const findUserDal = async (identifier) => {
   return await User.findOne({
-    $or: [{ username: identifier }, { email: identifier }],
+    $or: [{ email: identifier }],
   });
 };
 

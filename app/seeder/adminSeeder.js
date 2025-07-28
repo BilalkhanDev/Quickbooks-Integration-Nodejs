@@ -11,11 +11,11 @@ const createAdminUser = async () => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const hashedPassword = await bcrypt.hash('admin1234', 10);
 
     const adminUser = new User({
       username: 'admin',
-      email: 'admin@example.com',
+      email: 'admin@gmail.com',
       password: hashedPassword,
       role: USER_ROLES.ADMIN
     });
