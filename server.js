@@ -3,35 +3,28 @@ require("reflect-metadata");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const activityLogger = require("./app/middleware/activityLogger");
-const routes = require("./app/routes/index");
 const app = express();
 const path = require("path");
+const routes=require('./src/app/routes/index')
+const { ActivityLogger, errorHandler, morgan } = require("./src/shared/middleware");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(activityLogger);
+app.use(ActivityLogger);
+app.use(errorHandler);
+app.use(morgan);
 
 app.use("/api", routes);
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
-const startServer = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("✅ MongoDB connected.");
+dotenv.config({
+  path: `.env.${process.env.NODE_ENV || 'development'}`
+});
 
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error("❌ MongoDB connection failed:", err);
-  }
-};
+const PORT = process.env.PORT || 3000;
 
-startServer();
+app.listen(PORT, () => {
+  console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+});
