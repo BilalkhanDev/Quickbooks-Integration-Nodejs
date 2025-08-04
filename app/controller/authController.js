@@ -14,7 +14,7 @@ const register = async (req, res) => {
 // Signin Controller
 const login = async (req, res) => {
   const { email, password } = req.body;
- console.log("Email", email,password)
+
   try {
     const { accessToken, refreshToken } = await authenticateUser(email, password);
     return res.status(200).json({ message: 'Login successful', accessToken, refreshToken });

@@ -3,16 +3,13 @@ const express = require('express');
 const reqValidator = require('../middleware/reqValidator');
 const { useAuth } = require('../middleware/useAuth');
 const {createIssue, getIssueById, getAllIssues, getIssuesByServiceId, updateIssueById, deleteIssueById } = require('../controller/issueController');
-const upload = require('../middleware/multer');
-
+const s3AssetUploader = require('../middleware/multer');
+const parseMultipartJsonFields=require("../middleware/parseJsonFields");
 const router = express.Router();
 
 router.post('/create', 
   useAuth, 
-  upload.fields([
-    { name: 'photos', maxCount: 5 },
-    { name: 'documents', maxCount: 3 }
-  ]),
+  s3AssetUploader("issues", "documents"),
   reqValidator('issueCreateSchema', 'body'), 
   createIssue
 );
@@ -36,12 +33,13 @@ router.get('/service/:serviceId',
 
 router.patch('/:issueId', 
   useAuth,  
-  upload.fields([
-    { name: 'photos', maxCount: 5 },
-    { name: 'documents', maxCount: 3 }
-  ]),
+  s3AssetUploader("issues", "documents"),
+  parseMultipartJsonFields({
+    existingDocuments: 'json',   
+
+  }),
   reqValidator('issueIdSchema', 'params'),  
-  reqValidator('issueUpdateSchema', 'body'),
+  reqValidator('issueCreateSchema', 'body'),
   updateIssueById
 );
 

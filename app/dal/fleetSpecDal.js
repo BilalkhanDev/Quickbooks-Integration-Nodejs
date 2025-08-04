@@ -5,6 +5,7 @@ const wheel = require('../models/specfication/wheel');
 const transmission = require('../models/specfication/trasmission');
 const fuel = require('../models/specfication/fuel');
 const performance = require('../models/specfication/performance');
+const dimension = require('../models/specfication/dimension');
 
 const subModels = {
   engine: engine,       
@@ -12,10 +13,10 @@ const subModels = {
   transmission: transmission,
   weight: weight,    
   fuel:fuel,
-  performance: performance      
+  performance: performance,
+  dimension:dimension   
 
 };
-
 const updateOrCreateSubSpec = async (model, existingSubId, data) => {
   if (data) {
     if (existingSubId) { 
@@ -30,7 +31,6 @@ const updateOrCreateSubSpec = async (model, existingSubId, data) => {
     return existingSubId; 
   }
 };
-
 const updateFleetSpecAndSubSpecs = async (fleetId, body) => {
  
   if (!fleetId) {
@@ -80,7 +80,6 @@ const updateFleetSpecAndSubSpecs = async (fleetId, body) => {
 };
 const getFleetSpecs = async (fleetId) => {
   try {
-
     const specs = await FleetSpec.find({ fleetId })
       .populate("engine")
       .populate("wheel")
@@ -88,6 +87,7 @@ const getFleetSpecs = async (fleetId) => {
       .populate("weight")
       .populate("fuel")
       .populate("performance")
+      .populate("dimension")
 
 
     const fleetSpec = specs.length ? specs[0].toJSON() : null;
@@ -98,7 +98,6 @@ const getFleetSpecs = async (fleetId) => {
     throw new Error("❌ Error in fetchFleetSpecs:", error.message);
   }
 };
-
 module.exports = {
   updateFleetSpecAndSubSpecs,
   getFleetSpecs

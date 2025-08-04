@@ -1,18 +1,14 @@
-const schemas = require('../validation/schema'); // Ensure this is correctly imported
+const schemas = require('../validation/schema');
 
-const reqValidator = (schemaName, source = 'body') => { 
+const reqValidator = (schemaName, source = 'body') => {
   return (req, res, next) => {
-    if (!req) {
-      return res.status(400).json({ error: 'Request object is missing' });
-    }
-
     const schema = schemas[schemaName];
     if (!schema) {
       return res.status(400).json({ error: `Schema '${schemaName}' not found` });
     }
 
-    // Determine source of data
     let data;
+
     switch (source) {
       case 'params':
         if (!req.params || Object.keys(req.params).length === 0) {
@@ -33,11 +29,10 @@ const reqValidator = (schemaName, source = 'body') => {
         if (!req.body || Object.keys(req.body).length === 0) {
           return res.status(400).json({ error: 'Missing request body' });
         }
-        data = req.body;
+        data = req.body; // ✅ Do not inject req.params.id
         break;
     }
 
-    // Validate using the Joi schema
     const { error } = schema.validate(data, { abortEarly: false });
 
     if (error) {
@@ -45,10 +40,8 @@ const reqValidator = (schemaName, source = 'body') => {
       return res.status(400).json({ error: errorMessages });
     }
 
-    next(); 
+    next();
   };
 };
-
-
 
 module.exports = reqValidator;

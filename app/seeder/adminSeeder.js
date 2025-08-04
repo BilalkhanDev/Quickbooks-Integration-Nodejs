@@ -1,31 +1,49 @@
 const bcrypt = require('bcryptjs');
 const { USER_ROLES } = require('../constants/role');
-const User = require('../models/user'); // Make sure model name is capitalized
+const User = require('../models/user');
 
-const createAdminUser = async () => {
+const createUsers = async () => {
   try {
-    const existingAdmin = await User.findOne({ role: USER_ROLES.ADMIN });
+    const usersToSeed = [
+      {
+        username: 'admin',
+        email: 'admin@gmail.com',
+        password: 'admin1234',
+        role: USER_ROLES.ADMIN,
+      },
+      {
+        username: 'alexBrown',
+        email: 'alex@gmail.com',
+        password: 'alexBrown1234',
+        role: USER_ROLES.USER,
+      },
+    ];
 
-    if (existingAdmin) {
-      console.log('Admin user already exists');
-      return;
+    const createdUserIds = [];
+
+    for (const user of usersToSeed) {
+      const existing = await User.findOne({ email: user.email });
+      if (existing) {
+        console.log(`ℹ️ User ${user.email} already exists`);
+        createdUserIds.push(existing._id);
+        continue;
+      }
+
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      const newUser = await User.create({
+        ...user,
+        password: hashedPassword,
+      });
+
+      console.log(`✅ User ${user.email} created`);
+      createdUserIds.push(newUser._id);
     }
 
-    const hashedPassword = await bcrypt.hash('admin1234', 10);
-
-    const adminUser = new User({
-      username: 'admin',
-      email: 'admin@gmail.com',
-      password: hashedPassword,
-      role: USER_ROLES.ADMIN
-    });
-
-    await adminUser.save(); // ✅ correctly saving the Mongoose document
-    console.log('Admin user created successfully');
-    
+    return createdUserIds;
   } catch (error) {
-    console.error('Error creating admin user:', error);
+    console.error('❌ Error creating users:', error);
+    return [];
   }
 };
 
-module.exports =  createAdminUser 
+module.exports = createUsers;

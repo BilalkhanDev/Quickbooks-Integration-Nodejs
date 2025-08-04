@@ -53,9 +53,6 @@ const issueSchema = new mongoose.Schema(
         primaryMeterDue: {
             type: Number,
         },
-        photos: [{
-            type: String,
-        }],
         documents: [{
             type: String,
         }],

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { search } = require('./plugin');
 
 const FleetTypeSchema = new mongoose.Schema({
   name: {
@@ -22,5 +23,5 @@ const FleetTypeSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-
+FleetTypeSchema.plugin(search);
 module.exports = mongoose.model('FleetType', FleetTypeSchema);

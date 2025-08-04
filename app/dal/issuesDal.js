@@ -3,6 +3,8 @@ const ServiceEntry = require('../models/serviceEntry');
 
 // Create a new issue
 const createIssue = async (data) => {
+  console.log("Data",data)
+
   try {
     const serviceEntry = await ServiceEntry.findById(data.serviceId);
     if (!serviceEntry) {

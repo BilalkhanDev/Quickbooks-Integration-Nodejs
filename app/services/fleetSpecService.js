@@ -3,11 +3,8 @@ const { updateFleetSpecAndSubSpecs, getFleetSpecs } = require('../dal/fleetSpecD
 const updateFleetSpec = async (fleetId, updateData) => {
   return await updateFleetSpecAndSubSpecs(fleetId, updateData);
 };
-
-const getFleetSpecService=async (id)=>{
- 
-  return await getFleetSpecs(id);
-
+const getFleetSpecService=async (fleetId)=>{
+  return await getFleetSpecs(fleetId);
 }
 module.exports = {
   updateFleetSpec,

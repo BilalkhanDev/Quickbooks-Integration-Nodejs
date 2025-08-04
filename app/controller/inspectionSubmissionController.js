@@ -1,17 +1,17 @@
-const { createOrUpdateSubmissionService, getSubmissionByInspectionAndFleetService, getAllSubmissionsByFleetIdService } = require('../services/inspectionSubmissionService');
+const { createOrUpdateService, getSubmissionByInspectionAndFleetService, getAllSubmissionsByFleetIdService, getByIdService } = require('../services/inspectionSubmissionService');
 const { getInspectionByIdService } = require('../services/inspectionService');
 
 // Create or update a submission
 const createOrUpdateSubmission = async (req, res) => {
-    try {
-        const { inspectionId, fleetId, inspectedBy, inspectionDate, itemValues, status } = req.body;
-        const submissionData = { inspectedBy, inspectionDate, itemValues, status };
-        const submission = await createOrUpdateSubmissionService(inspectionId, fleetId, submissionData);
-        res.status(200).json({ success: true, data: submission });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+    
+  try {
+    const submission = await createOrUpdateService(req);
+    res.status(200).json({ success: true, data: submission });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
+
 
 // Get a submission by inspectionId and fleetId
 const getSubmissionByInspectionAndFleet = async (req, res) => {
@@ -62,6 +62,7 @@ const getAggregatedFormForFleet = async (req, res) => {
 const getAllAggregatedFormsForFleet = async (req, res) => {
     try {
         const { fleetId } = req.query;
+      
         const submissions = await getAllSubmissionsByFleetIdService(fleetId);
         // Aggregate: merge template (inspectionId) and itemValues for each submission
         const aggregated = submissions.map(sub => {
@@ -79,6 +80,7 @@ const getAllAggregatedFormsForFleet = async (req, res) => {
             return {
                 _id: sub._id,
                 name: template.name,
+                inspectionFormId:template._id,
                 description: template.description,
                 fleetId: sub.fleetId,
                 inspectedBy: sub.inspectedBy,
@@ -93,10 +95,19 @@ const getAllAggregatedFormsForFleet = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
+const getById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const submission = await getByIdService(id);
+        res.status(200).json({ success: true, data: submission });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 module.exports = {
     createOrUpdateSubmission,
     getSubmissionByInspectionAndFleet,
     getAggregatedFormForFleet,
-    getAllAggregatedFormsForFleet
+    getAllAggregatedFormsForFleet,
+    getById
 }; 

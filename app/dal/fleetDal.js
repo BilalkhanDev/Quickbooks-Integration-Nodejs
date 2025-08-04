@@ -2,23 +2,11 @@ const { default: mongoose } = require("mongoose");
 const Fleet = require("../models/fleet");
 const axios = require("axios");
 
-const createFleetDal = async (data, token) => {
-  try {
-    const response = await axios.post(`${process.env.FLEET_URL}/fleets`, data, {
-      headers: {
-        Authorization: `JWT ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error(
-      "ERROR creating fleet:",
-      error?.response?.data || error.message
-    );
-    throw new Error("Error creating fleet");
-  }
+const create = async (data) => {
+    const newFleet = new Fleet(data);
+    await newFleet.save();
+    return newFleet;
+  
 };
 const getAllFleetsDal = async (token) => {
   try {
@@ -85,11 +73,12 @@ const deleteFleetDal = async (id) => {
   return await Fleet.findByIdAndDelete(id);
 };
 
-module.exports = {
-  createFleetDal,
+const fleetDal = {
+  create,
   getAllFleetsDal,
   getFleetByIdDal,
   updateFleetDal,
   deleteFleetDal,
 
 };
+module.exports=fleetDal

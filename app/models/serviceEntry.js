@@ -8,7 +8,7 @@ const serviceEntrySchema = new mongoose.Schema(
         },
         repairPriorityClass: {
             type: String,
-           enum: ['scheduled', 'non-scheduled', 'emergency'],
+            enum: [0,1,2],
             required: true,
         },
         odometer: {
@@ -43,14 +43,6 @@ const serviceEntrySchema = new mongoose.Schema(
             type: Number,
             enum: [0, 1, 2, 3],
         },
-        // Remove this array since we're using virtual population
-        // issues: [{
-        //     type: mongoose.Schema.Types.ObjectId,
-        //     ref: 'Issues',
-        // }],
-        photos: [{
-            type: String,
-        }],
         documents: [{
             type: String,
         }],

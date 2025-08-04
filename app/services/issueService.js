@@ -1,8 +1,17 @@
 const issueDAL = require('../dal/issuesDal');
 
-const createIssue = async (data) => {
+const createIssue = async (req) => {
   try {
-    const issue = await issueDAL.createIssue(data);
+    const data = req.body;
+
+    const uploadedDocs = req?.s3Urls  || [];
+
+    const payload = {
+      ...data,
+      documents: uploadedDocs,
+    };
+
+    const issue = await issueDAL.createIssue(payload);
     return issue;
   } catch (error) {
     throw new Error(error.message);
@@ -36,14 +45,32 @@ const getIssuesByServiceId = async (serviceId) => {
   }
 };
 
-const updateIssueById = async (issueId, data) => {
+const updateIssueById = async (req) => {
   try {
-    const updatedIssue = await issueDAL.updateIssueById(issueId, data);
+    const { issueId } = req.params;
+    const data = req.body;
+
+    const existingDocs = data.existingDocuments || []
+
+    const uploadedDocs = req?.s3Urls || [];
+
+    const finalDocuments = [...existingDocs, ...uploadedDocs];
+
+    const payload = {
+      ...data,
+      documents: finalDocuments,
+    };
+
+    delete payload.existingDocuments;
+
+    const updatedIssue = await issueDAL.updateIssueById(issueId, payload);
     return updatedIssue;
   } catch (error) {
     throw new Error(`Error in service while updating issue: ${error.message}`);
   }
 };
+
+
 
 const deleteIssueById = async (issueId) => {
   try {

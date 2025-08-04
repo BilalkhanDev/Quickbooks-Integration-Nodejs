@@ -3,6 +3,7 @@ const { createServiceEntryService, getServiceEntryService, updateServiceEntrySer
 // Create a ServiceEntry
 const createServiceEntry = async (req, res) => {
   try {
+  
     const newServiceEntry = await createServiceEntryService(req);
     return res.status(201).json({
       message: "Service entry created successfully!",

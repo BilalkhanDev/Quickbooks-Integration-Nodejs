@@ -2,18 +2,34 @@ const express = require('express');
 const router = express.Router();
 const { useAuth } = require('../middleware/useAuth');
 const reqValidator = require('../middleware/reqValidator');
-const { createOrUpdateSubmission, getSubmissionByInspectionAndFleet, getAggregatedFormForFleet, getAllAggregatedFormsForFleet } = require('../controller/inspectionSubmissionController');
+const { createOrUpdateSubmission, getSubmissionByInspectionAndFleet, getAggregatedFormForFleet, getAllAggregatedFormsForFleet, getById } = require('../controller/inspectionSubmissionController');
+const parseMultipartJsonFields = require("../middleware/parseJsonFields");
+const s3AssetUploader = require('../middleware/multer');
 
+// Get all aggregated forms for a fleet
+router.get('/all', useAuth, getAllAggregatedFormsForFleet);
 // Create or update a submission
 router.post('/',
-    useAuth,
-    reqValidator('inspectionSubmissionSchema', 'body'), createOrUpdateSubmission);
+     useAuth,
+     s3AssetUploader("inspection"),
+     parseMultipartJsonFields({
+          inspectedBy: 'json',
+          itemValues:'json',
+     }),
+     reqValidator('inspectionSubmissionSchema', 'body'),
+     createOrUpdateSubmission);
 
 // Get a submission by inspectionId and fleetId
 router.get('/single',
      useAuth,
-     reqValidator('getInspectionSubmissionSchema', 'query'), 
-      getSubmissionByInspectionAndFleet);
+     reqValidator('getInspectionSubmissionSchema', 'query'),
+     getSubmissionByInspectionAndFleet);
+// get single by id itself
+
+router.get('/:id',
+     useAuth,
+     reqValidator('generiIdSchema', 'params'),
+     getById);
 
 // Get aggregated form (template + values) for a fleet
 router.get('/aggregated',
@@ -21,9 +37,8 @@ router.get('/aggregated',
      reqValidator('getInspectionSubmissionSchema', 'query'),
      getAggregatedFormForFleet);
 
-// Get all aggregated forms for a fleet
-router.get('/all-aggregated', useAuth, getAllAggregatedFormsForFleet);
 
-module.exports = router; 
+
+module.exports = router;
 
 

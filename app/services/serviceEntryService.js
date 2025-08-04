@@ -4,16 +4,19 @@ const ServiceEntry = require('../models/serviceEntry');
 // Create a new ServiceEntry
 const createServiceEntryService = async (req) => {
   try {
+    const documentUrls = req?.s3Urls || [];
+
     const newEntry = await ServiceEntry.create({
       ...req.body,
-      photos: req.files?.photos?.map(file => file.filename) || [],
-      documents: req.files?.documents?.map(file => file.filename) || []
+      documents: documentUrls,
     });
+
     return newEntry;
   } catch (err) {
     throw err;
   }
 };
+
 
 // Get ServiceEntry by fleetId
 const getServiceEntryService = async (fleetId) => {
@@ -32,32 +35,34 @@ const getSingleServiceEntryService = async (req) => {
 };
 // Update ServiceEntry by fleetId
 
-const updateServiceEntryService = async (req,res) => {
+const updateServiceEntryService = async (req, res) => {
   const { id } = req.params;
-  const data = req.body;
-  let photos = req.files?.photos?.map(file => file.filename);
-  let documents = req.files?.documents?.map(file => file.filename);
-  try {
-
-    // Fetch the existing service entry to get the current photos and documents
-    const existingServiceEntry = await ServiceEntry.findById(id);
-
-    if (!existingServiceEntry) {
-      return res.status(404).json({ message: "Service entry not found" });
+  const { existingDocuments } = req.body;
+  let existingDocsArray = [];
+  if (existingDocuments) {
+    try {
+      existingDocsArray = JSON.parse(existingDocuments);
+    } catch (err) {
+      console.error("Invalid JSON in existingDocuments");
     }
-
-    // If photos or documents are not provided, retain the existing ones
-    photos = photos && photos.length > 0 ? photos : existingServiceEntry.photos;
-    documents = documents && documents.length > 0 ? documents : existingServiceEntry.documents;
-
-    // Add the photos, documents, and other data to the update object
-    const updatedData = { ...data, photos, documents };
-    const updatedServiceEntry = await updateServiceEntryDAL(id, updatedData);
-    return updatedServiceEntry;
-  } catch (error) {
-    throw new Error(`Error updating service entry: ${error.message}`);
   }
+  const uploadedDocs =  req?.s3Urls || [];
+
+
+  const finalDocuments = [...existingDocsArray, ...uploadedDocs];
+
+  const updated = await ServiceEntry.findByIdAndUpdate(
+    id,
+    {
+      ...req.body,
+      documents: finalDocuments,
+    },
+    { new: true }
+  );
+
+  return updated;
 };
+
 
 module.exports = {
   createServiceEntryService,

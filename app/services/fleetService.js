@@ -1,43 +1,68 @@
-const {
-  createFleetDal,
-  getAllFleetsDal,
-  getFleetByIdDal,
-  updateFleetDal,
-  deleteFleetDal,
-  fetchFleetSpecs,
-} = require("../dal/fleetDal");
+const Fleet = require("../models/fleet");
 
-const createFleet = async (data) => {
-  const { token, ...payload } = data;
-  return await createFleetDal(payload, token);
+const create = async (req) => {
+  const { user, body } = req
+  const newFleet = new Fleet({ user: user?.id, ...body });
+  await newFleet.save();
+  return newFleet;
 };
 
-const getAllFleets = async (req) => {
-  const { page = 1, limit = 20, ...filter } = req.query;
-  const { token } = req.body;
+// const getAll = async (queryParams, options) => {
+//   const { search, ...filter } = queryParams;
+//   const searchFilter = await Fleet.search({ search });
 
-  return await getAllFleetsDal(token, filter, parseInt(page), parseInt(limit));
+//   let finalFilter = {};
+//   if (searchFilter && Object.keys(searchFilter).length > 0) {
+//     if (Object.keys(filter).length > 0) {
+//       finalFilter = { $and: [filter, searchFilter] };
+//     } else {
+//       finalFilter = searchFilter;
+//     }
+//   } else {
+//     finalFilter = filter;
+//   }
+//   return await Fleet.paginate(finalFilter, options);
+// };
+
+const getAll = async (queryParams, options, userId) => {
+  const { search, assigned, ...filter } = queryParams;
+  const searchFilter = await Fleet.search({ search });
+  if (assigned === 'true') {
+    filter.assigned_driver = { $ne: null };
+  } else if (assigned === 'false') {
+    filter.assigned_driver = null;
+  }
+
+  let finalFilter = { user: userId };
+
+  if (searchFilter && Object.keys(searchFilter).length > 0) {
+    finalFilter = { $and: [ { user: userId }, filter, searchFilter ] };
+  } else if (Object.keys(filter).length > 0) {
+    finalFilter = { $and: [ { user: userId }, filter ] };
+  }
+
+  return await Fleet.paginate(finalFilter, options);
 };
 
-const getFleetById = async (data) => {
-  const { token, id } = data;
-  return await getFleetByIdDal(id, token);
+
+const getById = async (id) => {
+  return await Fleet.findById(id);
 };
 
-const updateFleet = async (id, data) => {
-  const { token, ...payload } = data;
-  return await updateFleetDal(id, payload, token);
+const updateById = async (id, data) => {
+  return await Fleet.findByIdAndUpdate(id, data, { new: true });
 };
 
-const deleteFleet = async (id) => {
-  return await deleteFleetDal(id);
+const deleteById = async (id) => {
+  return await Fleet.findByIdAndDelete(id);
 };
 
-module.exports = {
-  createFleet,
-  getAllFleets,
-  getFleetById,
-  updateFleet,
-  deleteFleet,
-
+const fleetService = {
+  create,
+  getAll,
+  getById,
+  updateById,
+  deleteById,
 };
+
+module.exports = fleetService;

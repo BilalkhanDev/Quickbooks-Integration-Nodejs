@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const FleetType = require('../models/fleetType');
+
 const defaultTypes = [
-  { name: 'Car', isRemoveAble: true, isDefault: true }, 
+  { name: 'Car', isRemoveAble: true, isDefault: true },
   { name: 'ATV', isRemoveAble: true },
   { name: 'Backhoe Loader', isRemoveAble: true },
   { name: 'Boat', isRemoveAble: true },
@@ -36,20 +37,22 @@ const defaultTypes = [
   { name: 'Wheel Tractor Scraper', isRemoveAble: true },
 ];
 
-
-
 const seedFleetTypes = async () => {
   try {
-  
     const count = await FleetType.countDocuments();
     if (count === 0) {
-      await FleetType.insertMany(defaultTypes);
+      const fleetTypes = await FleetType.insertMany(defaultTypes);
       console.log('✅ Fleet types seeded');
-    } 
+      return fleetTypes[0]?._id || null;
+    } else {
+      console.log('ℹ️ Fleet types already exist, skipping seed');
+      const existing = await FleetType.findOne({});
+      return existing?._id || null;
+    }
   } catch (error) {
     console.error('❌ Error seeding fleet types:', error);
-  
+    return null;
   }
 };
-module.exports = seedFleetTypes;
 
+module.exports = seedFleetTypes;

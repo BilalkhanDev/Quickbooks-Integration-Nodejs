@@ -3,8 +3,8 @@ const issueService = require('../services/issueService');
 // Create a new issue
 const createIssue = async (req, res) => {
   try {
-    const issueData = req.body;
-    const issue = await issueService.createIssue(issueData);
+   
+    const issue = await issueService.createIssue(req);
     return res.status(201).json({
       message: 'Issue created successfully',
       issue,
@@ -48,7 +48,7 @@ const getAllIssues = async (req, res) => {
 // Get issues by serviceId
 const getIssuesByServiceId = async (req, res) => {
   try {
-    const { serviceId } = req.params; // Service ID from request parameters
+    const { serviceId } = req.params; 
     const issues = await issueService.getIssuesByServiceId(serviceId);
     return res.status(200).json(issues);
   } catch (error) {
@@ -62,9 +62,8 @@ const getIssuesByServiceId = async (req, res) => {
 // Update an issue by ID
 const updateIssueById = async (req, res) => {
   try {
-    const issueId = req.params.issueId;
-    const updateData = req.body;
-    const updatedIssue = await issueService.updateIssueById(issueId, updateData);
+  
+    const updatedIssue = await issueService.updateIssueById(req);
     return res.status(200).json({
       message: 'Issue updated successfully',
       updatedIssue,

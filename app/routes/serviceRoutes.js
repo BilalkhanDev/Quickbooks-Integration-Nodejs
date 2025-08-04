@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../middleware/multer');
-const { createServiceEntry, getServiceEntryById, updateServiceEntry, getServiceEntryByFleetId, getServiceById } = require('../controller/serviceEntryController');
+const s3AssetUploader = require('../middleware/multer');
+const { createServiceEntry, updateServiceEntry, getServiceEntryByFleetId, getServiceById } = require('../controller/serviceEntryController');
 const { useAuth } = require('../middleware/useAuth');
 const reqValidator = require('../middleware/reqValidator');
 
@@ -13,20 +13,14 @@ router.get('/:id',
 
 router.post('/',
   useAuth,
-  upload.fields([
-    { name: 'photos', maxCount: 5 },
-    { name: 'documents', maxCount: 3 }
-  ]),
+  s3AssetUploader("services", "documents"),
   createServiceEntry
 );
 router.put('/:id',
   useAuth,
   reqValidator('generiIdSchema', 'params'),
-  upload.fields([
-    { name: 'photos', maxCount: 5 },
-    { name: 'documents', maxCount: 3 }
-  ]),
-  reqValidator('updateServiceEntrySchema', 'body'),
+  s3AssetUploader("services", "documents"),
+  // reqValidator('updateServiceEntrySchema', 'body'),
   updateServiceEntry
 );
 

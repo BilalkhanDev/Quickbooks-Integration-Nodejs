@@ -11,7 +11,14 @@ const serviceRoutes=require("./serviceRoutes")
 const issuesRoutes=require("./issueRoutes")
 const inspectionRoutes=require("./inspectionRoutes")
 const inspectionSubmissionRoutes=require("./inspectionSubmissionRoutes")
-const commonRoutes=require('./commonRoutes')
+const driverRoutes=require('./driverRoutes')
+const companyRoutes=require('./companyRoutes')
+const fundingSourceRoutes=require('./common/fundingSource.route')
+const losRoutes=require("./common/los.route")
+const serviceAreaRoutes=require("./common/serviceArea.route")
+const spaceTypeRoutes=require("./common/spaceType.route");
+const equipmentRoutes=require("./common/equipment.route")
+
 const router = express.Router();
 
 router.use('/auth', authRoutes);
@@ -26,7 +33,15 @@ router.use("/service",serviceRoutes)
 router.use("/issue",issuesRoutes)
 router.use("/inspection",inspectionRoutes)
 router.use("/inspection-submission",inspectionSubmissionRoutes)
-router.use("/common",commonRoutes)
+router.use("/driver",driverRoutes)
+router.use("/company",companyRoutes)
+//will be move to common folder
+router.use("/common/fs",fundingSourceRoutes)
+router.use("/common/space-type",spaceTypeRoutes)
+router.use("/common/service-area",serviceAreaRoutes)
+router.use("/common/equipment",equipmentRoutes)
+router.use("/common/los",losRoutes)
+
 
 module.exports = router;
 

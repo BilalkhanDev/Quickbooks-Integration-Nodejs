@@ -1,19 +1,20 @@
 
 const { updateFleetSpec, getFleetSpecService } = require('../services/fleetSpecService');
 
-const get = async (req, res) => {
+const getById = async (req, res) => {
   try {
 
-    const Fleet = await getFleetSpecService(req.params.id);
+    const Fleet = await getFleetSpecService(req.params.fleetId);
     res.status(200).json(Fleet);
   } catch (err) {
  
     res.status(500).json({ error: err.message });
   }
 };
+
 const update = async (req, res) => {
   try {
-    const { id: fleetId } = req.params;
+    const { fleetId } = req.params;
     const data = req.body;
     const updatedFleet = await updateFleetSpec(fleetId, data);
     res.status(200).json(updatedFleet);
@@ -26,5 +27,5 @@ const update = async (req, res) => {
 
 module.exports = {
   update,
-  get
+  getById
 };

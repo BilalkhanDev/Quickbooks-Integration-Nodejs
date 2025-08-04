@@ -5,9 +5,12 @@ const createAdminUser = require('./adminSeeder');
 const seedFleetStatuses = require('./statusSeeder');
 const seedFleetTypes = require('./typeSeeder');
 const seedExpenses = require('./expenseSeeder');
-const seedFuelTypes = require('./fuelTypeSeeder');
 const seedVendors = require('./vendorSeeder');
 const seedInspections = require('./inspectionSeeder');
+const seedCompanies = require('./companySeeder');
+const seedFuelTypes = require('./fuelTypeSeeder')
+const seedCommon = require('./commonSeeder');
+const seedFleet = require('./fleetSeeder');
 
 const runSeeders = async () => {
   try {
@@ -18,13 +21,20 @@ const runSeeders = async () => {
 
     console.log("✅ MongoDB connected");
 
-    await createAdminUser();
+    const userIds=await createAdminUser();
     await seedFleetStatuses();
-    await seedFleetTypes();
+
     await seedExpenses();
-    await seedFuelTypes()
+
     await seedVendors()
     await seedInspections()
+    const { losId, spaceTypeId, fundingSourceId, serviceAreaId, equipmentId } = await seedCommon()
+    const companyId = await seedCompanies()
+    const fuelTypeId = await seedFuelTypes()
+    const fleetTypeId = await seedFleetTypes();
+    await seedFleet({userIds,losId, spaceTypeId, fundingSourceId, serviceAreaId, equipmentId, companyId, fuelTypeId, fleetTypeId})
+
+
 
     console.log("✅ All seeders executed successfully");
     mongoose.disconnect();

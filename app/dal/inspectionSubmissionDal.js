@@ -1,25 +1,22 @@
 const InspectionSubmission = require('../models/inspection/InspectionSubmission');
 const Inspection = require('../models/inspection/Inspection');
 
-
-const createOrUpdateSubmission = async (inspectionId, fleetId, submissionData) => {
-  
- 
-    const inspectionExists = await Inspection.exists({ _id: inspectionId });
-    if (!inspectionExists) {
-        throw new Error('Invalid inspectionId: not found in system');
-    }
-    try {
-        return await InspectionSubmission.findOneAndUpdate(
-            { inspectionId, fleetId },
-            { $set: submissionData },
-            { upsert: true, new: true }
-        ).lean();
-    } catch (error) {
-        throw error;
-    }
+const createOrUpdateDal = async (inspectionId, fleetId, submissionData) => {
+  const inspectionExists = await Inspection.exists({ _id: inspectionId });
+  if (!inspectionExists) {
+    throw new Error('Invalid inspectionId: not found in system');
+  }
+ console.log("Inspection Id", inspectionId)
+  try {
+    return await InspectionSubmission.findOneAndUpdate(
+      { inspectionId, fleetId },
+      { $set: submissionData },
+      { upsert: true, new: true }
+    ).lean();
+  } catch (error) {
+    throw error;
+  }
 };
-
 const getSubmissionByInspectionAndFleet = async (inspectionId, fleetId) => {
     try {
         return await InspectionSubmission.findOne({ inspectionId, fleetId }).lean();
@@ -28,6 +25,13 @@ const getSubmissionByInspectionAndFleet = async (inspectionId, fleetId) => {
     }
 };
 
+const getByIdDal= async (id) => {
+    try {
+        return await InspectionSubmission.findById(id).lean();
+    } catch (error) {
+        throw error;
+    }
+};
 const getAllSubmissionsByFleetId = async (fleetId) => {
     try {
         return await InspectionSubmission.find({ fleetId })
@@ -39,7 +43,8 @@ const getAllSubmissionsByFleetId = async (fleetId) => {
 };
 
 module.exports = {
-    createOrUpdateSubmission,
+    createOrUpdateDal,
     getSubmissionByInspectionAndFleet,
-    getAllSubmissionsByFleetId
+    getAllSubmissionsByFleetId,
+    getByIdDal
 }; 

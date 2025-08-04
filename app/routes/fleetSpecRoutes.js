@@ -1,23 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const reqValidator = require('../middleware/reqValidator');
-
 const { useAuth } = require('../middleware/useAuth');
-const { update, get } = require('../controller/fleetSpecController');
+const { update, getById } = require('../controller/fleetSpecController');
 
+router
+    .route('/:fleetId')
+    .put(useAuth,reqValidator("genericfleetIdSchema", 'params'),reqValidator("updateFleetSpecSchema", 'body'), update)
+    .get(useAuth,reqValidator("genericfleetIdSchema", 'params'),getById);
 
-
-router.put('/:id',
-  useAuth,
-  reqValidator("generiIdSchema", 'params'),
-  reqValidator("updateFleetSpecSchema", 'body'),
-  update
-);
-
-router.get('/:id',
-  useAuth,
-  reqValidator("generiIdSchema", 'params'),
-  get
-  
-);
 module.exports = router;
