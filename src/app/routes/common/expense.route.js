@@ -1,43 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const { bulkRemove, create, getAll, getById, update, remove } = require('../controllers/expenseController');
+const expenseController = require('../../controllers/common/expense.controller')
+const { reqValidator } = require('../../../shared/middleware');
+const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
 
 router.delete('/delete',
   useAuth,
-  reqValidator('bulkDeleteFleetStatusSchema', 'body'),
-  bulkRemove);
+
+  expenseController.bulkRemove);
+
+router
+  .route('/')
+  .post(useAuth,  expenseController.create)
+  .get(useAuth, expenseController.getAll)
+
+router
+  .route('/:id')
+  .put(useAuth,   expenseController.update)
+  .get(useAuth,  expenseController.getById)
+  .delete(useAuth,  expenseController.remove)
 
 
-router.post('/',
-  useAuth,
-  reqValidator('createExpenseSchema', 'body'),
-  create
-);
-
-router.get('/',
-  useAuth,
-  getAll
-);
-
-router.get('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  getById
-);
-
-router.put('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  reqValidator('updateExpenseSchema', 'body'),
-  update
-);
-
-router.delete('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  remove
-);
 
 module.exports = router;

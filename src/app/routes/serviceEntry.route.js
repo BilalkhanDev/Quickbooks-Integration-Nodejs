@@ -1,33 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const s3AssetUploader = require('../../shared/middleware/multer.middleware');
-const { createServiceEntry, updateServiceEntry, getServiceEntryByFleetId, getServiceById } = require('../controllers/serviceEntry.controller');
 const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
+const reqValidator = require('../../shared/middleware/validate.middleware');
+const serviceEntryController = require('../controllers/serviceEntry.controller')
 
-router.get('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  getServiceById
-);
+router
+  .route('/')
+  .post(useAuth, s3AssetUploader("services", "documents"), serviceEntryController.create)
 
-router.post('/',
-  useAuth,
-  s3AssetUploader("services", "documents"),
-  createServiceEntry
-);
-router.put('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  s3AssetUploader("services", "documents"),
-  // reqValidator('updateServiceEntrySchema', 'body'),
-  updateServiceEntry
-);
+router
+  .route('/:id')
+  .put(useAuth,
+    s3AssetUploader("services", "documents"), serviceEntryController.update)
+  .get(useAuth,serviceEntryController.getById)
 
 router.get('/fleet/:fleetId',
   useAuth,
-  reqValidator('genericfleetIdSchema', 'params'),
-  getServiceEntryByFleetId
-);
 
+  serviceEntryController.getByFleetId
+)
 module.exports = router;

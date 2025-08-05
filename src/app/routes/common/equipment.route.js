@@ -1,19 +1,19 @@
 const express = require('express');
 const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../../shared/middleware/reqValidator.middleware');
+const reqValidator = require('../../../shared/middleware/validate.middleware');
 const router = express.Router();
-const { create, getAll, getSingle, update, remove } = require("../../controllers/common/equipment.controller")
+const equipmentController=require('../../controllers/common/equipment.controller')
 
 router
     .route('/')
-    .post(useAuth, reqValidator("equipmentSchema","body"), create)
-    .get(useAuth, getAll);
+    .post(useAuth,  equipmentController.create)
+    .get(useAuth, equipmentController.getAll);
 
 
 router
     .route('/:id')
-    .get(useAuth, getSingle)
-    .patch(useAuth, reqValidator("equipmentSchema","body"), update)
-    .delete(useAuth, remove);
+    .get(useAuth, equipmentController.getById)
+    .patch(useAuth, equipmentController.update)
+    .delete(useAuth, equipmentController.remove);
 
 module.exports = router;

@@ -1,30 +1,13 @@
-// get all Users
+const service = require('../services/user.service');
+const catchAsync = require('../../shared/core/utils/catchAsync');
+const { default: HttpStatus } = require('http-status');
 
-const { fetchallUserService, fetchUserByIdService } = require("../services/userService");
+exports.getAllUsers = catchAsync(async (req, res) => {
+  const users = await service.fetchAll(req.query);
+  res.status(HttpStatus.OK).json({ message: 'Users fetched', users });
+});
 
-const getAllUsers = async (req, res) => {
-    try {
-        const users = await fetchallUserService(req)
-        return res.status(200).json({ message: 'users fetched...', users });
-    }
-    catch (error) {
-        return res.status(400).json({ error: error.message });
-    }
-}
-
-const getSingleUser = async (req, res) => {
-    try {
-        const identicalUser = await fetchUserByIdService(req)
-        return res.status(200).json({ message: 'user fetched...', identicalUser });
-    }
-    catch (error) {
-        return res.status(400).json({ error: error.message });
-
-    }
-}
-module.exports = {
-    getAllUsers,
-    getSingleUser
-
-};
-
+exports.getSingleUser = catchAsync(async (req, res) => {
+  const user = await service.fetchById(req.params.id);
+  res.status(HttpStatus.OK).json({ message: 'User fetched', user });
+});

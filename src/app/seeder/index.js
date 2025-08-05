@@ -1,16 +1,19 @@
-require('dotenv').config();
+require('dotenv').config({
+  path: `.env.${process.env.NODE_ENV || 'development'}`
+});
+
 const mongoose = require('mongoose');
 
-const createAdminUser = require('./adminSeeder');
-const seedFleetStatuses = require('./statusSeeder');
-const seedFleetTypes = require('./typeSeeder');
-const seedExpenses = require('./expenseSeeder');
-const seedVendors = require('./vendorSeeder');
-const seedInspections = require('./inspectionSeeder');
-const seedCompanies = require('./companySeeder');
-const seedFuelTypes = require('./fuelTypeSeeder')
-const seedCommon = require('./commonSeeder');
-const seedFleet = require('./fleetSeeder');
+const createAdminUser = require('./admin.seeder');
+const seedFleetStatuses = require('./status.seeder');
+const seedFleetTypes = require('./type.seeder');
+const seedExpenses = require('./expense.seeder');
+const seedVendors = require('./vendor.seeder');
+const seedInspections = require('./inspectionSeeder/index.js');
+const seedCompanies = require('./company.seeder.js');
+const seedFuelTypes = require('./fuelType.seeder.js')
+const seedCommon = require('./commonSeeder/index.js');
+const seedFleet = require('./fleet.seeder.js');
 
 const runSeeders = async () => {
   try {

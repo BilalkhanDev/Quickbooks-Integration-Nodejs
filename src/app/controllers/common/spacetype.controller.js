@@ -1,6 +1,6 @@
 const { default: HttpStatus } = require('http-status');
 const spaceTypeService = require('../../services/common/spaceType.service');
-const pick = require('../../utils/pick');
+const pick = require('../../../shared/core/utils/pick');
 
 exports.create = async (req, res) => {
   try {

@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
-const { createOrUpdateSubmission, getSubmissionByInspectionAndFleet, getAggregatedFormForFleet, getAllAggregatedFormsForFleet, getById } = require('../controllers/inspectionSubmission.controller');
+const reqValidator = require('../../shared/middleware/validate.middleware');
+const inspectionSubmissionController=require('../controllers/inspectionSubmission.controller')
 const parseMultipartJsonFields = require("../../shared/middleware/parseJsonFields.middleware");
 const s3AssetUploader = require('../../shared/middleware/multer.middleware');
 
-// Get all aggregated forms for a fleet
-router.get('/all', useAuth, getAllAggregatedFormsForFleet);
-// Create or update a submission
+router.get('/all', useAuth,inspectionSubmissionController.getAllAggregatedFormsForFleet);
+
 router.post('/',
      useAuth,
      s3AssetUploader("inspection"),
@@ -16,26 +15,25 @@ router.post('/',
           inspectedBy: 'json',
           itemValues:'json',
      }),
-     reqValidator('inspectionSubmissionSchema', 'body'),
-     createOrUpdateSubmission);
+   
+     inspectionSubmissionController.createOrUpdate);
 
-// Get a submission by inspectionId and fleetId
 router.get('/single',
      useAuth,
-     reqValidator('getInspectionSubmissionSchema', 'query'),
-     getSubmissionByInspectionAndFleet);
-// get single by id itself
+     
+    inspectionSubmissionController.getSingle);
+
 
 router.get('/:id',
      useAuth,
-     reqValidator('generiIdSchema', 'params'),
-     getById);
+  
+    inspectionSubmissionController.getById);
 
 // Get aggregated form (template + values) for a fleet
 router.get('/aggregated',
      useAuth,
-     reqValidator('getInspectionSubmissionSchema', 'query'),
-     getAggregatedFormForFleet);
+    
+     inspectionSubmissionController.getAggregatedFormForFleet);
 
 
 

@@ -1,37 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const reqValidator = require('../middleware/reqValidator');
-const { useAuth } = require('../middleware/useAuth');
-const { create, getAll, update, remove, bulkDelete } = require('../controller/fuelTypeController');
+const fuelTypeController = require('../../controllers/common/fuelType.controller')
+const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
+const { reqValidator } = require('../../../shared/middleware');
 
 router.delete('/delete',
   useAuth,
-  reqValidator('bulkDeleteFleetStatusSchema', 'body'),
-  bulkDelete);
+  
+  fuelTypeController.bulkDelete);
 
 
-router.post('/',
-  useAuth,
-  reqValidator('fuelTypeSchema', 'body'),
-  create
-);
+router
+  .route('/')
+  .post(useAuth, fuelTypeController.create)
+  .get(useAuth, fuelTypeController.getAll);
 
-router.get('/',
-  useAuth,
-  getAll
-);
-
-router.put('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  reqValidator('fuelTypeUpdateSchema', 'body'),
-  update
-);
-
-router.delete('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  remove
-);
+router
+  .route('/:id')
+  .put(useAuth, fuelTypeController.update)
+  .delete(useAuth,  fuelTypeController.remove);
 
 module.exports = router;

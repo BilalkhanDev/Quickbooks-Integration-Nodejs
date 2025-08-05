@@ -1,21 +1,26 @@
 const express = require('express');
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
-const { authController } = require('../controllers');
+const reqValidator = require('../../shared/middleware/validate.middleware');
+const authController = require('../controllers/auth.controller');
+const validate = require('../../shared/middleware/validate.middleware');
+const getAuthSchema = require('../../shared/validation/auth.schema');
+const { useAuth } = require('../../shared/middleware/useAuth.middleware');
 
 const router = express.Router();
 
+
+
 router.post('/register',
-    reqValidator("registerSchema", "body"),
+    validate(getAuthSchema,'register'),
     authController.register
 );
 router.post('/login',
-    reqValidator("loginSchema", "body"),
+    validate(getAuthSchema,'login'),
     authController.login
 );
-// router.post('/me',
-//     reqValidator("getProfile", "body"),
-//     me
-// );
+router.get('/me',
+    useAuth,
+    authController.getProfile
+);
 router.post('/refresh-token', authController.refreshAccessToken);
 
 module.exports = router;

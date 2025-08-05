@@ -1,49 +1,26 @@
 const express = require('express');
-const {
-  create,
-  remove,
-  bulkDelete,
-  update,
-  getAll,
-  getById
-} = require('../controllers/typeController');
-
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
+const typeController = require('../../controllers/common/type.controller')
+const reqValidator = require('../../../shared/middleware/validate.middleware');
+const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
 
 const router = express.Router();
 
-router.post(
-  '/',
-  useAuth,
-  reqValidator('createFleetTypeSchema', 'body'),
-  create
-);
+router
+  .route('/')
+  .post(useAuth, typeController.create)
+  .get(useAuth, typeController.getAll)
 
-router.get(
-  '/',
-  useAuth,
-  getAll
-);
+router
+  .route('/:id')
+  .put(useAuth, typeController.update)
+  .delete(useAuth,  typeController.remove)
 
-router.put(
-  '/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  reqValidator('updateFleetTypeSchema', 'body'),
-  update
-);
 
 router.delete('/delete',
   useAuth,
-  reqValidator('bulkDeleteFleetTypeSchema', 'body'),
-  bulkDelete
+
+  typeController.bulkDelete
 );
 
-router.delete('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  remove
-);
 
 module.exports = router;

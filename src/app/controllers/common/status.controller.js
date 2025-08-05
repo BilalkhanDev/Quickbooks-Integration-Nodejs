@@ -1,73 +1,56 @@
-const fleetService = require('../../services/fleetStatusService');
-const createStatus = async (req, res) => {
-  try {
-    const status = await fleetService.createStatus(req.body);
-    res.status(201).json(status);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+const { default: HttpStatus } = require('http-status');
+const catchAsync = require('../../../shared/core/utils/catchAsync');
+const fleetStatusService = require('../../services/common/fleetStatus.service');
+
+exports.create = catchAsync(async (req, res) => {
+
+  const status = await fleetStatusService.create(req.body);
+  res.status(HttpStatus.CREATED).json(status);
+
+});
+
+exports.getAll = async (req, res) => {
+
+  const statuses = await fleetStatusService.getAll();
+  res.status(HttpStatus.OK).json(statuses);
+
+};
+
+exports.getById = async (req, res) => {
+
+  const status = await fleetStatusService.getById(req.params.id);
+  if (!status) return res.status(HttpStatus.NOT_FOUND).json({ message: 'Not found' });
+  res.status(HttpStatus.OK).json(status);
+
+};
+
+exports.update = async (req, res) => {
+
+  const updated = await fleetStatusService.update(req.params.id, req.body);
+  res.status(HttpStatus.OK).json(updated);
+
+};
+
+exports.remove = async (req, res) => {
+
+  await fleetStatusService.delete(req.params.id);
+  res.status(HttpStatus.OK).json({ message: 'Deleted' });
+
+};
+
+
+exports.bulkRemove = async (req, res) => {
+
+  const ids = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(HttpStatus.NOT_FOUND).json({ error: 'No IDs provided for deletion.' });
   }
-};
 
-const getAllStatuses = async (req, res) => {
-  try {
-    const statuses = await fleetService.getStatuses();
-    res.json(statuses);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const getStatusById = async (req, res) => {
-  try {
-    const status = await fleetService.getStatus(req.params.id);
-    if (!status) return res.status(404).json({ message: 'Not found' });
-    res.json(status);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const updateStatus = async (req, res) => {
-  try {
-    const updated = await fleetService.updateStatus(req.params.id, req.body);
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-const removeStatusById = async (req, res) => {
-  try {
-    await fleetService.deleteStatus(req.params.id);
-    res.json({ message: 'Deleted' });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-// ✅ Bulk delete
-const bulkRemoveStatus = async (req, res) => {
-  try {
-    const ids = req.body; // since body is just an array, not { ids: [...] }
-
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ error: 'No IDs provided for deletion.' });
-    }
-
-    const result = await fleetService.bulkDeleteStatuses(ids);
-    res.json({ message: `${result.deletedCount} statuses deleted.` });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-
-
-module.exports = {
-  createStatus,
-  getAllStatuses,
-  getStatusById,
-  updateStatus,
-  removeStatusById,
-  bulkRemoveStatus
+  const result = await fleetStatusService.bulkDelete(ids);
+  res.json({ message: `${result.deletedCount} statuses deleted.` });
 
 };
+
+
+

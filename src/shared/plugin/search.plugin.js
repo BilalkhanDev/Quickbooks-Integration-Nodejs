@@ -47,7 +47,6 @@ module.exports = function searchPlugin(schema, options = {}) {
     ? dateFields
     : Object.entries(schema.paths).filter(([_, p]) => p.instance === 'Date').map(([k]) => k);
 
-  console.log('🔍 [searchPlugin] Auto string fields detected (including nested):', allStringFields);
 
   /**
    * Main search function
@@ -55,8 +54,6 @@ module.exports = function searchPlugin(schema, options = {}) {
   schema.statics.search = async function (searchParams = {}, dynamicRefFields = null) {
     const { search, field, startDate, endDate } = searchParams;
     const searchTerm = search ? search.toString().trim() : '';
-    console.log('🟢 [searchPlugin] searchTerm:', searchTerm);
-
     const activeRefFields =
       dynamicRefFields && Object.keys(dynamicRefFields).length > 0
         ? dynamicRefFields

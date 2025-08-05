@@ -309,7 +309,7 @@ const vendorSchema = Joi.object({
   contactName: Joi.string().optional(),
   contactPhone: Joi.number().optional(),
   email: Joi.string().email().optional(),
-  classification: Joi.number().valid(0, 1, 2, 3, 4, 5).required().default(0),
+  classification: Joi.array().items(Joi.string()).optional(),
   archived: Joi.boolean().optional()
 });
 const vendorUpdateSchema = Joi.object({
@@ -326,7 +326,7 @@ const vendorUpdateSchema = Joi.object({
   contactName: Joi.string().optional(),
   contactPhone: Joi.number().optional(),
   email: Joi.string().email().optional(),
-  classification: Joi.number().valid(0, 1, 2, 3, 4, 5).optional().default(0),
+  classification: Joi.array().items(Joi.string()).optional(),
   archived: Joi.boolean().optional()
 });
 

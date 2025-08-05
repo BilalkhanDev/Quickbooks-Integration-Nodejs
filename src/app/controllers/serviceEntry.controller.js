@@ -1,70 +1,29 @@
-const { createServiceEntryService, getServiceEntryService, updateServiceEntryService, getSingleServiceEntryService } = require('../services/serviceEntryService');
+const { default: HttpStatus } = require('http-status');
+const service = require('../services/serviceEntry.service');
+const catchAsync = require('../../shared/core/utils/catchAsync');
 
-// Create a ServiceEntry
-const createServiceEntry = async (req, res) => {
-  try {
-  
-    const newServiceEntry = await createServiceEntryService(req);
-    return res.status(201).json({
-      message: "Service entry created successfully!",
-      data: newServiceEntry
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
-  }
-};
+exports.create = catchAsync(async (req, res) => {
+  const newEntry = await service.create(req);
+  res.status(HttpStatus.CREATED).json({
+    message: 'Service entry created successfully!',
+    data: newEntry,
+  });
+});
 
-// Get ServiceEntry by fleetId
-const getServiceEntryByFleetId = async (req, res) => {
-  try {
-    const { fleetId } = req.params;
-    const serviceEntry = await getServiceEntryService(fleetId);
+exports.getByFleetId = catchAsync(async (req, res) => {
+  const entries = await service.getByFleetId(req.params.fleetId);
+  res.status(HttpStatus.OK).json(entries);
+});
 
-    if (!serviceEntry) {
-      return res.status(404).json({ message: "Service entry not found" });
-    }
-    return res.status(200).json(serviceEntry);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
-  }
-};
-const getServiceById = async (req, res) => {
-  try {
-    const serviceEntry = await getSingleServiceEntryService(req);
+exports.getById = catchAsync(async (req, res) => {
+  const entry = await service.getById(req.params.id);
+  res.status(HttpStatus.OK).json(entry);
+});
 
-    if (!serviceEntry) {
-      return res.status(404).json({ message: "Service entry not found" });
-    }
-    return res.status(200).json(serviceEntry);
-  } catch (error) {
-    console.error("Error:", error); // This will help trace any errors that occur in the try block
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-// Update ServiceEntry by fleetId
-
-const updateServiceEntry = async (req, res) => {
-  try {
-
-    const updatedServiceEntry = await updateServiceEntryService(req,res);
-
-    return res.status(200).json({
-      message: "Service entry updated successfully!",
-      data: updatedServiceEntry
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-
-module.exports = {
-  createServiceEntry,
-  getServiceEntryByFleetId,
-  updateServiceEntry,
-  getServiceById
-};
+exports.update = catchAsync(async (req, res) => {
+  const updated = await service.update(req);
+  res.status(HttpStatus.OK).json({
+    message: 'Service entry updated successfully!',
+    data: updated,
+  });
+});

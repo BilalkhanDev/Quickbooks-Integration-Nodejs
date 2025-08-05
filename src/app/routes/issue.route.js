@@ -1,52 +1,35 @@
 const express = require('express');
-// const { createIssue, getIssueById, getAllIssues, getIssuesByServiceId, updateIssueById, deleteIssueById } = require(' ');
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
+const reqValidator = require('../../shared/middleware/validate.middleware');
 const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const {createIssue, getIssueById, getAllIssues, getIssuesByServiceId, updateIssueById, deleteIssueById } = require('../controllers/issue.controller');
+const issueController = require('../controllers/issue.controller')
 const s3AssetUploader = require('../../shared/middleware/multer.middleware');
-const parseMultipartJsonFields=require("../../shared/middleware/parseJsonFields.middleware");
+const parseMultipartJsonFields = require("../../shared/middleware/parseJsonFields.middleware");
 const router = express.Router();
 
-router.post('/create', 
-  useAuth, 
-  s3AssetUploader("issues", "documents"),
-  reqValidator('issueCreateSchema', 'body'), 
-  createIssue
+router
+  .route('/')
+  .post(useAuth, s3AssetUploader("issues", "documents"),issueController.create)
+  .get(useAuth, issueController.getAll);
+
+router
+  .route('/:issueId')
+  .patch(useAuth,
+    s3AssetUploader("issues", "documents"),
+    parseMultipartJsonFields({
+      existingDocuments: 'json',
+
+    }),
+    
+ issueController.update)
+  .get(useAuth,  issueController.getById)
+  .delete(useAuth,  issueController.delete);
+
+
+router.get('/service/:serviceId',
+  useAuth,
+ // Validate the serviceId in the URL
+  issueController.getIssuesByServiceId
 );
 
-router.get('/:issueId', 
-  useAuth,  
-  reqValidator('issueIdSchema', 'params'), 
-  getIssueById
-);
-
-router.get('/', 
-  useAuth,  
-  getAllIssues
-);
-
-router.get('/service/:serviceId', 
-  useAuth,  
-  reqValidator('serviceIdSchema', 'params'),  // Validate the serviceId in the URL
-  getIssuesByServiceId
-);
-
-router.patch('/:issueId', 
-  useAuth,  
-  s3AssetUploader("issues", "documents"),
-  parseMultipartJsonFields({
-    existingDocuments: 'json',   
-
-  }),
-  reqValidator('issueIdSchema', 'params'),  
-  reqValidator('issueCreateSchema', 'body'),
-  updateIssueById
-);
-
-router.delete('/:issueId', 
-  useAuth,  
-  reqValidator('issueIdSchema', 'params'),  // Validate the issue ID in the URL
-  deleteIssueById
-);
 
 module.exports = router;

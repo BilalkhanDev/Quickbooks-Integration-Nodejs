@@ -1,57 +1,34 @@
-const service = require('../../services/fuelTypeService');
+const catchAsync = require('../../../shared/core/utils/catchAsync');
+const fuelTypeService = require('../../services/common/fuelType.service');
 
 
-const create = async (req, res) => {
-  try {
-    const fuelType = await service.createFuelType(value);
+exports.create = catchAsync(async (req, res) => {
+    const fuelType = await fuelTypeService.create(value);
     res.status(201).json(fuelType);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
-const getAll = async (req, res) => {
-  try {
-    const data = await service.getAllFuelTypes();
+});
+
+exports.getAll = catchAsync(async (req, res) => {
+    const data = await fuelTypeService.getAll();
     res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const update = async (req, res) => {
-  try {
-    const id = req.params.id;
  
+});
 
-    const updated = await service.updateFuelType(id, value);
-    res.json(updated);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const remove = async (req, res) => {
-  try {
+exports.update = catchAsync(async (req, res) => {
     const id = req.params.id;
-    await service.deleteFuelType(id);
+    const updated = await fuelTypeService.update(id, value);
+    res.json(updated);
+ 
+});
+
+exports.remove = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    await fuelTypeService.delete(id);
     res.json({ message: 'Deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-const bulkDelete = async (req, res) => {
-  try {
-    await service.bulkDeleteFuelTypes(value);
+} )
+
+exports.bulkDelete = catchAsync(async (req, res) => {
+    await fuelTypeService.bulkDelete(value);
     res.json({ message: 'Bulk delete successful' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-module.exports={
-    create,
-    update,
-    remove,
-    bulkDelete,
-    getAll
-}
+ 
+});

@@ -67,13 +67,8 @@ const VendorSchema = new mongoose.Schema({
         }
     },
     classification: {
-        type: Number,
-        enum: {
-            values: [0, 1, 2, 3, 4, 5],
-            //all,assest, charging, fuel,service, tools
-            message: 'Classification must be 0, 1, 2,3,4 or 5'
-        }
-        , default: 0
+        type: [String],// 'charging,fuel,service,asset'
+        default: []
     },
     archived: {
         type: Boolean,

@@ -1,34 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
+const reqValidator = require('../../shared/middleware/validate.middleware');
 const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const { getAll, updateInspection, getInspectionById, createInspection, getName } = require('../controllers/inspection.controller');
+const inspectionController = require('../controllers/inspection.controller')
+router
+  .route('/')
+  .post(useAuth,  inspectionController.create)
+  .get(useAuth, inspectionController.getAll);
 
-
-router.get('/',
-  useAuth,
-  getAll);
+router
+  .route('/:id')
+  .post(useAuth, inspectionController.update)
+  .get(useAuth, inspectionController.getById);
 
 router.get('/specific-detail',
   useAuth,
-  getName);
+  inspectionController.getName);
 
-router.put('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  updateInspection
-);
 
-router.get('/:id',
-  useAuth,
-  reqValidator('generiIdSchema', 'params'),
-  getInspectionById
-);
-
-router.post('/',
-  useAuth,
-  reqValidator('createInspectionSchema', 'body'),
-  createInspection
-);
 
 module.exports = router;

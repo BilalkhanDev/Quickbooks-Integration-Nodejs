@@ -1,37 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
+const reqValidator = require('../../shared/middleware/validate.middleware');
 const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const { create, getAll, getById, update, remove } = require("../controllers/company.controller")
+const companyController=require('../controllers/company.controller')
 
-router.post('/',
-    useAuth,
-    reqValidator('createCompanySchema', 'body'),
-    create
-);
+router
+    .route('/')
+    .post(useAuth,  companyController.create)
+    .get(useAuth, companyController.getAll);
 
-router.get('/',
-    useAuth,
-    getAll
-);
-
-router.get('/:id',
-    useAuth,
-    reqValidator('generiIdSchema', 'params'),
-    getById
-);
-
-router.put('/:id',
-    useAuth,
-    reqValidator('generiIdSchema', 'params'),
-    reqValidator('createCompanySchema', 'body'),
-    update
-);
-
-router.delete('/:id',
-    useAuth,
-    reqValidator('generiIdSchema', 'params'),
-    remove
-);
+router
+    .route('/:id')
+    .post(useAuth, companyController.update)
+    .get(useAuth, companyController.getById)
+    .delete(useAuth, companyController.remove)
 
 module.exports = router;

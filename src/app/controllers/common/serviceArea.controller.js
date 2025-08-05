@@ -1,6 +1,7 @@
 const { default: HttpStatus } = require('http-status');
 const  serviceAreaService  = require('../../services/common/serviceArea.service');
-const pick = require('../../utils/pick');
+const pick = require('../../../shared/core/utils/pick');
+
 
 exports.create = async (req, res) => {
   try {
@@ -13,7 +14,7 @@ exports.create = async (req, res) => {
 
 exports.getSingle = async (req, res) => {
   try {
-    const result = await serviceAreaService.getSingle(req.params.id);
+    const result = await serviceAreaService.getById(req.params.id);
     if (!result) {
       return res.status(HttpStatus.NOT_FOUND).json({ error: 'ServiceArea not found' });
     }

@@ -1,27 +1,20 @@
+// src/app/routes/fleet.route.js
 const express = require('express');
-const { USER_ROLES } = require('../../shared/constants/role');
-const {
-  create,
-  getAll,
-  getById,
-  update,
-  remove,
-} = require('../controllers/fleet.controller');
-const { reqValidator, useAuth } = require('../../shared/middleware');
-const { adminOnly } = require('../../shared/middleware/useAuth.middleware');
-
 const router = express.Router();
+const fleetController = require('../controllers/fleet.controller');
+const getFleetSchema = require('../../shared/validation/fleet.schema');
+const { useAuth } = require('../../shared/middleware/useAuth.middleware');
+const validate = require('../../shared/middleware/validate.middleware');
+
 router
   .route('/')
-  .post(useAuth,reqValidator("fleetSchema", 'body'), create)
-  .get(useAuth, getAll);
+  .post(useAuth,validate(getFleetSchema, 'create'),fleetController.create)
+  .get(useAuth,fleetController.getAll);
 
 router
   .route('/:id')
-  .put(useAuth, reqValidator("fleetIdSchema", 'params'), reqValidator("fleetSchema", 'body'), update)
-  .patch(useAuth, reqValidator("fleetIdSchema", 'params'), reqValidator("fleetDriverSchema", 'body'), update)
-  .get(useAuth, reqValidator("fleetIdSchema", 'params'), getById)
-  .delete(useAuth, adminOnly(USER_ROLES?.ADMIN), reqValidator("fleetIdSchema", 'params'), remove);
-
+  .get(useAuth,validate(getFleetSchema, 'getById'),fleetController.getById)
+  .put(useAuth,validate(getFleetSchema, 'update'),fleetController.update)
+  .delete(useAuth,validate(getFleetSchema, 'delete'),fleetController.remove);
 
 module.exports = router;

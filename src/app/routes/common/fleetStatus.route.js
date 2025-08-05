@@ -1,37 +1,25 @@
 const express = require('express');
-
-const { getStatusById, updateStatus, removeStatusById, createStatus, getAllStatuses, bulkRemoveStatus } = require('../controllers/statusController');
-
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
+const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
+const { reqValidator } = require('../../../shared/middleware');
+const fleetStatusController=require('../../controllers/common/status.controller')
 const router = express.Router();
 
-router.post('/',
-    useAuth,
-    reqValidator('createFleetStatusSchema', 'body'),
-    createStatus);
-router.get('/',
-    useAuth,
-    getAllStatuses);
-router.get('/:id',
-    useAuth,
-    reqValidator('generiIdSchema', 'params'),
-    getStatusById
-);
-router.put('/:id',
-    useAuth,
-    reqValidator('generiIdSchema', 'params'),
-    reqValidator('updateFleetStatusSchema', 'body'),
-    updateStatus);
+router
+  .route('/')
+  .post(useAuth,  fleetStatusController.create)
+  .get(useAuth,  fleetStatusController.getAll)
+
+router
+  .route('/:id')
+  .put(useAuth,  fleetStatusController.update)
+  .get(useAuth,  fleetStatusController.getById)
+  .delete(useAuth,  fleetStatusController.remove)
+
+
 router.delete('/delete',
     useAuth,
-    reqValidator('bulkDeleteFleetStatusSchema', 'body'),
-    bulkRemoveStatus
+    
+    fleetStatusController.bulkRemove
 );
-
-router.delete('/:id',
-    useAuth,
-    reqValidator('generiIdSchema', 'params'),
-    removeStatusById);
 
 module.exports = router;

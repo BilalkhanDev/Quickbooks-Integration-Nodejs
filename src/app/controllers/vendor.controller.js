@@ -1,62 +1,35 @@
-const service = require('../services/vendorService');
+const { default: HttpStatus } = require('http-status');
+const vendorService = require('../services/vendor.service');
+const catchAsync = require('../../shared/core/utils/catchAsync');
 
-const create = async (req, res) => {
 
-  try {
-    const vendor = await service.createVendor(req.body);
-    res.status(201).json(vendor);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+exports.create = catchAsync(async (req, res) => {
+  const vendor = await vendorService.create(req.body);
+  res.status(HttpStatus.CREATED).json(vendor);
+});
+
+exports.getAll = catchAsync(async (req, res) => {
+  const paginatedData = await vendorService.getAll(req.query);
+  res.status(HttpStatus.OK).json(paginatedData);
+});
+
+exports.update = catchAsync(async (req, res) => {
+  const vendor = await vendorService.update(req.params.id, req.body);
+  res.status(HttpStatus.OK).json(vendor);
+});
+
+exports.remove = catchAsync(async (req, res) => {
+  await vendorService.delete(req.params.id);
+  res.status(HttpStatus.OK).json({ message: 'Deleted successfully' });
+});
+
+exports.bulkDelete = catchAsync(async (req, res) => {
+  const ids = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(HttpStatus.BAD_REQUEST).json({ error: 'No IDs provided for deletion.' });
   }
-};
 
-const getAll = async (req, res) => {
-  try {
-    const paginatedData = await service.getVendors(req.query);
-    res.json(paginatedData);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-
-const update = async (req, res) => {
-  try {
-    const vendor = await service.updateVendor(req.params.id, req.body);
-    res.json(vendor);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const remove = async (req, res) => {
-  try {
-    await service.deleteVendor(req.params.id);
-    res.json({ message: 'Deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const bulkDelete = async (req, res) => {
-   const ids = req.body;
-
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ error: 'No IDs provided for deletion.' });
-    }
-
-
-  try {
-    await service.bulkDeleteVendors(ids);
-    res.json({ message: 'Bulk delete successful' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-module.exports={
-    create,
-    update,
-    remove,
-    getAll,
-    bulkDelete
-}
+  await vendorService.bulkDelete(ids);
+  res.status(HttpStatus.OK).json({ message: 'Bulk delete successful' });
+});

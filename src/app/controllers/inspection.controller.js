@@ -1,59 +1,29 @@
-const { getAllInspectionService, updateInspectionService, getInspectionByIdService, createInspectionService, getNameService } = require('../services/inspectionService');
+// controllers/inspection.controller.js
+const inspectionService = require('../services/inspection.service');
+const catchAsync = require('../../shared/core/utils/catchAsync');
+const { default: HttpStatus } = require('http-status');
 
-const getAll = async (req, res) => {
-    try {
-        const inspections = await getAllInspectionService();
-        res.status(200).json({ success: true, data: inspections });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
+exports.getAll = catchAsync(async (req, res) => {
+  const inspections = await inspectionService.getAll();
+  res.status(HttpStatus.OK).json({ success: true, data: inspections });
+});
 
-const getName = async (req, res) => {
-    try {
-        const inspections = await getNameService();
-        res.status(200).json({ success: true, data: inspections });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
+exports.getName = catchAsync(async (req, res) => {
+  const inspections = await inspectionService.getNames();
+  res.status(HttpStatus.OK).json({ success: true, data: inspections });
+});
 
+exports.getById = catchAsync(async (req, res) => {
+  const inspection = await inspectionService.getById(req.params.id);
+  res.status(HttpStatus.OK).json({ success: true, data: inspection });
+});
 
-const updateInspection = async (req, res) => {
-    try {
-        const inspectionId = req.params.id;
-        const updateData = req.body;
-        const updatedInspection = await updateInspectionService(inspectionId, updateData);
-        res.status(200).json({ success: true, data: updatedInspection });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
+exports.create = catchAsync(async (req, res) => {
+  const newInspection = await inspectionService.create(req.body);
+  res.status(HttpStatus.CREATED).json({ success: true, data: newInspection });
+});
 
-const getInspectionById = async (req, res) => {
-    try {
-        const inspectionId = req.params.id;
-        const inspection = await getInspectionByIdService(inspectionId);
-        res.status(200).json({ success: true, data: inspection });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
-
-const createInspection = async (req, res) => {
-    try {
-        const inspectionData = req.body;
-        const newInspection = await createInspectionService(inspectionData);
-        res.status(201).json({ success: true, data: newInspection });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
-
-module.exports = {
-    getAll,
-    updateInspection,
-    getInspectionById,
-    getName,
-    createInspection
-};
+exports.update = catchAsync(async (req, res) => {
+  const updatedInspection = await inspectionService.update(req.params.id, req.body);
+  res.status(HttpStatus.OK).json({ success: true, data: updatedInspection });
+});

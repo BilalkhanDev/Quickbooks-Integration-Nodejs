@@ -1,58 +1,37 @@
 const companyService = require('../services/company.service');
 const { default: HttpStatus } = require('http-status');
+const catchAsync = require('../../shared/core/utils/catchAsync'); // Optional but recommended
 
-const create = async (req, res) => {
-    try {
-        const company = await companyService.create(req.body);
-        return res.status(HttpStatus.CREATED).json(company);
-    } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-    }
-};
+exports.create = catchAsync(async (req, res) => {
+  const company = await companyService.create(req.body);
+  res.status(HttpStatus.CREATED).json(company);
+});
 
-const getAll = async (req, res) => {
-    try {
-        const companies = await companyService.getAll();
-        return res.status(HttpStatus.OK).json(companies);
-    } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-    }
-};
+exports.getAll = catchAsync(async (req, res) => {
+  const companies = await companyService.getAll();
+  res.status(HttpStatus.OK).json(companies);
+});
 
-const getById = async (req, res) => {
-    try {
-        const company = await companyService.getById(req.params.id);
-        if (!company) res.status(HttpStatus.NOT_FOUND).json({ error: "Company Not Found" });
-        return res.status(HttpStatus.OK).json(company);
-    } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-    }
-};
+exports.getById = catchAsync(async (req, res) => {
+  const company = await companyService.getById(req.params.id);
+  if (!company) {
+    return res.status(HttpStatus.NOT_FOUND).json({ error: 'Company Not Found' });
+  }
+  res.status(HttpStatus.OK).json(company);
+});
 
-const update = async (req, res) => {
-    try {
-        const company = await companyService.update(req.params.id, req.body);
-        if (!company) res.status(HttpStatus.NOT_FOUND).json({ error: "Company Not Found" });
-        return res.status(HttpStatus.OK).json(company);
-    } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-    }
-};
+exports.update = catchAsync(async (req, res) => {
+  const company = await companyService.update(req.params.id, req.body);
+  if (!company) {
+    return res.status(HttpStatus.NOT_FOUND).json({ error: 'Company Not Found' });
+  }
+  res.status(HttpStatus.OK).json(company);
+});
 
-const remove = async (req, res) => {
-    try {
-        const company = await companyService.deleteById(req.params.id);
-        if (!company) res.status(HttpStatus.NOT_FOUND).json({ error: "Company Not Found" });
-        return res.status(HttpStatus.OK).json(company);
-    } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-    }
-};
-
-module.exports = {
-    create,
-    getAll,
-    getById,
-    update,
-    remove
-};
+exports.remove= catchAsync(async (req, res) => {
+  const company = await companyService.delete(req.params.id);
+  if (!company) {
+    return res.status(HttpStatus.NOT_FOUND).json({ error: 'Company Not Found' });
+  }
+  res.status(HttpStatus.OK).json({ message: 'Company deleted successfully', company });
+});

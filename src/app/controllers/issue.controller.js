@@ -1,103 +1,33 @@
-const issueService = require('../services/issueService');
+const issueService = require('../services/issue.service');
+const catchAsync = require('../../shared/core/utils/catchAsync');
+const { default: HttpStatus } = require('http-status');
 
-// Create a new issue
-const createIssue = async (req, res) => {
-  try {
-   
-    const issue = await issueService.createIssue(req);
-    return res.status(201).json({
-      message: 'Issue created successfully',
-      issue,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: `Error creating issue: ${error.message}`,
-    });
-  }
-};
+exports.create = catchAsync(async (req, res) => {
+  const issue = await issueService.create(req);
+  res.status(HttpStatus.CREATED).json({ message: 'Issue created successfully', issue });
+});
 
-// Get an issue by ID
-const getIssueById = async (req, res) => {
-  try {
-    const issueId = req.params.issueId;
-    const issue = await issueService.getIssueById(issueId);
-    return res.status(200).json(issue);
-  } catch (error) {
-    console.error(error);
-    return res.status(404).json({
-      message: `Issue not found: ${error.message}`,
-    });
-  }
-};
+exports.getById = catchAsync(async (req, res) => {
+  const issue = await issueService.getById(req.params.issueId);
+  res.status(HttpStatus.OK).json(issue);
+});
 
-// Get all issues (optional filter)
-const getAllIssues = async (req, res) => {
-  try {
-    const filter = req.query || {};
-    const issues = await issueService.getAllIssues(filter);
-    return res.status(200).json(issues);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: `Error fetching issues: ${error.message}`,
-    });
-  }
-};
+exports.getAll = catchAsync(async (req, res) => {
+  const issues = await issueService.getAll(req.query);
+  res.status(HttpStatus.OK).json(issues);
+});
 
-// Get issues by serviceId
-const getIssuesByServiceId = async (req, res) => {
-  try {
-    const { serviceId } = req.params; 
-    const issues = await issueService.getIssuesByServiceId(serviceId);
-    return res.status(200).json(issues);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: `Error fetching issues by serviceId: ${error.message}`,
-    });
-  }
-};
+exports.getIssuesByServiceId = catchAsync(async (req, res) => {
+  const issues = await issueService.getByServiceId(req.params.serviceId);
+  res.status(HttpStatus.OK).json(issues);
+});
 
-// Update an issue by ID
-const updateIssueById = async (req, res) => {
-  try {
-  
-    const updatedIssue = await issueService.updateIssueById(req);
-    return res.status(200).json({
-      message: 'Issue updated successfully',
-      updatedIssue,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(400).json({
-      message: `Error updating issue: ${error.message}`,
-    });
-  }
-};
+exports.update= catchAsync(async (req, res) => {
+  const updated = await issueService.update(req);
+  res.status(HttpStatus.OK).json({ message: 'Issue updated successfully', updatedIssue: updated });
+});
 
-// Delete an issue by ID
-const deleteIssueById = async (req, res) => {
-  try {
-    const issueId = req.params.issueId;
-    const deletedIssue = await issueService.deleteIssueById(issueId);
-    return res.status(200).json({
-      message: 'Issue deleted successfully',
-      deletedIssue,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(404).json({
-      message: `Error deleting issue: ${error.message}`,
-    });
-  }
-};
-
-module.exports = {
-  createIssue,
-  getIssueById,
-  getAllIssues,
-  getIssuesByServiceId, 
-  updateIssueById,
-  deleteIssueById,
-};
+exports.delete = catchAsync(async (req, res) => {
+  const deleted = await issueService.delete(req.params.issueId);
+  res.status(HttpStatus.OK).json({ message: 'Issue deleted successfully', deletedIssue: deleted });
+});

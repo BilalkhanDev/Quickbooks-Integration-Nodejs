@@ -1,19 +1,19 @@
-// routes/driverRoutes.js
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
+const validate = require('../../shared/middleware/validate.middleware');
+const getDriverSchema = require('../../shared/validation/driver.schema');
 const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const {create,update,getByFleetId,getById,getAll} = require("../controllers/driver.controller");
-router
-  .route('/')
-  .post(useAuth,create)
-  .get(useAuth, getAll);
+const driverController = require('../controllers/driver.controller');
 
-router
-  .route('/:id')
-  .put(useAuth, update)
-  .get(useAuth, getById);
+router.route('/')
+  .post(useAuth, validate(getDriverSchema, 'create'), driverController.create)
+  .get(useAuth, driverController.getAll);
 
-router.get("/fleet/:fleetId", getByFleetId);
+router.route('/:id')
+  .put(useAuth, validate(getDriverSchema, 'update'), driverController.update)
+  .get(useAuth, validate(getDriverSchema, 'getById'), driverController.getById)
+ 
+
+router.get('/fleet/:fleetId', validate(getDriverSchema, 'getByFleetId'), driverController.getByFleetId);
 
 module.exports = router;

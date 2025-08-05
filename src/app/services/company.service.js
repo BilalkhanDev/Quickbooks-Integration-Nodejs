@@ -1,31 +1,27 @@
-const Company = require("../models/company.model");
+// services/company.service.js
+const Company = require('../models/company.model');
 
+class CompanyService {
+  async create(data) {
+    const company = new Company(data);
+    return await company.save();
+  }
 
-const create= async (data) => {
-  const company = new Company(data);
-  return await company.save();
-};
+  async getAll() {
+    return await Company.find();
+  }
 
-const getAll = async () => {
-  return await Company.find();
-};
+  async getById(id) {
+    return await Company.findById(id);
+  }
 
-const getById = async (id) => {
-  return await Company.findById(id);
-};
+  async update(id, data) {
+    return await Company.findByIdAndUpdate(id, data, { new: true });
+  }
 
-const update= async (id, data) => {
-  return await Company.findByIdAndUpdate(id, data, { new: true });
-};
+  async deleteById(id) {
+    return await Company.findByIdAndDelete(id);
+  }
+}
 
-const deleteById= async (id) => {
-  return await Company.findByIdAndDelete(id);
-};
-
-module.exports = {
-  create,
-  getAll,
-  getById,
-  update,
-  deleteById
-};
+module.exports = new CompanyService();
