@@ -6,7 +6,7 @@ const companyController=require('../controllers/company.controller')
 
 router
     .route('/')
-    .post(useAuth,  companyController.create)
+    .post(useAuth, companyController.create)
     .get(useAuth, companyController.getAll);
 
 router

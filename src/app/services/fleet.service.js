@@ -9,7 +9,6 @@ class FleetService {
   async getAll(queryParams, options, userId) {
     const { search, assigned, ...filter } = queryParams;
     const searchFilter = await Fleet.search({ search });
-
     if (assigned === 'true') {
       filter.assigned_driver = { $ne: null };
     } else if (assigned === 'false') {
@@ -18,18 +17,55 @@ class FleetService {
 
     let finalFilter = { user: userId };
 
+
     if (searchFilter && Object.keys(searchFilter).length > 0) {
       finalFilter = { $and: [{ user: userId }, filter, searchFilter] };
     } else if (Object.keys(filter).length > 0) {
       finalFilter = { $and: [{ user: userId }, filter] };
     }
 
-    return await Fleet.paginate(finalFilter, options);
+    return await Fleet.paginate(finalFilter, {
+      ...options,
+      populate: [
+        { path: 'group', select: '_id name' },
+        { path: 'type', select: '_id name' },
+        { path: 'los', select: '_id title' },
+        { path: 'fundingSources', select: '_id title' },
+        { path: 'assigned_driver', select: '_id firstName lastName email' },
+        { path: 'fuelType', select: '_id name' },
+      ],
+    });
   }
 
+
   async getById(id) {
-    return await Fleet.findById(id);
+    // Define the reference fields to be populated
+    const refFields = [
+      'user',
+      'serviceAreas',
+      'los',
+      'spaceType',
+      'type',
+      'group',
+      'equipments',
+      'fundingSources',
+      'assigned_driver',
+      'fuelType'
+    ];
+
+    const populateFields = refFields.map(field => {
+      return {
+        path: field,
+        select: '_id ' + (['assigned_driver', 'group'].includes(field) ? 'firstName lastName email' : 'title name')  // Populate `title` or `name` based on the field
+      };
+    });
+
+    // Fetch and populate Fleet data
+    const result = await Fleet.findById(id).populate(populateFields);
+
+    return result;
   }
+
 
   async update(id, data) {
     return await Fleet.findByIdAndUpdate(id, data, { new: true });

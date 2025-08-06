@@ -1,29 +1,41 @@
-
 const express = require('express');
-const { create, getAll, update, remove, bulkDelete } = require('../controllers/vendor.controller');
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../shared/middleware/validate.middleware');
 const router = express.Router();
+const vendorController = require('../controllers/vendor.controller');
+const { useAuth } = require('../../shared/middleware/useAuth.middleware');
+const validate = require('../../shared/middleware/validate.middleware');
+const getVendorSchema = require('../../shared/validation/vendor.schema');
+const { reqValidator } = require('../../shared/middleware');
 
-router.post('/',
+router
+  .route('/')
+  .post(
     useAuth,
-    // reqValidator("vendorSchema", "body"),
-    create);
-router.get('/',
+    validate(getVendorSchema, 'create'),  // Validate request body for creation
+    vendorController.create
+  )
+  .get(useAuth, vendorController.getAll);  
+
+router
+  .route('/:id')
+  .get(useAuth,reqValidator(getVendorSchema, 'getById'),vendorController.getById)
+  .put(
     useAuth,
-    getAll);
-router.put('/:id',
+    validate(getVendorSchema, 'update'),  
+    vendorController.update
+  )
+  .delete(
     useAuth,
-    // reqValidator("generiIdSchema", 'params'),
-    // reqValidator("vendorUpdateSchema", "body"),
-    update);
-router.delete('/:id',
+    validate(getVendorSchema, 'delete'),  
+    vendorController.remove
+  );
+
+
+router
+  .route('/delete')
+  .post(
     useAuth,
-    // reqValidator("generiIdSchema", 'params'),
-    remove);
-router.post('/delete',
-    useAuth,
-    // reqValidator('bulkDeleteFleetStatusSchema', 'body'),
-    bulkDelete);
+    validate(getVendorSchema, 'bulkDelete'),  // Validate request body for bulk deletion
+    vendorController.bulkDelete
+  );
 
 module.exports = router;

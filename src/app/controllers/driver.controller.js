@@ -6,7 +6,7 @@ const catchAsync = require('../../shared/core/utils/catchAsync');
 
 exports.getAll = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const queryParams = pick(req.query, ['search', 'assigned']);
+  const queryParams = pick(req.query, ['search', 'assigned','isActive']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const drivers = await driverService.getAll(queryParams, options, userId);
   res.status(HttpStatus.OK).json(drivers);

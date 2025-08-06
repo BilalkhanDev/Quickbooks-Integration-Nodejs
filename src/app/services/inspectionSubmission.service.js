@@ -3,10 +3,11 @@ const { Inspection, InspectionSubmission } = require('../models')
 
 class InspectionSubmissionService {
   async createOrUpdate(req) {
-    const { inspectionId, fleetId, inspectedBy, inspectionDate, itemValues, status } = req.body;
+    const userId=req.user.id
+    const { inspectionId, fleet, inspectedBy, inspectionDate, itemValues, status } = req.body;
     const uploads = req.s3Grouped || {};
 
-    if (!inspectionId || !fleetId) {
+    if (!inspectionId || !fleet) {
       throw new Error("Missing required fields: inspectionId or fleetId");
     }
 
@@ -26,6 +27,7 @@ class InspectionSubmissionService {
     });
 
     const submissionData = {
+      user:userId,
       inspectedBy,
       inspectionDate,
       itemValues: enrichedItemValues,
@@ -33,18 +35,20 @@ class InspectionSubmissionService {
     };
 
     return await InspectionSubmission.findOneAndUpdate(
-      { inspectionId, fleetId },
+      { inspectionId, fleet },
       { $set: submissionData },
       { upsert: true, new: true }
     ).lean();
   }
 
-  async getByInspectionAndFleet(inspectionId, fleetId) {
-    return await InspectionSubmission.findOne({ inspectionId, fleetId }).lean();
+  async getByInspectionAndFleet(fleetId,userId) {
+    console.log(fleetId)
+    return await InspectionSubmission.findOne({ fleet:fleetId ,user:userId}).lean();
   }
 
-  async getAllByFleetId(fleetId) {
-    return await InspectionSubmission.find({ fleetId }).populate('inspectionId').lean();
+  async getAllByFleetId(fleetId,userId) {
+    const data = await InspectionSubmission.find({ fleet:fleetId,user:userId }).populate('inspectionId','_id name').lean();
+    return data
   }
 
   async getById(id) {

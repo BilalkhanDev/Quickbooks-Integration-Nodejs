@@ -11,17 +11,25 @@ const InspectionSubmissionSchema = new mongoose.Schema({
     ref: 'Inspection',
     required: true
   },
-  fleetId: { type: String, required: true },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  fleet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Fleet',
+    required: true
+  },
   inspectedBy: {
     userId: { type: String, required: true },
     name: { type: String },
     email: { type: String }
   },
-  inspectionDate: { type: Date, default: Date.now },
   itemValues: [ItemValueSchema],
   status: {
-    type: Number,
-    enum: [0, 1],
+    type: String,
+    enum: ["active", "inactive"],
     default: 0
   }
 }, { timestamps: true });

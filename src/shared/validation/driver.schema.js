@@ -18,7 +18,6 @@ const baseDriverFields = {
   serviceArea: Joi.string().required(),
   garageAddress: Joi.string().required(),
   fleet: objectId().optional(),
-  user: objectId().optional(),
   isActive: Joi.boolean().optional()
 };
 
@@ -34,10 +33,7 @@ const getDriverSchema = (mode = 'create') => {
           params: Joi.object({
           id: objectId().required(),
         }),
-        body: Joi.object(baseDriverFields).fork(
-          Object.keys(baseDriverFields),
-          (field) => field.optional()
-        ),
+      body: Joi.object(baseDriverFields),
       };
 
     case 'getById':

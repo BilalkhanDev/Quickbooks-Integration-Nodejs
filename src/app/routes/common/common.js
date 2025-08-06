@@ -17,9 +17,9 @@ router.use('/space-type', spaceTypeRoutes);
 router.use('/service-area', serviceAreaRoutes);
 router.use('/equipment', equipmentRoutes);
 router.use('/los', losRoutes);
-router.use('/fuelType', fuelTypeRoutes);
+router.use('/fuel-type', fuelTypeRoutes);
 router.use('/type', fleetTypeRoutes);
-router.use('/fleetStatus', fleetStatusRoutes);
+router.use('/fleet-status', fleetStatusRoutes);
 router.use('/expense', expenseRoutes);
 
 

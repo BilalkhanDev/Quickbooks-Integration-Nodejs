@@ -3,6 +3,7 @@ const inspectionSubmissionService = require('../services/inspectionSubmission.se
 const inspectionService = require('../services/inspection.service'); 
 const catchAsync = require('../../shared/core/utils/catchAsync');
 const { default: HttpStatus } = require('http-status');
+const pick = require('../../shared/core/utils/pick');
 
 exports.createOrUpdate = catchAsync(async (req, res) => {
   const submission = await inspectionSubmissionService.createOrUpdate(req);
@@ -10,16 +11,20 @@ exports.createOrUpdate = catchAsync(async (req, res) => {
 });
 
 exports.getSingle = catchAsync(async (req, res) => {
+  const userId=req.user.id
   const { inspectionId, fleetId } = req.query;
-  const submission = await inspectionSubmissionService.getByInspectionAndFleet(inspectionId, fleetId);
+  const submission = await inspectionSubmissionService.getByInspectionAndFleet(inspectionId, fleetId,userId);
   res.status(HttpStatus.OK).json({ success: true, data: submission });
 });
 
 exports.getAggregatedFormForFleet = catchAsync(async (req, res) => {
-  const { inspectionId, fleetId } = req.query;
 
-  const template = await inspectionService.getFleetSpec(inspectionId);
-  const submission = await inspectionSubmissionService.getByInspectionAndFleet(inspectionId, fleetId);
+
+    const userId = req.user.id
+  const {  fleetId } = pick(req.query, ['fleetId']);
+ 
+  const template = await inspectionService.getById(inspectionId);
+  const submission = await inspectionSubmissionService.getByInspectionAndFleet(fleetId,userId);
 
   const valuesMap = {};
   if (submission?.itemValues) {
@@ -48,40 +53,12 @@ exports.getAggregatedFormForFleet = catchAsync(async (req, res) => {
   });
 });
 
-exports.getAllAggregatedFormsForFleet = catchAsync(async (req, res) => {
-  const { fleetId } = req.query;
-  const submissions = await inspectionSubmissionService.getAllByFleetId(fleetId);
-
-  const aggregated = submissions.map(sub => {
-    const template = sub.inspectionId;
-    const valuesMap = {};
-
-    if (sub.itemValues) {
-      for (const val of sub.itemValues) {
-        valuesMap[val.itemId] = val.value;
-      }
-    }
-
-    const itemsWithValues = template.items.map(item => ({
-      ...item,
-      value: valuesMap[item.itemId] ?? ""
-    }));
-
-    return {
-      _id: sub._id,
-      name: template.name,
-      inspectionFormId: template._id,
-      description: template.description,
-      fleetId: sub.fleetId,
-      inspectedBy: sub.inspectedBy,
-      inspectionDate: sub.inspectionDate,
-      sections: template.sections,
-      items: itemsWithValues,
-      status: sub.status
-    };
-  });
-
-  res.status(HttpStatus.OK).json({ success: true, data: aggregated });
+exports.getAll= catchAsync(async (req, res) => {
+  const userId = req.user.id
+  const {  fleetId } = pick(req.query, ['fleetId']);
+  const data = await inspectionSubmissionService.getAllByFleetId(fleetId,userId);
+ res.status(HttpStatus.OK).json({ success: true, data });
+  
 });
 
 exports.getById = catchAsync(async (req, res) => {

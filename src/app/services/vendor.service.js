@@ -1,3 +1,4 @@
+const ApiError = require("../../shared/core/exceptions/ApiError");
 const { Vendor } = require("../models");
 
 class VendorService {
@@ -6,52 +7,37 @@ class VendorService {
     return await vendor.save();
   }
 
-  async getAll(query) {
-    const {
-      page = 1,
-      limit = 10,
-      name,
-      classification,
-      labels,
-      contactName,
-    } = query;
+  async getAll(queryParams, options) {
+    let { search, ...filter } = queryParams;
+    const searchFilter = await Vendor.search({ search });
 
-    const filters = {};
+    if (searchFilter && Object.keys(searchFilter).length > 0) {
+      filter = { ...filter, ...searchFilter };
+    }
+    const results = await Vendor.paginate(filter, options);
+    return results
 
-    if (name) filters.name = { $regex: name, $options: 'i' };
-    if (classification) filters.classification = classification;
-    if (contactName) filters.contactName = { $regex: contactName, $options: 'i' };
-    if (labels) filters.labels = { $in: Array.isArray(labels) ? labels : [labels] };
-
-    const skip = (page - 1) * limit;
-
-    const [vendors, total] = await Promise.all([
-      Vendor.find(filters).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Vendor.countDocuments(filters),
-    ]);
-
-    return {
-      data: vendors,
-      total,
-      page: parseInt(page),
-      limit: parseInt(limit),
-    };
   }
 
+  async getById(id) {
+    const SingleVendor = await Vendor.findById(id);
+    if (!SingleVendor) throw new ApiError('Vendor not found');
+    return SingleVendor;
+  }
   async update(id, data) {
     const updated = await Vendor.findByIdAndUpdate(id, data, { new: true });
-    if (!updated) throw new Error('Vendor not found');
+    if (!updated) throw new ApiError('Vendor not found');
     return updated;
   }
 
   async delete(id) {
     const deleted = await Vendor.findByIdAndDelete(id);
-    if (!deleted) throw new Error('Vendor not found');
+    if (!deleted) throw new ApiError('Vendor not found');
     return deleted;
   }
 
   async bulkDelete(ids) {
-    if (!Array.isArray(ids)) throw new Error('IDs must be an array');
+    if (!Array.isArray(ids)) throw new ApiError('IDs must be an array');
     const result = await Vendor.deleteMany({ _id: { $in: ids } });
     return result;
   }

@@ -1,10 +1,11 @@
 const { default: HttpStatus } = require('http-status');
 const { ServiceArea } = require('../../models');
+const ApiError = require('../../../shared/core/exceptions/ApiError');
 class ServiceAreaService {
   async create(userBody) {
     const title = userBody.title?.trim();
     if (await ServiceArea.isTitleTaken(title)) {
-      throw new Error(HttpStatus.BAD_REQUEST, 'Title already taken');
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
 
     return ServiceArea.create({ ...userBody, title });
@@ -28,14 +29,14 @@ class ServiceAreaService {
   async update(id, updateBody) {
     const serviceArea = await this.getById(id);
     if (!serviceArea) {
-      throw new Error(HttpStatus.NOT_FOUND, 'ServiceArea not found');
+      throw new ApiError(HttpStatus.NOT_FOUND, 'ServiceArea not found');
     }
 
     if (
       updateBody.title &&
       (await ServiceArea.isTitleTaken(updateBody.title.trim(), id))
     ) {
-      throw new Error(HttpStatus.BAD_REQUEST, 'Title already taken');
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
 
     Object.assign(serviceArea, {
@@ -50,7 +51,7 @@ class ServiceAreaService {
   async remove(id) {
     const serviceArea = await this.getById(id);
     if (!serviceArea) {
-      throw new Error(HttpStatus.NOT_FOUND, 'ServiceArea not found');
+      throw new ApiError(HttpStatus.NOT_FOUND, 'ServiceArea not found');
     }
 
     await serviceArea.remove();

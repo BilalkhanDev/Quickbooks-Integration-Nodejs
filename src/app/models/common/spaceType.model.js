@@ -24,10 +24,7 @@ const spaceTypesSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    wnr: {
-      type: Boolean,
-      default: false,
-    },
+
     isActive: {
       type: Boolean,
       default: false,

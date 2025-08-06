@@ -1,17 +1,18 @@
 const { default: HttpStatus } = require('http-status');
 const { LOS } = require('../../models');
+const ApiError = require('../../../shared/core/exceptions/ApiError');
 class LOSService {
   async create(req) {
     const { s3Urls = [], body } = req;
 
     const title = body?.title?.trim();
     if (!title) {
-      throw new Error(HttpStatus.BAD_REQUEST, 'Title is required');
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Title is required');
     }
 
     const isDuplicate = await LOS.isTitleTaken(title);
     if (isDuplicate) {
-      throw new Error(HttpStatus.BAD_REQUEST, 'Title already taken');
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
 
     const payload = {
@@ -43,14 +44,14 @@ class LOSService {
 
     const los = await this.getSingle(params.id);
     if (!los) {
-      throw new Error(HttpStatus.NOT_FOUND, 'LOS not found');
+      throw new ApiError(HttpStatus.NOT_FOUND, 'LOS not found');
     }
 
     if (
       updateBody.title &&
       (await LOS.isTitleTaken(updateBody.title.trim(), params.id))
     ) {
-      throw new Error(HttpStatus.BAD_REQUEST, 'Title already taken');
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
 
     const { id, ...cleanUpdateBody } = updateBody;

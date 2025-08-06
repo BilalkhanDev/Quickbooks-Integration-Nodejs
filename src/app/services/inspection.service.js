@@ -1,5 +1,7 @@
 // services/inspection.service.js
-const Inspection = require('../models/inspection/inspection.model');
+
+const { Inspection } = require("../models");
+
 
 class InspectionService {
   async getAll() {
@@ -7,7 +9,8 @@ class InspectionService {
   }
 
   async getNames() {
-    return await Inspection.find({}, { name: 1 }).lean();
+    const data =await Inspection.find( { name: 1 }).lean();
+    conole.log(data)
   }
 
   async getById(inspectionId) {

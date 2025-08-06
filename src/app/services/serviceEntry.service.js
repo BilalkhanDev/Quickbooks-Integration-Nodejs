@@ -1,81 +1,77 @@
+const ApiError = require("../../shared/core/exceptions/ApiError");
 const { ServiceEntry } = require("../models");
-
-
-
+const mongoose = require("mongoose")
 class ServiceEntryService {
   async create(req) {
     const documentUrls = req?.s3Urls || [];
+    const user = req.user.id;
 
     const newEntry = await ServiceEntry.create({
       ...req.body,
+      user,
       documents: documentUrls,
     });
 
     return newEntry;
   }
 
-  async getByFleetId(fleetId) {
-    if (!fleetId) throw new Error('Fleet ID is required');
+  async getByFleetId(queryParams, options, userId, fleetId) {
+    if (!fleetId || !mongoose.Types.ObjectId.isValid(fleetId)) {
+      throw new ApiError('Invalid Fleet ID');
+    }
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      throw new ApiError('Invalid User ID');
+    }
+    const { search, ...filter } = queryParams;
+    const searchFilter = await ServiceEntry.search({ search });
+    let finalFilter = {
+      fleet: new mongoose.Types.ObjectId(fleetId),
+      user: new mongoose.Types.ObjectId(userId),
+    };
 
-    const entries = await ServiceEntry.aggregate([
-      { $match: { fleetId } },
+    if (searchFilter && Object.keys(searchFilter).length > 0) {
+      finalFilter = {
+        $and: [
+          { fleet: new mongoose.Types.ObjectId(fleetId) },
+          { user: new mongoose.Types.ObjectId(userId) },
+          filter,
+          searchFilter,
+        ],
+      };
+    } else if (Object.keys(filter).length > 0) {
+      finalFilter = {
+        $and: [
+          { fleet: new mongoose.Types.ObjectId(fleetId) },
+          { user: new mongoose.Types.ObjectId(userId) },
+          filter,
+        ],
+      };
+    }
 
-      {
-        $lookup: {
-          from: 'vendors',
-          localField: 'vendor',
-          foreignField: '_id',
-          as: 'vendorData',
-        },
-      },
-      { $unwind: { path: '$vendorData', preserveNullAndEmptyArrays: true } },
+    const result = await ServiceEntry.paginate(finalFilter, {
+      ...options,
+      populate: 'issuesCount vendor', // Populate 'issues' and 'vendor'
+    });
 
-      {
-        $lookup: {
-          from: 'issues',
-          localField: '_id',
-          foreignField: 'serviceId',
-          as: 'issuesArray',
-        },
-      },
-      {
-        $addFields: {
-          issuesCount: { $size: { $ifNull: ['$issuesArray', []] } },
-        },
-      },
-      {
-        $project: {
-          repairPriorityClass: 1,
-          odometer: 1,
-          void: 1,
-          completionDate: 1,
-          isStartDate: 1,
-          startDate: 1,
-          reference: 1,
-          labels: 1,
-          photos: 1,
-          documents: 1,
-          comments: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          vendor: '$vendorData',
-          issuesCount: 1,
-        },
-      },
-    ]);
-
-    return entries;
+    return result;
   }
 
-  async getById(id) {
-    const entry = await ServiceEntry.findById(id)
-      .populate('vendor')
+  async getById(id, userId) {
+    console.log("Id", id, userId)
+    const entry = await ServiceEntry.findOne({
+      _id: id,
+      user: userId,
+    })
+      .populate('vendor', '_id, name')
       .populate('issues', '-fleetId');
+
+    if (!entry) throw new ApiError('Service entry not found or unauthorized');
     return entry;
   }
 
   async update(req) {
     const { id } = req.params;
+    const user = req.user.id;
     const { existingDocuments } = req.body;
 
     let existingDocsArray = [];
@@ -90,13 +86,13 @@ class ServiceEntryService {
     const uploadedDocs = req?.s3Urls || [];
     const finalDocuments = [...existingDocsArray, ...uploadedDocs];
 
-    const updated = await ServiceEntry.findByIdAndUpdate(
-      id,
+    const updated = await ServiceEntry.findOneAndUpdate(
+      { _id: id, user },
       { ...req.body, documents: finalDocuments },
       { new: true }
     );
 
-    if (!updated) throw new Error('Service entry not found');
+    if (!updated) throw new ApiError('Service entry not found or unauthorized');
     return updated;
   }
 }

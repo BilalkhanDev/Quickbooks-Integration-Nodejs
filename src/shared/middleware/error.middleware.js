@@ -6,7 +6,7 @@ const errorHandler = (err, req, res, next) => {
   const statusCode = Number.isInteger(err.statusCode) ? err.statusCode : 500;
 
   // ✅ Log the error
-  // logger.error('Error: %s\nStatus: %d\nStack: %s', err.message, statusCode, err.stack || 'No stack');
+  logger.error('Error: %s\nStatus: %d\nStack: %s', err.message, statusCode, err.stack || 'No stack');
 
   res.status(statusCode).json({
     success: false,

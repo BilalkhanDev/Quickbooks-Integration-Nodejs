@@ -5,8 +5,9 @@ const reqValidator = require('../../shared/middleware/validate.middleware');
 const inspectionSubmissionController=require('../controllers/inspectionSubmission.controller')
 const parseMultipartJsonFields = require("../../shared/middleware/parseJsonFields.middleware");
 const s3AssetUploader = require('../../shared/middleware/multer.middleware');
+const getInspectionSubmissionSchema = require('../../shared/validation/inspectionSubmission.schema');
 
-router.get('/all', useAuth,inspectionSubmissionController.getAllAggregatedFormsForFleet);
+router.get('/all', useAuth,inspectionSubmissionController.getAll);
 
 router.post('/',
      useAuth,
@@ -15,7 +16,7 @@ router.post('/',
           inspectedBy: 'json',
           itemValues:'json',
      }),
-   
+     reqValidator(getInspectionSubmissionSchema,'create'),
      inspectionSubmissionController.createOrUpdate);
 
 router.get('/single',

@@ -19,7 +19,7 @@ const paginate = (schema) => {
    * @param {number} [options.page] - Current page (default = 1)
    * @returns {Promise<QueryResult>}
    */
-  schema.statics.paginate = async function (filter, options) {
+  schema.statics.paginate = async function (filter, options = {}) {
     let sort = '';
     
     if (options.sortBy) {
@@ -40,28 +40,48 @@ const paginate = (schema) => {
     const countPromise = this.countDocuments(filter).exec();
     let docsQuery = this.find(filter).sort(sort).skip(skip).limit(limit);
 
-    // Handle populate
+    // Handle populate - Fixed version
     if (options.populate) {
-      let populateArray = [];
+      const processPopulate = (populate) => {
+        if (typeof populate === 'string') {
+          // Handle nested populate like "user.profile" or simple "user"
+          if (populate.includes('.')) {
+            const parts = populate.split('.');
+            return parts.reverse().reduce((acc, part) => 
+              acc ? { path: part, populate: acc } : { path: part }
+            );
+          }
+          return { path: populate };
+        }
+        
+        if (typeof populate === 'object' && populate !== null) {
+          return populate;
+        }
+        
+        return null;
+      };
+
+      let populateOptions = [];
 
       if (typeof options.populate === 'string') {
-        // e.g. "member,driver.profile"
-        populateArray = options.populate.split(',').map(p =>
-          p.split('.').reverse().reduce((a, b) => ({ path: b, populate: a }))
-        );
+        // Handle comma-separated string like "user,fleet,service"
+        populateOptions = options.populate.split(',')
+          .map(p => p.trim())
+          .map(processPopulate)
+          .filter(Boolean);
       } else if (Array.isArray(options.populate)) {
-        populateArray = options.populate.map(p => {
-          if (typeof p === 'string') {
-            return p.split('.').reverse().reduce((a, b) => ({ path: b, populate: a }));
-          }
-          return p; // object format
-        });
+        // Handle array of strings or objects
+        populateOptions = options.populate
+          .map(processPopulate)
+          .filter(Boolean);
       } else if (typeof options.populate === 'object') {
-        populateArray = [options.populate];
+        // Handle single object
+        populateOptions = [processPopulate(options.populate)].filter(Boolean);
       }
 
-      populateArray.forEach((pop) => {
-        docsQuery = docsQuery.populate(pop);
+      // Apply populate options
+      populateOptions.forEach((popOption) => {
+        docsQuery = docsQuery.populate(popOption);
       });
     }
 

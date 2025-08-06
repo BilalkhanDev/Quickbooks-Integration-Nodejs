@@ -3,13 +3,18 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const { search, paginate } = require("../../shared/plugin");
 
+const addressSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  coords: { type: [Number], default: [0, 0] },
+  city: { type: String },
+  state: { type: String },
+});
 const DriverSchema = new mongoose.Schema({
   
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
-  address: { type: String, required: true },
-  zipcode: { type: String, required: true },
+  address: addressSchema,
   startDate: { type: Date, required: true },
   endDate: { type: Date },
   license: { type: String, required: true },
@@ -24,7 +29,7 @@ const DriverSchema = new mongoose.Schema({
     },
   },
   contactNumber: { type: String, required: true },
-  serviceArea: { type: String, required: true },
+  serviceArea: {type: mongoose.Schema.Types.ObjectId, ref: "ServiceArea" },
   garageAddress: { type: String, required: true },
   fleet: { type: mongoose.Schema.Types.ObjectId, ref: "Fleet"},
   user:{type: mongoose.Schema.Types.ObjectId, ref: "User"},

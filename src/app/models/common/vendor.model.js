@@ -1,19 +1,18 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const { search, paginate } = require('../../../shared/plugin');
 
+const addressSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  coords: { type: [Number], default: [0, 0] },
+  city: { type: String },
+  state: { type: String },
+});
 const VendorSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         unique: true
-    },
-    status: {
-        type: Number,
-        enum: {
-            values: [0, 1],
-            message: 'Status Must be 0 or 1'
-        },
-        default: 0
     },
     phone: {
         type: Number,
@@ -27,26 +26,7 @@ const VendorSchema = new mongoose.Schema({
         type: String,
         default: null
     }],
-    address: {
-        type: String,
-        default: null
-    },
-    subAddrress: {
-        type: String,
-        default: null
-    },
-    city: {
-        type: String,
-        default: null
-    },
-    state: {
-        type: String,
-        default: null
-    },
-    zip: {
-        type: String,
-        default: null
-    },
+    address:addressSchema,
     contactName: {
         type: String,
         default: null
@@ -60,8 +40,7 @@ const VendorSchema = new mongoose.Schema({
         default: null,
         validate: {
             validator: function (value) {
-                // Only validate if email is not null
-                return value === null || validator.isEmail(value);
+             return value === null || validator.isEmail(value);
             },
             message: 'Invalid email format'
         }
@@ -73,9 +52,14 @@ const VendorSchema = new mongoose.Schema({
     archived: {
         type: Boolean,
         default: false
+    },
+    isActive:{
+        type:Boolean,
+        default:true
     }
 }, {
     timestamps: true
 });
-
+VendorSchema.plugin(search)
+VendorSchema.plugin(paginate)
 module.exports = mongoose.model('Vendor', VendorSchema);

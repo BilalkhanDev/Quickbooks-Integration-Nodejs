@@ -1,54 +1,39 @@
 const { default: HttpStatus } = require('http-status');
 const losService=require("../../services/common/los.service");
 const pick = require('../../../shared/core/utils/pick');
+const catchAsync = require('../../../shared/core/utils/catchAsync');
 
-exports.create = async (req, res) => {
-  try {
-    const los = await losService.create(req);
-    res.status(HttpStatus.CREATED).send(los);
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-  }
-};
+exports.create = catchAsync(async (req, res) => {
+    const result = await losService.create(req);
+    res.status(HttpStatus.CREATED).send(result);
+ 
+})
 
-exports.getSingle = async (req, res) => {
-  try {
-    const spaceType = await losService.getSingle(req.params.id);
-    if (!spaceType) {
-      return res.status(HttpStatus.NOT_FOUND).json({ error: 'SpaceType not found' });
+exports.getSingle = catchAsync(async (req, res) => {
+    const result= await losService.getSingle(req.params.id);
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({ error: 'LOS not found' });
     }
-    res.send(spaceType);
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-  }
-};
+    res.status(HttpStatus.OK).send(result);
+});
 
-exports.getAll = async (req, res) => {
-  try {
+exports.getAll =catchAsync( async (req, res) => {
+
     const queryParams = pick(req.query, ['search', 'role', 'isActive']);
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const result = await losService.getAll(queryParams, options);
-    res.send(result);
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-  }
-};
+    res.status(HttpStatus.OK).send(result);
 
-exports.update = async (req, res) => {
-  try {
+});
+
+exports.update =catchAsync( async (req, res) => {
     const result = await losService.update(req);
     res.send(result);
-  } catch (error) {
-    
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-  }
-};
+ 
+});
 
-exports.remove = async (req, res) => {
-  try {
-    await losService.remove(req.params.id);
-    res.status(HttpStatus.NO_CONTENT).send();
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
-  }
-};
+exports.remove = catchAsync(async (req, res) => {
+    const result=await losService.remove(req.params.id);
+    res.status(HttpStatus.OK).send(result);
+ 
+});

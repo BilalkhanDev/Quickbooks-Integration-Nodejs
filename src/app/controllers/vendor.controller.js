@@ -1,6 +1,7 @@
 const { default: HttpStatus } = require('http-status');
 const vendorService = require('../services/vendor.service');
 const catchAsync = require('../../shared/core/utils/catchAsync');
+const pick = require('../../shared/core/utils/pick');
 
 
 exports.create = catchAsync(async (req, res) => {
@@ -9,10 +10,16 @@ exports.create = catchAsync(async (req, res) => {
 });
 
 exports.getAll = catchAsync(async (req, res) => {
-  const paginatedData = await vendorService.getAll(req.query);
+  const queryParams = pick(req.query, ['search', 'classification', 'isActive']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const paginatedData = await vendorService.getAll(queryParams, options,);
   res.status(HttpStatus.OK).json(paginatedData);
 });
-
+exports.getById = catchAsync(async (req, res) => {
+  console.log(req.body)
+  const vendor = await vendorService.getById(req.params.id);
+  res.status(HttpStatus.OK).json(vendor);
+});
 exports.update = catchAsync(async (req, res) => {
   const vendor = await vendorService.update(req.params.id, req.body);
   res.status(HttpStatus.OK).json(vendor);

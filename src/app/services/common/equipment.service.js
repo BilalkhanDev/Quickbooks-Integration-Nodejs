@@ -1,6 +1,6 @@
 const { default: HttpStatus } = require('http-status');
 const { Equipment } = require('../../models');
-const ApiError = require('../../../shared/core/exceptions/apiError');
+const ApiError = require('../../../shared/core/exceptions/ApiError');
 
 class EquipmentService {
   async create(data) {
