@@ -1,9 +1,9 @@
 // controllers/inspectionSubmission.controller.js
 const inspectionSubmissionService = require('../services/inspectionSubmission.service');
 const inspectionService = require('../services/inspection.service'); 
-const catchAsync = require('../../shared/core/utils/catchAsync');
+const catchAsync = require('../shared/core/utils/catchAsync');
 const { default: HttpStatus } = require('http-status');
-const pick = require('../../shared/core/utils/pick');
+const pick = require('../shared/core/utils/pick');
 
 exports.createOrUpdate = catchAsync(async (req, res) => {
   const submission = await inspectionSubmissionService.createOrUpdate(req);

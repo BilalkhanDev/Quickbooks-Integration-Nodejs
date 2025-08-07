@@ -1,10 +1,10 @@
 const express = require('express');
-const reqValidator = require('../../../shared/middleware/validate.middleware');
+const reqValidator = require('../../middleware/validate.middleware');
 const router = express.Router();
 const losController=require("../../controllers/common/los.controller")
-const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
-const s3AssetUploader = require('../../../shared/middleware/multer.middleware');
-const getLOSValidationSchema = require('../../../shared/validation/common/los.schema');
+const { useAuth } = require('../../middleware/useAuth.middleware');
+const s3AssetUploader = require('../../middleware/multer.middleware');
+const getLOSValidationSchema = require('../../validation/common/los.schema');
 
 router
   .route('/')

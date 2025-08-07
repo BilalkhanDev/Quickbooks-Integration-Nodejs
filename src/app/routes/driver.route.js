@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const validate = require('../../shared/middleware/validate.middleware');
-const getDriverSchema = require('../../shared/validation/driver.schema');
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
+const validate = require('../middleware/validate.middleware');
+const getDriverSchema = require('../validation/driver.schema');
+const { useAuth } = require('../middleware/useAuth.middleware');
 const driverController = require('../controllers/driver.controller');
 
 router.route('/')

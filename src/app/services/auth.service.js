@@ -1,11 +1,10 @@
 // services/auth.service.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const GenericService = require('../../shared/service/genric.service');
 const { User } = require('../models');
-const ApiError = require('../../shared/core/exceptions/ApiError');
+const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
-
+const GenericService=require('../shared/service/genric.service')
 class AuthService {
   async create({ email, password }) {
     const existingUser = await GenericService.findOne(User, { email });

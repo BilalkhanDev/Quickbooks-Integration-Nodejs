@@ -1,7 +1,7 @@
 const { default: HttpStatus } = require('http-status');
 const service = require('../services/serviceEntry.service');
-const catchAsync = require('../../shared/core/utils/catchAsync');
-const pick = require('../../shared/core/utils/pick');
+const catchAsync = require('../shared/core/utils/catchAsync');
+const pick = require('../shared/core/utils/pick');
 
 exports.create = catchAsync(async (req, res) => {
   const newEntry = await service.create(req);

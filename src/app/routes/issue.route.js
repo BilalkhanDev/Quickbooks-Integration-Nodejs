@@ -1,10 +1,10 @@
 const express = require('express');
-const reqValidator = require('../../shared/middleware/validate.middleware');
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
+const reqValidator = require('../middleware/validate.middleware');
+const { useAuth } = require('../middleware/useAuth.middleware');
 const issueController = require('../controllers/issue.controller');
-const s3AssetUploader = require('../../shared/middleware/multer.middleware');
-const parseMultipartJsonFields = require('../../shared/middleware/parseJsonFields.middleware');
-const getIssueSchema = require('../../shared/validation/issue.schema');
+const s3AssetUploader = require('../middleware/multer.middleware');
+const parseMultipartJsonFields = require('../middleware/parseJsonFields.middleware');
+const getIssueSchema = require('../validation/issue.schema');
 
 const router = express.Router();
 

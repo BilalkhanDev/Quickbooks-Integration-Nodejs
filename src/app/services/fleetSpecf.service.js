@@ -7,7 +7,7 @@ const performanceModel = require('../models/specification/performance.model');
 const weightModel = require('../models/specification/weight.model');
 const wheelModel = require('../models/specification/wheel.model');
 const transmissionModel = require('../models/specification/trasmission.model');
-const ApiError = require('../../shared/core/exceptions/apiError');
+const ApiError = require('../shared/core/exceptions/ApiError');
 
 class FleetSpecificationService {
   constructor() {

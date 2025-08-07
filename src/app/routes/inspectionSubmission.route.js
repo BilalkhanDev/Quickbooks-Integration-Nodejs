@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../shared/middleware/validate.middleware');
+const { useAuth } = require('../middleware/useAuth.middleware');
+const reqValidator = require('../middleware/validate.middleware');
 const inspectionSubmissionController=require('../controllers/inspectionSubmission.controller')
-const parseMultipartJsonFields = require("../../shared/middleware/parseJsonFields.middleware");
-const s3AssetUploader = require('../../shared/middleware/multer.middleware');
-const getInspectionSubmissionSchema = require('../../shared/validation/inspectionSubmission.schema');
+const parseMultipartJsonFields = require("../middleware/parseJsonFields.middleware");
+const s3AssetUploader = require('../middleware/multer.middleware');
+const getInspectionSubmissionSchema = require('../validation/inspectionSubmission.schema');
 
 router.get('/all', useAuth,inspectionSubmissionController.getAll);
 

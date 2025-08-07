@@ -1,6 +1,6 @@
 // controllers/fleet.controller.js
-const catchAsync = require('../../shared/core/utils/catchAsync');
-const pick = require('../../shared/core/utils/pick');
+const catchAsync = require('../shared/core/utils/catchAsync');
+const pick = require('../shared/core/utils/pick');
 const fleetService = require('../services/fleet.service');
 const { default: HttpStatus } = require('http-status');
 

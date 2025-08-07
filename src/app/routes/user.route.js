@@ -1,8 +1,8 @@
 const express = require('express');
-const reqValidator = require('../../shared/middleware/reqValidator.middleware');
-const { adminOnly, useAuth, adminOrSelf } = require('../../shared/middleware/useAuth.middleware');
+const reqValidator = require('../middleware/reqValidator.middleware');
+const { adminOnly, useAuth, adminOrSelf } = require('../middleware/useAuth.middleware');
 const userController=require('../controllers/user.controller')
-const { USER_ROLES } = require('../../shared/constants/role');
+const { USER_ROLES } = require('../shared/constants/role');
 
 const router = express.Router();
 

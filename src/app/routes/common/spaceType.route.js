@@ -1,8 +1,8 @@
 const express = require('express');
-const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../../shared/middleware/validate.middleware');
+const { useAuth } = require('../../middleware/useAuth.middleware');
+const reqValidator = require('../../middleware/validate.middleware');
 const spaceTypeController=require('../../controllers/common/spacetype.controller')
-const getSpaceTypeValidation = require('../../../shared/validation/common/spaceType.schema');
+const getSpaceTypeValidation = require('../../validation/common/spaceType.schema');
 
 const router = express.Router();
 

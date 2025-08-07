@@ -1,4 +1,4 @@
-const ApiError = require("../../shared/core/exceptions/ApiError");
+const ApiError = require("../shared/core/exceptions/ApiError");
 const { ServiceEntry } = require("../models");
 const mongoose = require("mongoose")
 class ServiceEntryService {

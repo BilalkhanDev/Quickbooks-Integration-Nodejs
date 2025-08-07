@@ -1,4 +1,4 @@
-const catchAsync = require('../../../shared/core/utils/catchAsync');
+const catchAsync = require('../../shared/core/utils/catchAsync');
 const service = require('../../services/common/expense.service');
 
 exports.create = catchAsync(async (req, res) => {

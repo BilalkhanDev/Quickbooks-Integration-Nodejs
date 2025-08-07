@@ -1,6 +1,6 @@
 const { default: HttpStatus } = require('http-status');
 const { LOS } = require('../../models');
-const ApiError = require('../../../shared/core/exceptions/ApiError');
+const ApiError = require('../../shared/core/exceptions/ApiError');
 class LOSService {
   async create(req) {
     const { s3Urls = [], body } = req;

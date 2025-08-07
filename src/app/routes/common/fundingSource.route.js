@@ -1,9 +1,9 @@
 const express = require('express');
-const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../../shared/middleware/validate.middleware');
-const s3AssetUploader = require('../../../shared/middleware/multer.middleware');
+const { useAuth } = require('../../middleware/useAuth.middleware');
+const reqValidator = require('../../middleware/validate.middleware');
+const s3AssetUploader = require('../../middleware/multer.middleware');
 const fsController=require('../../controllers/common/fundingSource.controller');
-const getFundingSourceValidation = require('../../../shared/validation/common/fundingSource.schema');
+const getFundingSourceValidation = require('../../validation/common/fundingSource.schema');
 const router = express.Router();
 
 router

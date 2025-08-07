@@ -1,5 +1,5 @@
 const service = require('../services/user.service');
-const catchAsync = require('../../shared/core/utils/catchAsync');
+const catchAsync = require('../shared/core/utils/catchAsync');
 const { default: HttpStatus } = require('http-status');
 
 exports.getAllUsers = catchAsync(async (req, res) => {

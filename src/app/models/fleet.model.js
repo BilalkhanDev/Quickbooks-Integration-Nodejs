@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { FLEET_STATUS } = require('../../shared/constants/enum');
-const { paginate, search } = require('../../shared/plugin');
+const { FLEET_STATUS } = require('../shared/constants/enum');
+const { paginate, search } = require('../shared/plugin');
 
 const FleetSchema = new mongoose.Schema({
   user:{ 

@@ -1,6 +1,6 @@
 const { default: HttpStatus } = require('http-status');
 const { SpaceType } = require('../../models');
-const ApiError = require('../../../shared/core/exceptions/ApiError');
+const ApiError = require('../../shared/core/exceptions/ApiError');
 class SpaceTypeService {
   async create(userBody) {
     const title = userBody.title?.trim();

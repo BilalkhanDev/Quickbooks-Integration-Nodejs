@@ -1,9 +1,9 @@
 const express = require('express');
-const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
-const reqValidator = require('../../../shared/middleware/validate.middleware');
+const { useAuth } = require('../../middleware/useAuth.middleware');
+const reqValidator = require('../../middleware/validate.middleware');
 const router = express.Router();
 const equipmentController=require('../../controllers/common/equipment.controller');
-const getEquipmentSchema = require('../../../shared/validation/common/equipment.schema');
+const getEquipmentSchema = require('../../validation/common/equipment.schema');
 
 router
     .route('/')

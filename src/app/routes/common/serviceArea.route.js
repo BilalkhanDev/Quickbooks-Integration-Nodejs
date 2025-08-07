@@ -1,9 +1,9 @@
 const express = require('express');
-const reqValidator = require('../../../shared/middleware/validate.middleware');
+const reqValidator = require('../../middleware/validate.middleware');
 const router = express.Router();
 const {create,update,getAll,getSingle,remove}=require("../../controllers/common/serviceArea.controller");
-const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
-const getServiceAreaValidation = require('../../../shared/validation/common/serviceArea.schema');
+const { useAuth } = require('../../middleware/useAuth.middleware');
+const getServiceAreaValidation = require('../../validation/common/serviceArea.schema');
 router
   .route('/')
   .post(useAuth,reqValidator(getServiceAreaValidation,'create'),create)

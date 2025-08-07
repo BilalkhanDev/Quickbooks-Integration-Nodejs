@@ -1,6 +1,6 @@
 const { default: HttpStatus } = require('http-status');
 const { FundingSource } = require('../../models');
-const ApiError = require('../../../shared/core/exceptions/ApiError');
+const ApiError = require('../../shared/core/exceptions/ApiError');
 
 class FundingSourceService {
   async create(req) {

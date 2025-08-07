@@ -13,11 +13,11 @@ const seedFleet = async ({
   fleetTypeId,
 }) => {
   try {
-    const count = await Fleet.countDocuments();
+    const count = await Fleet.countDocuments();  // Check if fleets already exist
     if (count === 0) {
       const defaultFleets = [
         {  
-          user:userIds[0],  
+          user: userIds[0],  
           setiDecall: 'SETI001',
           serviceAreas: serviceAreaId,
           los: losId,
@@ -41,13 +41,19 @@ const seedFleet = async ({
         },
       ];
 
-      await Fleet.insertMany(defaultFleets);
+      // Insert default fleets
+      const fleets = await Fleet.insertMany(defaultFleets);
       console.log('✅ Fleets seeded successfully');
+
+      // Return the IDs of the seeded fleets
+      return fleets.map(fleet => fleet._id);
     } else {
       console.log('ℹ️ Fleets already exist. Skipping seed.');
+      return [];  // Return empty array if fleets already exist
     }
   } catch (error) {
     console.error('❌ Error seeding fleets:', error);
+    return [];  // Return empty array in case of error
   }
 };
 

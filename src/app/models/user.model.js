@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator'); 
-const { USER_ROLES } = require('../../shared/constants/role');
+const { USER_ROLES } = require('../shared/constants/role');
 
 const UserSchema = new mongoose.Schema({
   username: {

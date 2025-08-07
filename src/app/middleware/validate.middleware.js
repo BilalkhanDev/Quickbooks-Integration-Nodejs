@@ -1,8 +1,8 @@
 // src/shared/middleware/validate.middleware.js
 const Joi = require('joi');
 const httpStatus = require('http-status');
-const pick = require('../core/utils/pick');
-const ApiError = require('../core/exceptions/ApiError');
+const pick = require('../shared/core/utils/pick');
+const ApiError = require('../shared/core/exceptions/ApiError');
 
 const validate = (schemaFn, mode = 'create') => {
   if (typeof schemaFn !== 'function') {
@@ -10,6 +10,7 @@ const validate = (schemaFn, mode = 'create') => {
   }
 
   const schema = schemaFn(mode);
+  
 
   return (req, res, next) => {
     const validSchema = pick(schema, ['params', 'query', 'body']);

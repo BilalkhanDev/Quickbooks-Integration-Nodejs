@@ -1,4 +1,4 @@
-const ApiError = require('../../shared/core/exceptions/ApiError');
+const ApiError = require('../shared/core/exceptions/ApiError');
 const { Issue, ServiceEntry } = require('../models');
 
 class IssueService {

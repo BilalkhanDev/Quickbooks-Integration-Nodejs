@@ -1,5 +1,5 @@
 const { default: HttpStatus } = require('http-status');
-const catchAsync = require('../../../shared/core/utils/catchAsync');
+const catchAsync = require('../../shared/core/utils/catchAsync');
 const fleetTypeService = require('../../services/common/type.service');
 
 exports.create = catchAsync(async (req, res) => {

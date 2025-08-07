@@ -1,8 +1,8 @@
 // controllers/driver.controller.js
 const driverService = require('../services/driver.service');
-const pick = require('../../shared/core/utils/pick');
+const pick = require('../shared/core/utils/pick');
 const { default: HttpStatus } = require('http-status');
-const catchAsync = require('../../shared/core/utils/catchAsync');
+const catchAsync = require('../shared/core/utils/catchAsync');
 
 exports.getAll = catchAsync(async (req, res) => {
   const userId = req.user.id;

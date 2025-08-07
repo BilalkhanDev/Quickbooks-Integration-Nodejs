@@ -1,7 +1,7 @@
 const express = require('express');
 const typeController = require('../../controllers/common/type.controller')
-const reqValidator = require('../../../shared/middleware/validate.middleware');
-const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
+const reqValidator = require('../../middleware/validate.middleware');
+const { useAuth } = require('../../middleware/useAuth.middleware');
 
 const router = express.Router();
 

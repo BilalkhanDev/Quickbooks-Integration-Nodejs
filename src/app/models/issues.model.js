@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { search, paginate } = require('../../shared/plugin');
+const { search, paginate } = require('../shared/plugin');
 
 const issueSchema = new mongoose.Schema(
     {

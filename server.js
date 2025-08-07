@@ -10,14 +10,14 @@ const cors = require("cors");
 const app = express();
 const path = require("path");
 const routes=require('./src/app/routes/index')
-const { ActivityLogger, errorHandler, morgan } = require("./src/shared/middleware");
 const connectDB = require('./src/config/db.config');
+const { ActivityLogger, errorHandler, morgan } = require('./src/app/middleware');
 
-// app.use(xss());
-// app.use(mongoSanitize());
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));  
+// app.use(xss({ whiteList: [], stripIgnoreTagBody: ['script'] }));
+// app.use(mongoSanitize()); 
+app.use(cors());  
 
 
 app.use(morgan);

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require("validator");
-const { paginate, search } = require('../../../shared/plugin');
+const { paginate, search } = require('../../shared/plugin');
 
 const addressSchema = new mongoose.Schema({
   name: { type: String, required: true },

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { search } = require('../../../shared/plugin');
+const { search } = require('../../shared/plugin');
 
 
 const FleetTypeSchema = new mongoose.Schema({

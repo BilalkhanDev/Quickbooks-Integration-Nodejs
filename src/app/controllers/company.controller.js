@@ -1,6 +1,6 @@
 const companyService = require('../services/company.service');
 const { default: HttpStatus } = require('http-status');
-const catchAsync = require('../../shared/core/utils/catchAsync'); // Optional but recommended
+const catchAsync = require('../shared/core/utils/catchAsync'); // Optional but recommended
 
 exports.create = catchAsync(async (req, res) => {
   const company = await companyService.create(req.body);

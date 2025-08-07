@@ -2,9 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const fleetController = require('../controllers/fleet.controller');
-const getFleetSchema = require('../../shared/validation/fleet.schema');
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
-const validate = require('../../shared/middleware/validate.middleware');
+const getFleetSchema = require('../validation/fleet.schema');
+const { useAuth } = require('../middleware/useAuth.middleware');
+const validate = require('../middleware/validate.middleware');
 
 router
   .route('/')

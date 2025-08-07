@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const expenseController = require('../../controllers/common/expense.controller')
-const { reqValidator } = require('../../../shared/middleware');
-const { useAuth } = require('../../../shared/middleware/useAuth.middleware');
+const { reqValidator } = require('../../middleware');
+const { useAuth } = require('../../middleware/useAuth.middleware');
 
 router.delete('/delete',
   useAuth,

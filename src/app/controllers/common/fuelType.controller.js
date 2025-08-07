@@ -1,4 +1,4 @@
-const catchAsync = require('../../../shared/core/utils/catchAsync');
+const catchAsync = require('../../shared/core/utils/catchAsync');
 const fuelTypeService = require('../../services/common/fuelType.service');
 
 

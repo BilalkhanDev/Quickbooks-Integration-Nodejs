@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { USER_ROLES } = require('../../shared/constants/role');
+const { USER_ROLES } = require('../shared/constants/role');
 const User = require('../models/user.model');
 
 const createUsers = async () => {

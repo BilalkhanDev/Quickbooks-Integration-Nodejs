@@ -14,7 +14,6 @@ const seedSpaceTypes = async (losIds = []) => {
           description: 'For passengers who can walk without assistance.',
           loadTime: '5',
           unloadTime: '5',
-          wnr: false,
           los: losIds[0], 
           isActive: true,
         },
@@ -23,7 +22,6 @@ const seedSpaceTypes = async (losIds = []) => {
           description: 'For passengers using a wheelchair, requires ramp or lift.',
           loadTime: '10',
           unloadTime: '10',
-          wnr: true,
           los: losIds[1] || losIds[0],
           isActive: true,
         }

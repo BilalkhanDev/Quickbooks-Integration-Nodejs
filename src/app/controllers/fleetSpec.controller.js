@@ -1,7 +1,7 @@
 
 const fleetSpecService = require('../services/fleetSpecf.service');
 const { default: HttpStatus } = require('http-status');
-const catchAsync = require('../../shared/core/utils/catchAsync');
+const catchAsync = require('../shared/core/utils/catchAsync');
 
 exports.getById = catchAsync(async (req, res) => {
   const spec = await fleetSpecService.getFleetSpec(req.params.fleetId);

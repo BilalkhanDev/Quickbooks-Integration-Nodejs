@@ -1,13 +1,10 @@
 const express = require('express');
-const reqValidator = require('../../shared/middleware/validate.middleware');
+const validate = require('../middleware/validate.middleware');
 const authController = require('../controllers/auth.controller');
-const validate = require('../../shared/middleware/validate.middleware');
-const getAuthSchema = require('../../shared/validation/auth.schema');
-const { useAuth } = require('../../shared/middleware/useAuth.middleware');
+const getAuthSchema = require('../validation/auth.schema');
+const { useAuth } = require('../middleware/useAuth.middleware');
 
 const router = express.Router();
-
-
 
 router.post('/register',
     validate(getAuthSchema,'register'),

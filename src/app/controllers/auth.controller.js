@@ -1,8 +1,8 @@
 // controllers/auth.controller.js
 const { default: HttpStatus } = require('http-status');
 const authService = require('../services/auth.service');
-const catchAsync = require('../../shared/core/utils/catchAsync');
 const axios = require('axios');
+const catchAsync = require('../shared/core/utils/catchAsync');
 
 exports.register = catchAsync(async (req, res) => {
   const user = await authService.create(req.body);

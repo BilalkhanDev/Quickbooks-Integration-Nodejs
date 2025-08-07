@@ -1,6 +1,6 @@
 
 const path = require("path");
-const { ActivityLogs } = require("../../app/models");
+const { ActivityLogs } = require("../models/shared/activityLogs.model");
 
 const activityLogger = async (req, res, next) => {
   const start = Date.now();

@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { USER_ROLES } = require('../../shared/constants/role');
+const { USER_ROLES } = require('../shared/constants/role');
 
 // 🧱 Base fields
 const baseAuthFields = {

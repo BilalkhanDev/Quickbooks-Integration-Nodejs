@@ -1,7 +1,7 @@
 // models/Driver.js
 const mongoose = require("mongoose");
 const validator = require("validator");
-const { search, paginate } = require("../../shared/plugin");
+const { search, paginate } = require("../shared/plugin");
 
 const addressSchema = new mongoose.Schema({
   name: { type: String, required: true },

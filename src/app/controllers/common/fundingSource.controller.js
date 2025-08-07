@@ -1,6 +1,6 @@
 const { default: HttpStatus } = require('http-status');
 const fundingsourceService=require('../../services/common/fundingSource.service');
-const pick = require('../../../shared/core/utils/pick');
+const pick = require('../../shared/core/utils/pick');
 
 exports.create = async (req, res) => {
   try {
