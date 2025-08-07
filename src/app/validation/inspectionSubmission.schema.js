@@ -3,7 +3,7 @@ const objectId = require('./objectId.schema');  // Assuming objectId schema is d
 
 const ItemValueSchema = Joi.object({
   itemId: Joi.string().required(),
-  value: Joi.any().required()
+  value: Joi.any().optional()
 });
 
 const baseInspectionSubmissionFields = {
