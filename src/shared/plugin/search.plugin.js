@@ -118,7 +118,7 @@ module.exports = function searchPlugin(schema, options = {}) {
         : { $and: dateFilters };
     }
 
-    console.log('🟡 [searchPlugin] baseFilter:', JSON.stringify(baseFilter, null, 2));
+  
 
     // ✅ Ref fields (lookup)
     let refMatchFilter = {};
@@ -153,10 +153,8 @@ module.exports = function searchPlugin(schema, options = {}) {
 
         pipeline.push({ $match: { $or: refOrConditions } });
         pipeline.push({ $project: { _id: 1 } });
-
-        console.log('🛠 [searchPlugin] Final aggregation pipeline for refs:', JSON.stringify(pipeline, null, 2));
         const aggResult = await this.aggregate(pipeline).exec();
-        console.log('📥 [searchPlugin] Aggregation result for refs:', aggResult);
+        
 
         const matchingIds = aggResult.map(doc => doc._id);
         if (matchingIds.length > 0) {
@@ -175,7 +173,6 @@ module.exports = function searchPlugin(schema, options = {}) {
       finalFilter = baseFilter;
     }
 
-    console.log('🎯 [searchPlugin] Final merged filter:', JSON.stringify(finalFilter, null, 2));
     return finalFilter;
   };
 };

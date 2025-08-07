@@ -3,6 +3,9 @@ const router = express.Router();
 const reqValidator = require('../../shared/middleware/validate.middleware');
 const { useAuth } = require('../../shared/middleware/useAuth.middleware');
 const inspectionController = require('../controllers/inspection.controller')
+router.get('/specific-detail',
+  useAuth,
+  inspectionController.getName);
 router
   .route('/')
   .post(useAuth,  inspectionController.create)
@@ -13,9 +16,7 @@ router
   .post(useAuth, inspectionController.update)
   .get(useAuth, inspectionController.getById);
 
-router.get('/specific-detail',
-  useAuth,
-  inspectionController.getName);
+
 
 
 

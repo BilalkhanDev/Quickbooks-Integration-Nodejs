@@ -9,8 +9,8 @@ class InspectionService {
   }
 
   async getNames() {
-    const data =await Inspection.find( { name: 1 }).lean();
-    conole.log(data)
+    const data = await Inspection.find({}, { name: 1, _id: 1 }).lean();
+    return data
   }
 
   async getById(inspectionId) {

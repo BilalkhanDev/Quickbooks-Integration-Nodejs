@@ -9,7 +9,7 @@ exports.getAll = catchAsync(async (req, res) => {
 });
 
 exports.getName = catchAsync(async (req, res) => {
-  
+
   const inspections = await inspectionService.getNames();
   res.status(HttpStatus.OK).json({ success: true, data: inspections });
 });
