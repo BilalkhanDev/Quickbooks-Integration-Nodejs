@@ -12,7 +12,6 @@ router
   .route('/')
   .post(
     useAuth,
-    s3AssetUploader('issues', 'documents'),
     reqValidator(getIssueSchema,'create'),
     issueController.create
   )
@@ -22,7 +21,6 @@ router
   .route('/:issueId')
   .patch(
     useAuth,
-    s3AssetUploader('issues', 'documents'),
     parseMultipartJsonFields({ existingDocuments: 'json' }),
     reqValidator(getIssueSchema,'update'),
     issueController.update

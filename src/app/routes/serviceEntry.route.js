@@ -10,7 +10,7 @@ router
   .route('/')
   .post(
     useAuth,
-    s3AssetUploader("services", "documents"),
+    // s3AssetUploader("services", "documents"),
     reqValidator(getServiceEntrySchema,'create'),
     serviceEntryController.create
   );
@@ -19,7 +19,7 @@ router
   .route('/:id')
   .put(
     useAuth,
-    s3AssetUploader("services", "documents"),
+    // s3AssetUploader("services", "documents"),
     reqValidator(getServiceEntrySchema,'update'),
     serviceEntryController.update
   )

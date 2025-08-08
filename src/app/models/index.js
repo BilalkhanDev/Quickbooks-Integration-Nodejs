@@ -32,3 +32,8 @@ module.exports.Vendor = require('./common/vendor.model');
 //shared 
 
 module.exports.ActivityLogs = require('./shared/activityLogs.model');
+
+
+//file-upload
+
+module.exports.Documents = require('./document.model');

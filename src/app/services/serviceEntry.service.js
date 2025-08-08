@@ -3,13 +3,13 @@ const { ServiceEntry } = require("../models");
 const mongoose = require("mongoose")
 class ServiceEntryService {
   async create(req) {
-    const documentUrls = req?.s3Urls || [];
+    // const documentUrls = req?.s3Urls || [];
     const user = req.user.id;
 
     const newEntry = await ServiceEntry.create({
       ...req.body,
       user,
-      documents: documentUrls,
+      // documents: documentUrls,
     });
 
     return newEntry;
@@ -57,7 +57,7 @@ class ServiceEntryService {
   }
 
   async getById(id, userId) {
-    console.log("Id", id, userId)
+ 
     const entry = await ServiceEntry.findOne({
       _id: id,
       user: userId,
@@ -72,23 +72,9 @@ class ServiceEntryService {
   async update(req) {
     const { id } = req.params;
     const user = req.user.id;
-    const { existingDocuments } = req.body;
-
-    let existingDocsArray = [];
-    if (existingDocuments) {
-      try {
-        existingDocsArray = JSON.parse(existingDocuments);
-      } catch (err) {
-        console.warn('Invalid JSON in existingDocuments');
-      }
-    }
-
-    const uploadedDocs = req?.s3Urls || [];
-    const finalDocuments = [...existingDocsArray, ...uploadedDocs];
-
     const updated = await ServiceEntry.findOneAndUpdate(
       { _id: id, user },
-      { ...req.body, documents: finalDocuments },
+      { ...req.body },
       { new: true }
     );
 

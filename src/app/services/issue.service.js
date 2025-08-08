@@ -4,7 +4,6 @@ const { Issue, ServiceEntry } = require('../models');
 class IssueService {
   async create(req) {
     const data = req.body;
-    const uploadedDocs = req?.s3Urls || [];
     const userId = req.user.id;
     const serviceEntry = await ServiceEntry.findById(data.service);
     if (!serviceEntry) {
@@ -14,7 +13,6 @@ class IssueService {
     const payload = {
       ...data,
       user: userId,
-      documents: uploadedDocs,
     };
 
     const issue = new Issue(payload);
@@ -43,19 +41,11 @@ class IssueService {
     const data = req.body;
     const userId = req.user.id;
 
-    const existingDocs = data.existingDocuments || [];
-    const uploadedDocs = req?.s3Urls || [];
-
-    const finalDocuments = [...existingDocs, ...uploadedDocs];
 
     const payload = {
       ...data,
       user: userId,
-      documents: finalDocuments,
     };
-
-    delete payload.existingDocuments;
-
     const updated = await Issue.findByIdAndUpdate(issueId, payload, { new: true });
 
     if (!updated) {

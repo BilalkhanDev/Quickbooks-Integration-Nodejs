@@ -17,7 +17,7 @@ const baseServiceEntryFields = {
   vendor: objectId().optional(),
   reference: Joi.string().allow('').optional(),
   labels: Joi.number().valid(...LABELS).optional(),
-  documents: Joi.array().items(Joi.string()).optional(),
+  documents: Joi.array().items(Joi.string()).optional().default([]),
   comments: Joi.string().allow('').optional(),
 };
 

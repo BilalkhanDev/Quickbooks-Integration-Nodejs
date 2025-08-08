@@ -23,7 +23,7 @@ app.use(cors());
 app.use(morgan);
 
 app.use("/api", routes);
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.use(ActivityLogger);
 app.use(errorHandler);
 

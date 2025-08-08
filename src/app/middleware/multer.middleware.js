@@ -40,6 +40,7 @@ const s3AssetUploader = (folder = "uploads/assets", fieldName = null, maxCount =
     uploader,
 
     async (req, res, next) => {
+          console.log("Files",req.files)
       try {
         if (!req.files || req.files.length === 0) {
           req.s3Urls = [];
@@ -47,7 +48,7 @@ const s3AssetUploader = (folder = "uploads/assets", fieldName = null, maxCount =
           req.s3Grouped = {};
           return next();
         }
-
+    console.log("Files",req.files)
         const uploads = await Promise.all(
           req.files.map(async (file) => {
             const ext = path.extname(file.originalname);
@@ -72,7 +73,7 @@ const s3AssetUploader = (folder = "uploads/assets", fieldName = null, maxCount =
             };
           })
         );
-
+     console.log("Upoads",uploads)
         // Flat URLs
         req.s3Urls = uploads.map(u => u.url);
         // Full metadata

@@ -10,6 +10,7 @@ const inspectionSubmissionRoutes = require("./inspectionSubmission.route")
 const driverRoutes = require('./driver.route')
 const companyRoutes = require('./company.route')
 const commonRoutes = require('./common/common')
+const documentRoutes=require('./douments.route')
 
 const router = express.Router();
 
@@ -27,6 +28,8 @@ router.use("/driver", driverRoutes)
 router.use("/company", companyRoutes)
 
 router.use("/common", commonRoutes)
+
+router.use("/uploads", documentRoutes )
 
 
 

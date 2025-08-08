@@ -45,11 +45,7 @@ const serviceEntrySchema = new mongoose.Schema(
       type: Number,
       enum: [0, 1, 2, 3],
     },
-    documents: [
-      {
-        type: String,
-      },
-    ],
+   documents: [{ type: String }],
     comments: {
       type: String,
       default: '',

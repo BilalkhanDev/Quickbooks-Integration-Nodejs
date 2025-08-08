@@ -18,7 +18,7 @@ const baseIssueFields = {
   assignedTo: Joi.string().optional().allow(''),
   dueDate: Joi.date().optional(),
   primaryMeterDue: Joi.number().optional(),
-  documents: Joi.array().items(Joi.string()).optional(),
+  documents: Joi.array().items(Joi.string()).optional().default([]),
 };
 
 const getIssueSchema = (mode = 'create') => {

@@ -60,9 +60,7 @@ const issueSchema = new mongoose.Schema(
         primaryMeterDue: {
             type: Number,
         },
-        documents: [{
-            type: String,
-        }],
+       documents: [{type:String}],
     },
     {
         timestamps: true,
