@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { USER_ROLES } = require('../shared/constants/role');
 
-// 🧱 Base fields
+// Common fields for auth validation (username, email, password, etc.)
 const baseAuthFields = {
   username: Joi.string()
     .max(50)
@@ -41,25 +41,22 @@ const baseAuthFields = {
     }),
 };
 
-// 🎯 getAuthSchema function
-const getAuthSchema = (mode = 'register') => {
-  switch (mode) {
-    case 'register':
-      return {
-        body: Joi.object(baseAuthFields),
-      };
+class AuthSchema {
+  register = {
 
-    case 'login':
-      return {
-        body: Joi.object({
-          email: baseAuthFields.email,
-          password: baseAuthFields.password,
-        }),
-      };
+    body: Joi.object(baseAuthFields),
 
-    default:
-      return {};
   }
-};
 
-module.exports = getAuthSchema;
+
+  login = {
+
+    body: Joi.object({
+      email: baseAuthFields.email,
+      password: baseAuthFields.password,
+    }),
+
+  }
+}
+
+module.exports = new AuthSchema();

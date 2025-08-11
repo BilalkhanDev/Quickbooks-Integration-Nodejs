@@ -1,42 +1,18 @@
 const mongoose = require('mongoose');
-const { paginate, search } = require('../../shared/plugin');
+const GenericModel = require('./generic.model');
+const equipmentSchema = new GenericModel().schema; 
 
-
-const equipmentSchema = mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    code: {
-      type: String,
-      trim: true,
-    },
-   
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
+equipmentSchema.add({
+  code: {
+    type: String,
+    trim: true,
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
-
-
-equipmentSchema.plugin(paginate);
-equipmentSchema.plugin(search)
-equipmentSchema.statics.isTitleTaken = async function (title, exclude) {
-  const result = await this.findOne({ title, _id: { $ne: exclude } });
-  return !!result;
-};
-
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 const Equipment = mongoose.model('Equipment', equipmentSchema);
 

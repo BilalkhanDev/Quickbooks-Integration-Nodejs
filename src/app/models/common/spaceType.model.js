@@ -1,47 +1,20 @@
 const mongoose = require('mongoose');
-const { paginate, search } = require('../../shared/plugin');
+const GenericModel = require('./generic.model');
 
+const spaceTypeSchema = new GenericModel().schema;
 
-const spaceTypesSchema = mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    los: { type: mongoose.Schema.ObjectId, ref: 'LOS' },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    loadTime: {
-      type: String,
-      required: true,
-
-    },
-    unloadTime: {
-      type: String,
-      required: true,
-    },
-
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
+spaceTypeSchema.add({
+  los: { type: mongoose.Schema.ObjectId, ref: 'LOS' },
+  loadTime: {
+    type: String,
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  unloadTime: {
+    type: String,
+    required: true,
+  },
+});
 
-spaceTypesSchema.plugin(paginate);
-spaceTypesSchema.plugin(search);
-spaceTypesSchema.statics.isTitleTaken = async function (title, excludeLOSId) {
-  const spaceType = await this.findOne({ title, _id: { $ne: excludeLOSId } });
-  return !!spaceType;
-};
-
-const SpaceType = mongoose.model('SpaceType', spaceTypesSchema);
+const SpaceType = mongoose.model('SpaceType', spaceTypeSchema);
 
 module.exports = SpaceType;

@@ -31,4 +31,4 @@ class InspectionService {
   }
 }
 
-module.exports = new InspectionService(); // singleton
+module.exports = new InspectionService(); 

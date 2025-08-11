@@ -1,13 +1,14 @@
 const multer = require("multer");
 const path = require("path");
 const crypto = require("crypto");
+const sharp = require("sharp"); // For image compression
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 require("dotenv").config();
 
 // Init S3 client
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
-  endpoint: process.env.AWS_S3_URL, 
+  endpoint: process.env.AWS_S3_URL,
   forcePathStyle: true,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -15,13 +16,23 @@ const s3 = new S3Client({
   },
 });
 
-// File type validation
+// File type validation and size check (5 MB)
 const fileFilter = (req, file, cb) => {
   const allowed = /jpeg|jpg|png|gif|pdf|doc|docx/;
   const extValid = allowed.test(path.extname(file.originalname).toLowerCase());
   const mimeValid = allowed.test(file.mimetype);
-  if (extValid && mimeValid) cb(null, true);
-  else cb(new Error("Only JPG, PNG, GIF, PDF, DOC, and DOCX allowed."));
+
+  // File size check (5 MB limit)
+  const fileSizeLimit = 5 * 1024 * 1024; // 5 MB
+  if (file.size > fileSizeLimit) {
+    return cb(new Error("File is too large. Max size is 5 MB."));
+  }
+
+  if (extValid && mimeValid) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only JPG, PNG, GIF, PDF, DOC, and DOCX allowed."));
+  }
 };
 
 // Multer with memory storage
@@ -32,33 +43,47 @@ const upload = multer({
 });
 
 const s3AssetUploader = (folder = "uploads/assets", fieldName = null, maxCount = 3) => {
-  const uploader = fieldName
-    ? upload.array(fieldName, maxCount)  
-    : upload.any();                      
+  const uploader = fieldName ? upload.array(fieldName, maxCount) : upload.any();
 
   return [
     uploader,
 
     async (req, res, next) => {
-          console.log("Files",req.files)
       try {
+        const documentType = req.body.documentType || "default"; // Default if not provided
+
         if (!req.files || req.files.length === 0) {
           req.s3Urls = [];
           req.s3Uploads = [];
           req.s3Grouped = {};
           return next();
         }
-    console.log("Files",req.files)
+
         const uploads = await Promise.all(
           req.files.map(async (file) => {
-            const ext = path.extname(file.originalname);
+            const ext = path.extname(file.originalname).toLowerCase();
             const fileName = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}${ext}`;
-            const key = `${folder}/${fileName}`;
+            const key = `${documentType}/${fileName}`; // Folder is based on documentType
+
+            // Log the original file size
+            console.log(`Original file size: ${file.size / 1024 / 1024} MB`);
+
+            // If the file is an image, compress it using Sharp
+            let buffer = file.buffer;
+            if ([".jpeg", ".jpg", ".png", ".gif"].includes(ext)) {
+              // Compress and resize the image
+              buffer = await sharp(file.buffer)
+                .resize(1024) // Resize image to max width of 1024px (you can adjust as needed)
+                .toBuffer(); // Compress and resize image
+
+              // Log the compressed file size
+              console.log(`Compressed file size: ${buffer.length / 1024 / 1024} MB`);
+            }
 
             const command = new PutObjectCommand({
               Bucket: process.env.AWS_S3_BUCKET_NAME,
               Key: key,
-              Body: file.buffer,
+              Body: buffer, // Use compressed image buffer
               ContentType: file.mimetype,
               ACL: "public-read",
             });
@@ -73,9 +98,11 @@ const s3AssetUploader = (folder = "uploads/assets", fieldName = null, maxCount =
             };
           })
         );
-     console.log("Upoads",uploads)
+
+        console.log("Uploads", uploads);
+
         // Flat URLs
-        req.s3Urls = uploads.map(u => u.url);
+        req.s3Urls = uploads.map((u) => u.url);
         // Full metadata
         req.s3Uploads = uploads;
         // Grouped by fieldName (for dynamic fields)
@@ -90,10 +117,8 @@ const s3AssetUploader = (folder = "uploads/assets", fieldName = null, maxCount =
         console.error("S3 upload error:", err);
         return res.status(500).json({ error: "File upload to S3 failed." });
       }
-    }
+    },
   ];
 };
 
 module.exports = s3AssetUploader;
-
-
