@@ -15,8 +15,7 @@ const customFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
   winston.format.errors({ stack: false }),
   winston.format.printf(({ timestamp, level, message, module, status, url, method }) => {
-    let logMessage = `${timestamp} [${module || 'GENERAL'}] ${level.toUpperCase()}:`;
-
+    let logMessage = `${timestamp} [${module || 'GENERAL'}] ${level && level?.toUpperCase() || "-"}:`;
     if (method && url) {
       logMessage += ` ${method} ${url}`;
     }

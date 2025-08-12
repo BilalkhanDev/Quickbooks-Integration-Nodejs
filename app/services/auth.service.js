@@ -26,6 +26,7 @@ class AuthService extends GenericService {
 
   // Authenticate user and generate tokens
   async authenticateUser(email, password) {
+
     const user = await this.findOne({ email });
     if (!user) {
       throw new ApiError('User not found');

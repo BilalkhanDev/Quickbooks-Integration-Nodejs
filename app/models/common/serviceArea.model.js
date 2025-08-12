@@ -1,16 +1,20 @@
+// servicearea.model.js
 const mongoose = require('mongoose');
-const GenericModel = require('./generic.model'); 
+const BaseModel = require('./base.model');  // Importing the generic class
 
-const serviceAreaSchema = new GenericModel().schema; 
+class ServiceAreaModel extends BaseModel {
+  constructor() {
+    super();
+    this.schema.add({
+      zipCodes: [
+        {
+          type: [String],
+        },
+      ],
+    });
+  }
+}
 
-serviceAreaSchema.add({
-  zipCodes: [
-    {
-      type: [String],
-    },
-  ],
-});
-
-const ServiceArea = mongoose.model('ServiceArea', serviceAreaSchema);
+const ServiceArea = mongoose.model('ServiceArea', new ServiceAreaModel().schema);
 
 module.exports = ServiceArea;

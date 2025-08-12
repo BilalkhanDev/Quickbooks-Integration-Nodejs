@@ -68,6 +68,7 @@ class FleetService {
 
 
   async update(id, data) {
+    console.log("Dat",data)
     return await Fleet.findByIdAndUpdate(id, data, { new: true });
   }
 

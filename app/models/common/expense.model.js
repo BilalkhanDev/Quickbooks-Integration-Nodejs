@@ -1,19 +1,24 @@
+// expense.model.js
 const mongoose = require('mongoose');
+const BaseModel = require('./base.model');  // Importing the generic class
 
-const ExpenseSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique:true,
-    
-  },
-  usage: {
-    type: Number,
-    default: 0
-  },
+class ExpenseModel extends BaseModel {
+  constructor() {
+    super();  
+    this.schema.add({
+      name: {
+        type: String,
+        required: true,
+        unique: true,
+      },
+      usage: {
+        type: Number,
+        default: 0
+      },
+    });
+  }
+}
 
-}, {
-  timestamps: true
-});
+const Expense = mongoose.model('Expense', new ExpenseModel().schema);
 
-module.exports = mongoose.model('Expense', ExpenseSchema);
+module.exports = Expense;

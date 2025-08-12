@@ -1,16 +1,20 @@
+// los.model.js
 const mongoose = require('mongoose');
-const GenericModel = require('./generic.model'); 
+const BaseModel = require('./base.model');  // Importing the generic class
 
-const losSchema = new GenericModel().schema; 
+class LOSModel extends BaseModel {
+  constructor() {
+    super();
+    this.schema.add({
+      profileImageURL: {
+        type: String,
+        required: false,
+        default: '',
+      },
+    });
+  }
+}
 
-losSchema.add({
-  profileImageURL: {
-    type: String,
-    required: false,
-    default: '',
-  },
-});
-
-const LOS = mongoose.model('LOS', losSchema);
+const LOS = mongoose.model('LOS', new LOSModel().schema);
 
 module.exports = LOS;

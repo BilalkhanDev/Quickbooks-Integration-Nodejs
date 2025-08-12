@@ -1,6 +1,6 @@
+// generic.model.js
 const mongoose = require('mongoose');
 const { paginate, search } = require('../../shared/plugin');
-
 
 class GenericCommonModel {
   constructor() {
@@ -29,7 +29,7 @@ class GenericCommonModel {
     this.schema.plugin(search);
   }
 
-  // Method to check if title is taken (can be used in any subclass)
+  // Static method to check if title is taken (can be used in any subclass)
   static async isTitleTaken(title, excludeId) {
     const result = await this.findOne({ title, _id: { $ne: excludeId } });
     return !!result;

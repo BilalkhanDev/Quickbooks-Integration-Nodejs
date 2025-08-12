@@ -1,19 +1,24 @@
+// equipment.model.js
 const mongoose = require('mongoose');
-const GenericModel = require('./generic.model');
-const equipmentSchema = new GenericModel().schema; 
+const BaseModel = require('./base.model');  // Importing the generic class
 
-equipmentSchema.add({
-  code: {
-    type: String,
-    trim: true,
-    required: true,
-  },
-  isActive: {
-    type: Boolean,
-    default: false,
-  },
-});
+class EquipmentModel extends BaseModel {
+  constructor() {
+    super();  
+    this.schema.add({
+      code: {
+        type: String,
+        trim: true,
+        required: true,
+      },
+      isActive: {
+        type: Boolean,
+        default: false,
+      },
+    });
+  }
+}
 
-const Equipment = mongoose.model('Equipment', equipmentSchema);
+const Equipment = mongoose.model('Equipment', new EquipmentModel().schema);
 
 module.exports = Equipment;

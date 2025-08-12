@@ -1,35 +1,41 @@
 // controllers/auth.controller.js
-const { default: HttpStatus } = require('http-status');
-const authService = require('../services/auth.service');
-const axios = require('axios');
 const catchAsync = require('../shared/core/utils/catchAsync');
-const jwt=require("jsonwebtoken")
+const { default: HttpStatus } = require('http-status');
+const jwt = require('jsonwebtoken');
+const BaseController = require('./base.controller');  
+const authService = require('../services/auth.service'); 
+const ApiError = require('../shared/core/exceptions/ApiError');
 
-exports.register = catchAsync(async (req, res) => {
-  const user = await authService.register(req.body);
-  res.status(HttpStatus.CREATED).json({ message: 'User created successfully', user });
-});
-
-exports.login = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const { accessToken, refreshToken, user } = await authService.authenticateUser(email, password);
-  res.status(HttpStatus.CREATED).json({ message: 'Login successful', accessToken, refreshToken, user });
-});
-
-exports.refreshAccessToken = catchAsync((req, res) => {
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Refresh token is required' });
+class AuthController extends BaseController {
+  constructor() {
+    super(authService);  
   }
+  register = catchAsync(async (req, res) => {
+    const user = this.create(req,res); 
+    return this.sendSuccessResponse(res, HttpStatus.OK, 'User profile fetched successfully', user);
+  });
 
-  const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-  const tokens = authService.generateTokens({ id: payload.id, role: payload.role });
+  login = catchAsync(async (req, res) => {
+    const { email, password } = req.body;
+    const { accessToken, refreshToken, user } = await this.service.authenticateUser(email, password);
+    return this.sendSuccessResponse(res, HttpStatus.OK, 'Login successful', { accessToken, refreshToken, user });
+  });
 
-  res.status(HttpStatus.OK).json(tokens);
-});
+  refreshAccessToken = catchAsync(async (req, res) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      throw new ApiError(res, HttpStatus.UNAUTHORIZED, 'Refresh token is required');
+    }
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const tokens = this.service.generateTokens({ id: payload?.id, role: payload?.role });
+     return this.sendSuccessResponse(res, HttpStatus.OK, 'Token refreshed successfully', tokens);
+  });
 
-exports.getProfile = catchAsync(async (req, res) => {
-    const userProfile = await authService.getProfile(req.user.id);
-    res.status(HttpStatus.OK).json(userProfile);
-   
-})
+  getProfile = catchAsync(async (req, res) => {
+    const userProfile = await this.service.getProfile(req.user.id);
+    return this.sendSuccessResponse(res, HttpStatus.OK, 'User profile fetched successfully', userProfile);
+ 
+  });
+}
+
+module.exports = new AuthController();
