@@ -64,7 +64,7 @@ const createModuleLogger = (moduleName) => {
     ]
   });
 
-  // Add an 'http' method to log HTTP-specific logs
+  // Make sure 'http' method is defined and works correctly
   moduleLogger.http = (message, meta = {}) => {
     return moduleLogger.info(message, { ...meta, level: 'http' });  // Use info level, with custom 'http' label
   };

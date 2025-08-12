@@ -1,5 +1,5 @@
 const { default: HttpStatus } = require('http-status');
-const loggerFactory = require('../../config/logger.config');
+const loggerFactory = require('../config/logger.config');
 const ApiError = require('../shared/core/exceptions/ApiError');
 
 const errorHandler = (err, req, res, next) => {
