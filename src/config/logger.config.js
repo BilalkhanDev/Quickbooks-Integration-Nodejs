@@ -1,3 +1,4 @@
+// logger.config.js
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const path = require('path');
@@ -15,17 +16,17 @@ const customFormat = winston.format.combine(
   winston.format.errors({ stack: false }),
   winston.format.printf(({ timestamp, level, message, module, status, url, method }) => {
     let logMessage = `${timestamp} [${module || 'GENERAL'}] ${level.toUpperCase()}:`;
-    
+
     if (method && url) {
       logMessage += ` ${method} ${url}`;
     }
-    
+
     if (status) {
       logMessage += ` [${status}]`;
     }
-    
+
     logMessage += ` ${message}`;
-    
+
     return logMessage;
   })
 );
@@ -62,6 +63,11 @@ const createModuleLogger = (moduleName) => {
       })
     ]
   });
+
+  // Add an 'http' method to log HTTP-specific logs
+  moduleLogger.http = (message, meta = {}) => {
+    return moduleLogger.info(message, { ...meta, level: 'http' });  // Use info level, with custom 'http' label
+  };
 
   // Add module name to all log entries
   const originalLog = moduleLogger.log;
