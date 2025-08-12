@@ -1,42 +1,46 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
-const GenericService=require('../services/generic.service')
+const GenericService = require('../services/generic.service');
+const { TokenProvider, PaswordHasher } = require('../security');
+
 class AuthService extends GenericService {
   constructor() {
     super(User); 
   }
-  async create({ email, password }) {
-    const existingUser = await this.findOne({ email }); 
+
+  // Register user
+  async register({ email, password }) {
+    const existingUser = await this.findOne({ email });
     if (existingUser) {
       throw new ApiError('User already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    // Use PasswordHasher to hash the password
+    const hashedPassword = await PaswordHasher.hash(password); // Password hashing logic encapsulated in PasswordHasher
     return await this.create({ 
       email,
       password: hashedPassword,
     });
   }
 
+  // Authenticate user and generate tokens
   async authenticateUser(email, password) {
     const user = await this.findOne({ email });
     if (!user) {
       throw new ApiError('User not found');
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    // Use PasswordHasher to compare the password
+    const isMatch = await PaswordHasher.compare(password, user.password); // Password comparison logic encapsulated in PasswordHasher
     if (!isMatch) {
       throw new ApiError('Invalid credentials');
     }
 
+    // Generate tokens after successful authentication
     const payload = { id: user.id, role: user.role };
-
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '3d' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+    const accessToken = TokenProvider.generateAccessToken(payload);
+    const refreshToken = TokenProvider.generateRefreshToken(payload);
 
     return {
       accessToken,
@@ -49,6 +53,7 @@ class AuthService extends GenericService {
     };
   }
 
+  // Get user profile
   async getProfile(userId) {
     const user = await this.findById(userId);
     if (!user) {
@@ -65,9 +70,10 @@ class AuthService extends GenericService {
     };
   }
 
+  // Generate access and refresh tokens using TokenProvider
   generateTokens(payload) {
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+    const accessToken = TokenProvider.generateAccessToken(payload);
+    const refreshToken = TokenProvider.generateRefreshToken(payload);
     return { accessToken, refreshToken };
   }
 }

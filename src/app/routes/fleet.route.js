@@ -15,6 +15,7 @@ router
   .route('/:id')
   .get(useAuth,validate(getFleetSchema, 'getById'),fleetController.getById)
   .put(useAuth,validate(getFleetSchema, 'update'),fleetController.update)
+  .patch(useAuth,validate(getFleetSchema, 'updateDriver'),fleetController.update)
   .delete(useAuth,validate(getFleetSchema, 'delete'),fleetController.remove);
 
 module.exports = router;

@@ -49,6 +49,16 @@ const getFleetSchema = (mode = 'create') => {
           )
         ),
       };
+      case 'updateDriver':
+      return {
+        params: Joi.object({
+          id: objectId().required(),
+        }),
+        body: Joi.object({
+          assigned_driver:objectId().required()
+        }),
+      };
+
 
     case 'delete':
     case 'getById':

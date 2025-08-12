@@ -4,8 +4,9 @@ const authService = require('../services/auth.service');
 const axios = require('axios');
 const catchAsync = require('../shared/core/utils/catchAsync');
 const jwt=require("jsonwebtoken")
+
 exports.register = catchAsync(async (req, res) => {
-  const user = await authService.create(req.body);
+  const user = await authService.register(req.body);
   res.status(HttpStatus.CREATED).json({ message: 'User created successfully', user });
 });
 
