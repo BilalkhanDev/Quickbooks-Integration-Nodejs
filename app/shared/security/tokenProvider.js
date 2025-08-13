@@ -1,7 +1,7 @@
 // src/security/token-provider.js
 
 const jwt = require('jsonwebtoken');
-const ApiError = require('../shared/core/exceptions/ApiError');
+const ApiError = require('../core/exceptions/ApiError');
 
 class TokenProvider {
   #accessSecret; 

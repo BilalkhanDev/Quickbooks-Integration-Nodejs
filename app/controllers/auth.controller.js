@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const BaseController = require('./base.controller');  
 const authService = require('../services/auth.service'); 
 const ApiError = require('../shared/core/exceptions/ApiError');
+const tokenProvider = require('../shared/security/tokenProvider');
 
 class AuthController extends BaseController {
   constructor() {
@@ -21,15 +22,26 @@ class AuthController extends BaseController {
     return this.sendSuccessResponse(res, HttpStatus.OK, 'Login successful', { accessToken, refreshToken, user });
   });
 
-  refreshAccessToken = catchAsync(async (req, res) => {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      throw new ApiError(res, HttpStatus.UNAUTHORIZED, 'Refresh token is required');
-    }
-    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const tokens = this.service.generateTokens({ id: payload?.id, role: payload?.role });
-     return this.sendSuccessResponse(res, HttpStatus.OK, 'Token refreshed successfully', tokens);
+ refreshAccessToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    throw new ApiError(res, HttpStatus.UNAUTHORIZED, 'Refresh token is required');
+  }
+
+  const payload = tokenProvider.verifyRefreshToken(refreshToken);
+
+  const tokens = await this.service.generateTokens({
+    id: payload?.id,
+    role: payload?.role
   });
+
+  return res.status(HttpStatus.OK).json({
+    status: 'success',
+    message: 'Token refreshed successfully',
+    data: tokens
+  });
+});
 
   getProfile = catchAsync(async (req, res) => {
     const userProfile = await this.service.getProfile(req.user.id);

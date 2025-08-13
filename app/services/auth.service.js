@@ -2,7 +2,7 @@ const { User } = require('../models');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
 const GenericService = require('../services/generic.service');
-const { TokenProvider, PaswordHasher } = require('../security');
+const { TokenProvider, PaswordHasher } = require('../shared/security');
 
 class AuthService extends GenericService {
   constructor() {
