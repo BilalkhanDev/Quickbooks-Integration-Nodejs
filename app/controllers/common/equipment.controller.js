@@ -1,42 +1,27 @@
-const { default: HttpStatus } = require('http-status');
 const equipmentService = require('../../services/common/equipment.service');
 const pick = require('../../shared/core/utils/pick');
 const catchAsync = require('../../shared/core/utils/catchAsync');
+const BaseController = require('../base.controller');
 
-
-exports.create = catchAsync(async (req, res) => {
-  const result = await equipmentService.create(req.body);
-  res.status(HttpStatus.CREATED).send(result);
-
-});
-
-exports.getById = catchAsync(async (req, res) => {
-
-  const result = await equipmentService.getById(req.params.id);
-  if (!result) {
-    return res.status(HttpStatus.NOT_FOUND).json({ error: 'Addon not found' });
+class EquipmentController extends BaseController {
+  constructor() {
+    super(equipmentService);
   }
-  res.send(result);
 
-});
-
-exports.getAll = catchAsync(async (req, res) => {
+  getAll = catchAsync(async (req, res) => {
   const queryParams = pick(req.query, ['search', 'role', 'isActive']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await equipmentService.getAll(queryParams, options);
-  res.send(result);
+  const result = await this.service.getAll(queryParams, options);
+  return this.sendSuccessResponse(res, HttpStatus.OK,"Succes", result);
 
 })
 
-exports.update = catchAsync(async (req, res) => {
-  const result = await equipmentService.update(req.params.id, req.body);
-  res.send(result);
+}
+module.exports = new EquipmentController();
 
-});
 
-exports.remove = catchAsync(async (req, res) => {
 
-  const result = await equipmentService.update(req.params.id, req.body);
-  res.send(result);
 
-});
+
+
+

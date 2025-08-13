@@ -18,7 +18,7 @@ router
   .route('/:id')
   .put(useAuth,   expenseController.update)
   .get(useAuth,  expenseController.getById)
-  .delete(useAuth,  expenseController.remove)
+  .delete(useAuth,  expenseController.delete)
 
 
 

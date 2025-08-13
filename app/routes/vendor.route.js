@@ -26,7 +26,7 @@ router
   .delete(
     useAuth,
     validate(getVendorSchema, 'delete'),  
-    vendorController.remove
+    vendorController.delete
   );
 
 

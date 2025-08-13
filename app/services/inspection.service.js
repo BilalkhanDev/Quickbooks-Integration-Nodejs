@@ -1,34 +1,14 @@
 // services/inspection.service.js
+const { Inspection } = require('../models');
+const GenericService = require('./generic.service');
 
-const { Inspection } = require("../models");
-
-
-class InspectionService {
-  async getAll() {
-    return await Inspection.find().lean();
+class InspectionService extends GenericService {
+  constructor() {
+    super(Inspection); 
   }
-
   async getNames() {
-    const data = await Inspection.find({}, { name: 1, _id: 1 }).lean();
-    return data
-  }
-
-  async getById(inspectionId) {
-    return await Inspection.findById(inspectionId).lean();
-  }
-
-  async create(data) {
-    const inspection = new Inspection(data);
-    return await inspection.save();
-  }
-
-  async update(inspectionId, updateData) {
-    return await Inspection.findByIdAndUpdate(
-      inspectionId,
-      { $set: updateData },
-      { new: true }
-    ).lean();
+    return await this.model.find({}, { name: 1, _id: 1 }).lean();
   }
 }
 
-module.exports = new InspectionService(); 
+module.exports = new InspectionService();

@@ -13,7 +13,7 @@ router
   .route('/:id')
   .put(useAuth,  fleetStatusController.update)
   .get(useAuth,  fleetStatusController.getById)
-  .delete(useAuth,  fleetStatusController.remove)
+  .delete(useAuth,  fleetStatusController.delete)
 
 
 router.delete('/delete',

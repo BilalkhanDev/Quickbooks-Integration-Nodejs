@@ -1,7 +1,12 @@
 const { default: HttpStatus } = require('http-status');
 const { LOS } = require('../../models');
 const ApiError = require('../../shared/core/exceptions/ApiError');
-class LOSService {
+const GenericService = require('../generic.service');
+class LOSService extends GenericService {
+  constructor() {
+    super(LOS)
+  }
+
   async create(req) {
     const { s3Urls = [], body } = req;
 
@@ -10,7 +15,7 @@ class LOSService {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title is required');
     }
 
-    const isDuplicate = await LOS.isTitleTaken(title);
+    const isDuplicate = await this.model.isTitleTaken(title);
     if (isDuplicate) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
@@ -21,23 +26,20 @@ class LOSService {
       profileImageURL: s3Urls[0] || '',
     };
 
-    return LOS.create(payload);
+    return this.model.create(payload);
   }
 
   async getAll(queryParams, options) {
     let { search, ...filter } = queryParams;
-    const searchFilter = await LOS.search({ search });
+    const searchFilter = await this.model.search({ search });
 
     if (searchFilter && Object.keys(searchFilter).length > 0) {
       filter = { ...filter, ...searchFilter };
     }
 
-    return LOS.paginate(filter, options);
+    return this.model.paginate(filter, options);
   }
 
-  async getSingle(id) {
-    return LOS.findById(id);
-  }
 
   async update(req) {
     const { body: updateBody = {}, s3Urls, params } = req;
@@ -49,7 +51,7 @@ class LOSService {
 
     if (
       updateBody.title &&
-      (await LOS.isTitleTaken(updateBody.title.trim(), params.id))
+      (await this.model.isTitleTaken(updateBody.title.trim(), params.id))
     ) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
@@ -62,16 +64,6 @@ class LOSService {
     });
 
     await los.save();
-    return los;
-  }
-
-  async remove(losId) {
-    const los = await this.getSingle(losId);
-    if (!los) {
-      throw new Error(HttpStatus.NOT_FOUND, 'LOS not found');
-    }
-
-    await los.remove();
     return los;
   }
 }

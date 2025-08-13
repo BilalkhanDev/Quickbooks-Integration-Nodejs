@@ -18,6 +18,6 @@ router
 router
   .route('/:id')
   .put(useAuth, fuelTypeController.update)
-  .delete(useAuth,  fuelTypeController.remove);
+  .delete(useAuth,  fuelTypeController.delete);
 
 module.exports = router;

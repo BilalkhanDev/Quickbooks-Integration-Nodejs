@@ -13,7 +13,7 @@ router
 router
   .route('/:id')
   .put(useAuth, typeController.update)
-  .delete(useAuth,  typeController.remove)
+  .delete(useAuth,  typeController.delete)
 
 
 router.delete('/delete',

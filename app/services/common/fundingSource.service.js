@@ -1,17 +1,22 @@
 const { default: HttpStatus } = require('http-status');
 const { FundingSource } = require('../../models');
 const ApiError = require('../../shared/core/exceptions/ApiError');
+const GenericService = require('../generic.service');
 
-class FundingSourceService {
+class FundingSourceService  extends GenericService {
+  constructor() {
+    super(FundingSource)
+  }
+
   async create(req) {
     const { s3Urls = [], body } = req;
     const title = body?.title?.trim();
 
     if (!title) {
-      throw new Error(HttpStatus.BAD_REQUEST, 'Title is required');
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Title is required');
     }
 
-    const isDuplicate = await FundingSource.isTitleTaken(title);
+    const isDuplicate = await this.model.isTitleTaken(title);
     if (isDuplicate) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
@@ -22,27 +27,25 @@ class FundingSourceService {
       profileImageURL: s3Urls[0] || '',
     };
 
-    return FundingSource.create(payload);
+    return this.model.create(payload);
   }
 
   async getAll(queryParams, options) {
     let { search, ...filter } = queryParams;
-    const searchFilter = await FundingSource.search({ search });
+    const searchFilter = await this.model.search({ search });
 
     if (searchFilter && Object.keys(searchFilter).length > 0) {
       filter = { ...filter, ...searchFilter };
     }
 
-    return FundingSource.paginate(filter, options);
+    return this.model.paginate(filter, options);
   }
 
-  async getSingle(id) {
-    return FundingSource.findById(id);
-  }
+ 
 
   async update(req) {
     const { body: updateBody = {}, s3Urls, params } = req;
-    const fs = await this.getSingle(params.id);
+    const fs = await this.model.findById(params.id);
 
     if (!fs) {
       throw new ApiError(HttpStatus.NOT_FOUND, 'Funding Source not found');
@@ -50,7 +53,7 @@ class FundingSourceService {
 
     if (
       updateBody.title &&
-      (await FundingSource.isTitleTaken(updateBody.title.trim(), params.id))
+      (await this.model.isTitleTaken(updateBody.title.trim(), params.id))
     ) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
@@ -65,15 +68,7 @@ class FundingSourceService {
     return fs;
   }
 
-  async delete(id) {
-    const result = await this.getSingle(id);
-    if (!result) {
-      throw new ApiError(HttpStatus.NOT_FOUND, 'Fundingsource not found');
-    }
 
-    await result.remove();
-    return result;
-  }
 }
 
 module.exports = new FundingSourceService();

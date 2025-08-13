@@ -1,4 +1,3 @@
-// services/fleetSpecification.service.js
 const { Specification } = require('../models');
 const dimensionModel = require('../models/specification/dimension.model');
 const engineModel = require('../models/specification/engine.model');
@@ -8,9 +7,11 @@ const weightModel = require('../models/specification/weight.model');
 const wheelModel = require('../models/specification/wheel.model');
 const transmissionModel = require('../models/specification/trasmission.model');
 const ApiError = require('../shared/core/exceptions/ApiError');
+const GenericService = require('./generic.service');
 
-class FleetSpecificationService {
+class FleetSpecificationService extends GenericService {
   constructor() {
+    super(Specification);
     this.subModels = {
       engine: engineModel,
       wheel: wheelModel,
@@ -26,7 +27,7 @@ class FleetSpecificationService {
     if (!data) return existingSubId;
 
     if (existingSubId) {
-      return await model.findByIdAndUpdate(existingSubId, data, { new: true });
+      return model.findByIdAndUpdate(existingSubId, data, { new: true });
     }
 
     const newSub = new model(data);
@@ -39,7 +40,7 @@ class FleetSpecificationService {
       throw new ApiError(400, 'Fleet ID is required');
     }
 
-    const existingFleetSpec = await Specification.findOne({ fleetId });
+    const existingFleetSpec = await this.model.findOne({ fleetId });
     const updates = {};
 
     for (const key of Object.keys(this.subModels)) {
@@ -52,19 +53,18 @@ class FleetSpecificationService {
     let updated;
 
     if (!existingFleetSpec) {
-      const newFleetSpec = new Specification({ fleetId, ...updates });
+      const newFleetSpec = new this.model({ fleetId, ...updates });
       await newFleetSpec.save();
-      updated = await Specification.findById(newFleetSpec._id).populate(Object.keys(this.subModels));
+      updated = await this.model.findById(newFleetSpec._id).populate(Object.keys(this.subModels));
     } else {
-      updated = await Specification.findOneAndUpdate({ fleetId }, updates, { new: true })
-        .populate(Object.keys(this.subModels));
+      updated = await this.model.findOneAndUpdate({ fleetId }, updates, { new: true }).populate(Object.keys(this.subModels));
     }
 
     return updated;
   }
 
   async getFleetSpec(fleetId) {
-    const specs = await Specification.find({ fleetId })
+    const specs = await this.model.find({ fleetId })
       .populate('engine')
       .populate('wheel')
       .populate('transmission')

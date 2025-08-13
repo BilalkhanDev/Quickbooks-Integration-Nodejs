@@ -1,40 +1,41 @@
 const { default: HttpStatus } = require('http-status');
 const { ServiceArea } = require('../../models');
 const ApiError = require('../../shared/core/exceptions/ApiError');
-class ServiceAreaService {
+const GenericService = require('../generic.service');
+class ServiceAreaService extends GenericService {
+  constructor() {
+    super(ServiceArea)
+  }
   async create(userBody) {
     const title = userBody.title?.trim();
-    if (await ServiceArea.isTitleTaken(title)) {
+    if (await this.model.isTitleTaken(title)) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
 
-    return ServiceArea.create({ ...userBody, title });
+    return this.model.create({ ...userBody, title });
   }
 
   async getAll(queryParams, options) {
     let { search, ...filter } = queryParams;
-    const searchFilter = await ServiceArea.search({ search });
+    const searchFilter = await this.model.search({ search });
 
     if (searchFilter && Object.keys(searchFilter).length > 0) {
       filter = { ...filter, ...searchFilter };
     }
 
-    return ServiceArea.paginate(filter, options);
+    return this.model.paginate(filter, options);
   }
 
-  async getById(id) {
-    return ServiceArea.findById(id);
-  }
-
+  
   async update(id, updateBody) {
-    const serviceArea = await this.getById(id);
+    const serviceArea = await this.model.findById(id);
     if (!serviceArea) {
       throw new ApiError(HttpStatus.NOT_FOUND, 'ServiceArea not found');
     }
 
     if (
       updateBody.title &&
-      (await ServiceArea.isTitleTaken(updateBody.title.trim(), id))
+      (await this.model.isTitleTaken(updateBody.title.trim(), id))
     ) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
@@ -48,15 +49,6 @@ class ServiceAreaService {
     return serviceArea;
   }
 
-  async remove(id) {
-    const serviceArea = await this.getById(id);
-    if (!serviceArea) {
-      throw new ApiError(HttpStatus.NOT_FOUND, 'ServiceArea not found');
-    }
-
-    await serviceArea.remove();
-    return serviceArea;
-  }
 }
 
 module.exports = new ServiceAreaService();

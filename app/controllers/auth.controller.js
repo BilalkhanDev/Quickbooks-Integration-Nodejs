@@ -1,7 +1,6 @@
 // controllers/auth.controller.js
 const catchAsync = require('../shared/core/utils/catchAsync');
 const { default: HttpStatus } = require('http-status');
-const jwt = require('jsonwebtoken');
 const BaseController = require('./base.controller');  
 const authService = require('../services/auth.service'); 
 const ApiError = require('../shared/core/exceptions/ApiError');
@@ -11,15 +10,17 @@ class AuthController extends BaseController {
   constructor() {
     super(authService);  
   }
+  
   register = catchAsync(async (req, res) => {
     const user = this.create(req,res); 
     return this.sendSuccessResponse(res, HttpStatus.OK, 'User profile fetched successfully', user);
   });
 
+  
   login = catchAsync(async (req, res) => {
     const { email, password } = req.body;
-    const { accessToken, refreshToken, user } = await this.service.authenticateUser(email, password);
-    return this.sendSuccessResponse(res, HttpStatus.OK, 'Login successful', { accessToken, refreshToken, user });
+    const { accessToken, refreshToken } = await this.service.authenticateUser(email, password);
+    return this.sendSuccessResponse(res, HttpStatus.OK, 'Login successful', { accessToken, refreshToken });
   });
 
  refreshAccessToken = catchAsync(async (req, res) => {
@@ -35,12 +36,7 @@ class AuthController extends BaseController {
     id: payload?.id,
     role: payload?.role
   });
-
-  return res.status(HttpStatus.OK).json({
-    status: 'success',
-    message: 'Token refreshed successfully',
-    data: tokens
-  });
+ return this.sendSuccessResponse(res, HttpStatus.OK, 'Token refreshed successfully', tokens);
 });
 
   getProfile = catchAsync(async (req, res) => {

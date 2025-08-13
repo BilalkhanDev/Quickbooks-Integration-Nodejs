@@ -1,47 +1,36 @@
 // controllers/fleet.controller.js
+const HttpStatus = require('http-status').default;
+const BaseController = require('./base.controller');
+const fleetService = require('../services/fleet.service');
 const catchAsync = require('../shared/core/utils/catchAsync');
 const pick = require('../shared/core/utils/pick');
-const fleetService = require('../services/fleet.service');
-const { default: HttpStatus } = require('http-status');
 
-exports.create = catchAsync(async (req, res) => {
-  const fleet = await fleetService.create(req);
-  res.status(HttpStatus.CREATED).json(fleet);
-});
-
-exports.getAll = catchAsync(async (req, res) => {
-  const userId = req.user.id;
-  const queryParams = pick(req.query, ['search', 'status', 'type', 'group', 'assigned']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const fleets = await fleetService.getAll(queryParams, options, userId);
-  res.status(HttpStatus.OK).json(fleets);
-});
-
-exports.getFleetSpec = catchAsync(async (req, res) => {
-  const fleets = await fleetService.getFleetSpec(req);
-  res.status(HttpStatus.OK).json(fleets);
-});
-
-exports.getById = catchAsync(async (req, res) => {
-  const fleet = await fleetService.getById(req.params.id);
-  if (!fleet) {
-    return res.status(HttpStatus.NOT_FOUND).json({ message: 'Fleet not found' });
+class FleetController extends BaseController {
+  constructor() {
+    super(fleetService);
   }
-  res.status(HttpStatus.OK).json(fleet);
-});
 
-exports.update = catchAsync(async (req, res) => {
-  const fleet = await fleetService.update(req.params.id, req.body);
-  if (!fleet) {
-    return res.status(HttpStatus.NOT_FOUND).json({ message: 'Fleet not found' });
-  }
-  res.status(HttpStatus.OK).json(fleet);
-});
+  create = catchAsync(async (req, res) => {
+    const fleet = await this.service.create(req);
+    return this.sendSuccessResponse(res, HttpStatus.CREATED,fleet);
+  });
 
-exports.remove = catchAsync(async (req, res) => {
-  const deleted = await fleetService.deleteById(req.params.id);
-  if (!deleted) {
-    return res.status(HttpStatus.NOT_FOUND).json({ message: 'Fleet not found' });
-  }
-  res.status(HttpStatus.OK).json({ message: 'Fleet deleted successfully' });
-});
+  // Override: custom query param filtering
+  getAll = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const queryParams = pick(req.query, ['search', 'status', 'type', 'group', 'assigned']);
+    const options = pick(req.query, ['sortBy', 'limit', 'page']);
+    const fleets = await this.service.getAll(queryParams, options, userId);
+    return this.sendSuccessResponse(res, HttpStatus.OK, 'Fleets fetched', fleets);
+  });
+
+  // Custom method
+  getFleetSpec = catchAsync(async (req, res) => {
+    const fleets = await this.service.getFleetSpec(req);
+    return this.sendSuccessResponse(res, HttpStatus.OK, 'Fleet specs fetched', fleets);
+  });
+
+}
+
+// Export a singleton instance
+module.exports = new FleetController();

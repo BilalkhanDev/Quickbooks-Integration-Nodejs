@@ -1,45 +1,46 @@
-
 const { Documents } = require("../models");
-const ApiError = require("../shared/core/exceptions/ApiError");
+const GenericService = require("./generic.service");
 
-class DocumentService {
-    async add(req) {
-        if (req?.s3Urls.length > 0) {
-            const documents = await Promise.all(
-                req.s3Urls.map(async (url) => {  // Make sure the map is async
-                    const document = await new Documents({
-                        user: req.user.id,
-                        documentUrl: url,
-                        documentType: req.body.documentType,
-                    }).save();
-                    return document;  // Return the saved document
-                })
-            );
+class DocumentService extends GenericService {
+  constructor() {
+    super(Documents);
+  }
 
-            return documents;  // Return the array of saved documents
-        } else {
-            return [];  // If no files, return an empty array
-        }
+  async create(req) {
+    if (req?.s3Urls?.length > 0) {
+      const documents = await Promise.all(
+        req.s3Urls.map(async (url) => {
+          const document = await new this.model({
+            user: req.user.id,
+            documentUrl: url,
+            documentType: req.body.documentType,
+          }).save();
+          return document;
+        })
+      );
+      return documents;
     }
-    async getAll(queryParams, options, userId) {
-        let { search, documentType,...filter } = queryParams;
-        const searchFilter = await Documents.search({ search ,documentType});
+    return [];
+  }
 
-        if (searchFilter && Object.keys(searchFilter).length > 0) {
-            filter = { ...filter, ...searchFilter };
-        }
-        let finalFilter = { user: userId };
-        if (searchFilter && Object.keys(searchFilter).length > 0) {
-            finalFilter = { $and: [{ user: userId }, filter, searchFilter] };
-        } else if (Object.keys(filter).length > 0) {
-            finalFilter = { $and: [{ user: userId }, filter] };
-        }
+  async getAll(queryParams, options, userId) {
+    let { search, documentType, ...filter } = queryParams;
+    const searchFilter = await this.model.search({ search, documentType });
 
-        const results = await Documents.paginate(finalFilter, options);
-        return results
-
+    if (searchFilter && Object.keys(searchFilter).length > 0) {
+      filter = { ...filter, ...searchFilter };
     }
 
+    let finalFilter = { user: userId };
+    if (searchFilter && Object.keys(searchFilter).length > 0) {
+      finalFilter = { $and: [{ user: userId }, filter, searchFilter] };
+    } else if (Object.keys(filter).length > 0) {
+      finalFilter = { $and: [{ user: userId }, filter] };
+    }
+
+    const results = await this.model.paginate(finalFilter, options);
+    return results;
+  }
 }
 
 module.exports = new DocumentService();

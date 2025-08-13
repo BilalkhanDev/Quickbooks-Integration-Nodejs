@@ -1,10 +1,17 @@
-const ApiError = require('../shared/core/exceptions/ApiError');
+// services/issue.service.js
 const { Issue, ServiceEntry } = require('../models');
+const GenericService = require('./generic.service');
+const ApiError = require('../shared/core/exceptions/ApiError');
 
-class IssueService {
+class IssueService extends GenericService {
+  constructor() {
+    super(Issue);
+  }
+
   async create(req) {
     const data = req.body;
     const userId = req.user.id;
+
     const serviceEntry = await ServiceEntry.findById(data.service);
     if (!serviceEntry) {
       throw new ApiError(`ServiceEntry with ID ${data.service} not found.`);
@@ -15,53 +22,15 @@ class IssueService {
       user: userId,
     };
 
-    const issue = new Issue(payload);
+    const issue = new this.model(payload);
     await issue.save();
     return issue;
   }
 
-  async getById(issueId) {
-    const issue = await Issue.findById(issueId);
-    if (!issue) {
-      throw new ApiError(`Issue with ID ${issueId} not found`);
-    }
-    return issue;
-  }
-
-  async getAll(filter = {}) {
-    return await Issue.find(filter);
-  }
-
   async getByServiceId(serviceId) {
-    return await Issue.find({ service: serviceId });
+    return await this.model.find({ service: serviceId });
   }
 
-  async update(req) {
-    const { issueId } = req.params;
-    const data = req.body;
-    const userId = req.user.id;
-
-
-    const payload = {
-      ...data,
-      user: userId,
-    };
-    const updated = await Issue.findByIdAndUpdate(issueId, payload, { new: true });
-
-    if (!updated) {
-      throw new ApiError(`Issue with ID ${issueId} not found`);
-    }
-
-    return updated;
-  }
-
-  async delete(issueId) {
-    const deleted = await Issue.findByIdAndDelete(issueId);
-    if (!deleted) {
-      throw new ApiError(`Issue with ID ${issueId} not found`);
-    }
-    return deleted;
-  }
 }
 
 module.exports = new IssueService();

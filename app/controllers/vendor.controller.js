@@ -1,42 +1,38 @@
-const { default: HttpStatus } = require('http-status');
-const vendorService = require('../services/vendor.service');
+// controllers/vendor.controller.js
+
+const HttpStatus = require('http-status').default;
 const catchAsync = require('../shared/core/utils/catchAsync');
 const pick = require('../shared/core/utils/pick');
+const vendorService = require('../services/vendor.service');
+const BaseController = require('./base.controller');
 
-
-exports.create = catchAsync(async (req, res) => {
-  const vendor = await vendorService.create(req.body);
-  res.status(HttpStatus.CREATED).json(vendor);
-});
-
-exports.getAll = catchAsync(async (req, res) => {
-  const queryParams = pick(req.query, ['search', 'classification', 'isActive']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const paginatedData = await vendorService.getAll(queryParams, options,);
-  res.status(HttpStatus.OK).json(paginatedData);
-});
-exports.getById = catchAsync(async (req, res) => {
-  console.log(req.body)
-  const vendor = await vendorService.getById(req.params.id);
-  res.status(HttpStatus.OK).json(vendor);
-});
-exports.update = catchAsync(async (req, res) => {
-  const vendor = await vendorService.update(req.params.id, req.body);
-  res.status(HttpStatus.OK).json(vendor);
-});
-
-exports.remove = catchAsync(async (req, res) => {
-  await vendorService.delete(req.params.id);
-  res.status(HttpStatus.OK).json({ message: 'Deleted successfully' });
-});
-
-exports.bulkDelete = catchAsync(async (req, res) => {
-  const ids = req.body;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    return res.status(HttpStatus.BAD_REQUEST).json({ error: 'No IDs provided for deletion.' });
+class VendorController extends BaseController {
+  constructor() {
+    super(vendorService);
   }
 
-  await vendorService.bulkDelete(ids);
-  res.status(HttpStatus.OK).json({ message: 'Bulk delete successful' });
-});
+  getAll = catchAsync(async (req, res) => {
+    const queryParams = pick(req.query, ['search', 'classification', 'isActive']);
+    const options = pick(req.query, ['sortBy', 'limit', 'page']);
+
+    const paginatedData = await this.service.getAll(queryParams, options);
+
+    return this.sendSuccessResponse(res, HttpStatus.OK, 'Vendors fetched successfully', paginatedData);
+  });
+
+  bulkDelete = catchAsync(async (req, res) => {
+    const ids = req.body;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return this.sendErrorResponse(res, HttpStatus.BAD_REQUEST, 'No IDs provided for deletion.');
+    }
+
+    await this.service.bulkDelete(ids);
+
+    return this.sendSuccessResponse(res,HttpStatus.OK, 'Bulk delete successful');
+  });
+
+  // create, getById, update, remove are inherited from BaseController
+}
+
+module.exports = new VendorController();

@@ -1,19 +1,14 @@
-const ApiError = require("../shared/core/exceptions/ApiError");
-const { ServiceEntry } = require("../models");
-const mongoose = require("mongoose")
-class ServiceEntryService {
-  async create(req) {
-    // const documentUrls = req?.s3Urls || [];
-    const user = req.user.id;
+// services/serviceEntry.service.js
+const mongoose = require('mongoose');
+const { ServiceEntry } = require('../models');
+const ApiError = require('../shared/core/exceptions/ApiError');
+const GenericService = require('./generic.service');
 
-    const newEntry = await ServiceEntry.create({
-      ...req.body,
-      user,
-      // documents: documentUrls,
-    });
-
-    return newEntry;
+class ServiceEntryService extends GenericService {
+  constructor() {
+    super(ServiceEntry);
   }
+
 
   async getByFleetId(queryParams, options, userId, fleetId) {
     if (!fleetId || !mongoose.Types.ObjectId.isValid(fleetId)) {
@@ -22,8 +17,10 @@ class ServiceEntryService {
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       throw new ApiError('Invalid User ID');
     }
+
     const { search, ...filter } = queryParams;
-    const searchFilter = await ServiceEntry.search({ search });
+
+    const searchFilter = await this.model.search?.({ search }); // Optional static method
     let finalFilter = {
       fleet: new mongoose.Types.ObjectId(fleetId),
       user: new mongoose.Types.ObjectId(userId),
@@ -48,37 +45,43 @@ class ServiceEntryService {
       };
     }
 
-    const result = await ServiceEntry.paginate(finalFilter, {
+    const result = await this.model.paginate(finalFilter, {
       ...options,
-      populate: 'issuesCount vendor', // Populate 'issues' and 'vendor'
+      populate: 'issuesCount vendor',
     });
 
     return result;
   }
 
   async getById(id, userId) {
- 
-    const entry = await ServiceEntry.findOne({
+    const entry = await this.model.findOne({
       _id: id,
       user: userId,
     })
-      .populate('vendor', '_id, name')
+      .populate('vendor', '_id name')
       .populate('issues', '-fleetId');
 
-    if (!entry) throw new ApiError('Service entry not found or unauthorized');
+    if (!entry) {
+      throw new ApiError('Service entry not found or unauthorized');
+    }
+
     return entry;
   }
-
+// here' we override the generic servive update to add custom 
   async update(req) {
     const { id } = req.params;
     const user = req.user.id;
-    const updated = await ServiceEntry.findOneAndUpdate(
+
+    const updated = await this.model.findOneAndUpdate(
       { _id: id, user },
       { ...req.body },
       { new: true }
     );
 
-    if (!updated) throw new ApiError('Service entry not found or unauthorized');
+    if (!updated) {
+      throw new ApiError('Service entry not found or unauthorized');
+    }
+
     return updated;
   }
 }

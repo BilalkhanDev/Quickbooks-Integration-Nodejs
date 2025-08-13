@@ -10,25 +10,38 @@ if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
 }
 
-// Custom format for logging (without stack trace)
 const customFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  winston.format.errors({ stack: false }),
-  winston.format.printf(({ timestamp, level, message, module, status, url, method }) => {
-    let logMessage = `${timestamp} [${module || 'GENERAL'}] ${level && level?.toUpperCase() || "-"}:`;
-    if (method && url) {
-      logMessage += ` ${method} ${url}`;
+  winston.format.errors({ stack: true }), // Include full stack trace
+  winston.format.printf(({ timestamp, level, message, stack }) => {
+    // Ensure level is a string and call .toUpperCase() on it
+    const levelStr = typeof level === 'string' ? level : 'unknown';
+    let logMessage = `${timestamp} [${levelStr.toUpperCase()}]: ${message}`;
+    if (stack) {
+      logMessage += `\nStack Trace: ${stack}`;
     }
-
-    if (status) {
-      logMessage += ` [${status}]`;
-    }
-
-    logMessage += ` ${message}`;
-
     return logMessage;
   })
 );
+
+// Configure winston logger
+const logger = winston.createLogger({
+  level: 'error',
+  format: customFormat,
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    }),
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' })
+  ]
+});
+
+module.exports = logger;
+
+
 
 // Function to create module-specific daily rotate file transport
 const createModuleTransport = (moduleName) => {

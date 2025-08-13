@@ -13,8 +13,8 @@ router
 
 router
     .route('/:id')
-    .get(useAuth, reqValidator(getSpaceTypeValidation,'getById'),spaceTypeController.getSingle)
+    .get(useAuth, reqValidator(getSpaceTypeValidation,'getById'),spaceTypeController.getById)
     .patch(useAuth,reqValidator(getSpaceTypeValidation,'update'), spaceTypeController.update)
-    .delete(useAuth,reqValidator(getSpaceTypeValidation,'getById'),spaceTypeController.remove);
+    .delete(useAuth,reqValidator(getSpaceTypeValidation,'getById'),spaceTypeController.delete);
 
 module.exports = router;

@@ -1,22 +1,26 @@
 const { default: HttpStatus } = require('http-status');
 const { SpaceType } = require('../../models');
 const ApiError = require('../../shared/core/exceptions/ApiError');
-class SpaceTypeService {
+const GenericService = require('../generic.service');
+class SpaceTypeService extends GenericService {
+  constructor() {
+    super(SpaceType)
+  }
   async create(userBody) {
     const title = userBody.title?.trim();
-    if (await SpaceType.isTitleTaken(title)) {
+    if (await this.model.isTitleTaken(title)) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
-    return SpaceType.create({ ...userBody, title });
+    return this.model.create({ ...userBody, title });
   }
 
   async getAll(queryParams, options, refFields) {
     let { search, ...filter } = queryParams;
-    const searchFilter = await SpaceType.search({ search }, refFields);
+    const searchFilter = await this.model.search({ search }, refFields);
     if (searchFilter && Object.keys(searchFilter).length > 0) {
       filter = { ...filter, ...searchFilter };
     }
-    const result = await SpaceType.paginate(filter, {
+    const result = await this.model.paginate(filter, {
       ...options,
       populate: { path: 'los', select: '_id title' },
     });
@@ -24,41 +28,29 @@ class SpaceTypeService {
     return result;
   }
 
-  async getSingle(id) {
-    return SpaceType.findById(id);
-  }
+
 
   async update(id, updateBody) {
-    const spaceType = await this.getSingle(id);
+    const spaceType = await this.model.findById(id);
     if (!spaceType) {
       throw new ApiError(HttpStatus.NOT_FOUND, 'SpaceType not found');
     }
-
     if (
       updateBody.title &&
-      (await SpaceType.isTitleTaken(updateBody.title.trim(), id))
+      (await this.model.isTitleTaken(updateBody.title.trim(), id))
     ) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
 
     Object.assign(spaceType, {
       ...updateBody,
-      title: updateBody.title?.trim() ?? spaceType.title,
+      title: updateBody.title?.trim() ?? this.model.title,
     });
 
-    await spaceType.save();
+    await this.spaceType.save();
     return spaceType;
   }
 
-  async remove(id) {
-    const spaceType = await this.getSingle(id);
-    if (!spaceType) {
-      throw new ApiError(HttpStatus.NOT_FOUND, 'SpaceType not found');
-    }
-
-    await spaceType.remove();
-    return spaceType;
-  }
 }
 
 module.exports = new SpaceTypeService();

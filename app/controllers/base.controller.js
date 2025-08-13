@@ -8,7 +8,8 @@ class BaseController {
   }
   create = catchAsync(async (req, res) => {
     const data = await this.service.create(req.body);
-    return data
+
+     return this.sendSuccessResponse(res, HttpStatus.OK, data);
   });
 
   
@@ -17,12 +18,12 @@ class BaseController {
     if (!data) {
       return this.sendErrorResponse(res, HttpStatus.NOT_FOUND, 'Not found');
     }
-   return data
+   return this.sendSuccessResponse(res, HttpStatus.OK, data);
   });
 
   getAll = catchAsync(async (req, res) => {
     const data = await this.service.getAll();
-    return data
+     return this.sendSuccessResponse(res, HttpStatus.OK, "Fetch Success", data);
   });
 
   update = catchAsync(async (req, res) => {
@@ -30,7 +31,7 @@ class BaseController {
     if (!data) {
       return this.sendErrorResponse(res, HttpStatus.NOT_FOUND, 'Not found');
     }
-   return data
+    return this.sendSuccessResponse(res, HttpStatus.OK, data);
   });
 
   delete = catchAsync(async (req, res) => {
@@ -38,10 +39,10 @@ class BaseController {
     if (!data) {
       return this.sendErrorResponse(res, HttpStatus.NOT_FOUND, 'Not found');
     }
-    return data
+    return this.sendSuccessResponse(res, HttpStatus.OK, data);
   });
-   sendSuccessResponse(res, statusCode, message, data = null) {
-    res.status(statusCode).json(data);
+   sendSuccessResponse(res, statusCode, message="Success", data = null) {
+    res.status(statusCode).json({message,data});
   }
 
   sendErrorResponse(res, statusCode, message) {

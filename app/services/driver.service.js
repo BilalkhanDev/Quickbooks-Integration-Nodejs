@@ -1,9 +1,15 @@
 const { Driver } = require("../models");
+const GenericService = require("./generic.service");
+const ApiError = require("../shared/core/exceptions/ApiError"); // Optional, for consistent error handling
 
-class DriverService {
+class DriverService extends GenericService {
+  constructor() {
+    super(Driver);
+  }
+
   async getAll(queryParams, options, userId) {
     const { search, assigned, ...filter } = queryParams;
-    const searchFilter = await Driver.search({ search });
+    const searchFilter = await this.model.search({ search });
 
     if (assigned === 'true') {
       filter.fleet = { $ne: null };
@@ -19,28 +25,19 @@ class DriverService {
       finalFilter = { $and: [{ user: userId }, filter] };
     }
 
-    return await Driver.paginate(finalFilter, options);
-  }
-
-  async getById(id) {
-    return await Driver.findById(id);
+    return this.model.paginate(finalFilter, options);
   }
 
   async getByFleetId(fleetId) {
-    return await Driver.find({ fleet: fleetId });
+    return this.model.find({ fleet: fleetId });
   }
 
   async create(data, userId) {
-    const existingDriver = await Driver.findOne({ email: data?.email, user: userId });
+    const existingDriver = await this.model.findOne({ email: data?.email, user: userId });
     if (existingDriver) {
-      throw new Error('A driver with this email already exists.');
+      throw new ApiError('Conflict', 'A driver with this email already exists.');
     }
-
-    return await Driver.create({ ...data, user: userId });
-  }
-
-  async update(id, data) {
-    return await Driver.findByIdAndUpdate(id, data, { new: true });
+    return this.model.create({ ...data, user: userId });
   }
 }
 

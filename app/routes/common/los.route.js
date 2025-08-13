@@ -13,8 +13,8 @@ router
 
 router
   .route('/:id')
-  .get(useAuth,reqValidator(getLOSValidationSchema,'getById'),losController.getSingle)
+  .get(useAuth,reqValidator(getLOSValidationSchema,'getById'),losController.getById)
   .patch(useAuth,s3AssetUploader("common/los", "profileImage"),reqValidator(getLOSValidationSchema,'update'),losController.update)
-  .delete(useAuth,reqValidator(getLOSValidationSchema,'getById'),losController.remove);
+  .delete(useAuth,reqValidator(getLOSValidationSchema,'getById'),losController.delete);
 
 module.exports = router;

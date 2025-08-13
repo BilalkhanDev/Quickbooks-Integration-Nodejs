@@ -1,14 +1,21 @@
 const { Fleet } = require("../models");
-class FleetService {
+const GenericService = require("./generic.service");
+
+class FleetService extends GenericService {
+  constructor() {
+    super(Fleet);
+  }
+
   async create(req) {
     const { user, body } = req;
-    const fleet = new Fleet({ user: user?.id, ...body });
-    return await fleet.save();
+    const fleet = new this.model({ user: user?.id, ...body });
+    return fleet.save();
   }
 
   async getAll(queryParams, options, userId) {
     const { search, assigned, ...filter } = queryParams;
-    const searchFilter = await Fleet.search({ search });
+    const searchFilter = await this.model.search({ search });
+
     if (assigned === 'true') {
       filter.assigned_driver = { $ne: null };
     } else if (assigned === 'false') {
@@ -17,14 +24,13 @@ class FleetService {
 
     let finalFilter = { user: userId };
 
-
     if (searchFilter && Object.keys(searchFilter).length > 0) {
       finalFilter = { $and: [{ user: userId }, filter, searchFilter] };
     } else if (Object.keys(filter).length > 0) {
       finalFilter = { $and: [{ user: userId }, filter] };
     }
 
-    return await Fleet.paginate(finalFilter, {
+    return this.model.paginate(finalFilter, {
       ...options,
       populate: [
         { path: 'group', select: '_id name' },
@@ -37,9 +43,7 @@ class FleetService {
     });
   }
 
-
   async getById(id) {
-    // Define the reference fields to be populated
     const refFields = [
       'user',
       'serviceAreas',
@@ -53,31 +57,16 @@ class FleetService {
       'fuelType'
     ];
 
-    const populateFields = refFields.map(field => {
-      return {
-        path: field,
-        select: '_id ' + (['assigned_driver', 'group'].includes(field) ? 'firstName lastName email' : 'title name')  // Populate `title` or `name` based on the field
-      };
-    });
+    const populateFields = refFields.map(field => ({
+      path: field,
+      select: '_id ' + (['assigned_driver', 'group'].includes(field) ? 'firstName lastName email' : 'title name')
+    }));
 
-    // Fetch and populate Fleet data
-    const result = await Fleet.findById(id).populate(populateFields);
-
-    return result;
-  }
-
-
-  async update(id, data) {
-    console.log("Dat",data)
-    return await Fleet.findByIdAndUpdate(id, data, { new: true });
-  }
-
-  async delete(id) {
-    return await Fleet.findByIdAndDelete(id);
+    return this.model.findById(id).populate(populateFields);
   }
 
   async getFleetSpec(req) {
-    return await Fleet.find({ user: req.user.id }).select('name type group');
+    return this.model.find({ user: req.user.id }).select('name type group');
   }
 }
 

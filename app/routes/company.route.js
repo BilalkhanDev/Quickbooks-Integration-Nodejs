@@ -13,6 +13,6 @@ router
     .route('/:id')
     .post(useAuth, companyController.update)
     .get(useAuth, companyController.getById)
-    .delete(useAuth, companyController.remove)
+    .delete(useAuth, companyController.delete)
 
 module.exports = router;

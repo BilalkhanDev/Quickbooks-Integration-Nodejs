@@ -15,6 +15,6 @@ router
     .route('/:id')
     .get(useAuth,reqValidator(getEquipmentSchema,'getById'),  equipmentController.getById)
     .patch(useAuth,reqValidator(getEquipmentSchema,'update'),  equipmentController.update)
-    .delete(useAuth,reqValidator(getEquipmentSchema,'getById'),  equipmentController.remove);
+    .delete(useAuth,reqValidator(getEquipmentSchema,'getById'),  equipmentController.delete);
 
 module.exports = router;
