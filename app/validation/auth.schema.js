@@ -30,6 +30,13 @@ const baseAuthFields = {
       'string.max': 'Password cannot exceed 255 characters',
       'any.required': 'Password is required',
     }),
+   timeZone: Joi.string()
+    .pattern(/^[A-Za-z]+\/[A-Za-z_]+$/)  // Regex to allow time zones like "Asia/Kolkata", "Europe/London"
+    .optional()
+    .messages({
+      'string.base': 'Time zone must be a string',
+      'string.pattern.base': 'Invalid time zone format. Use the format Region/City (e.g., Asia/Kolkata)',
+    }),
 
   role: Joi.number()
     .valid(...Object.values(USER_ROLES))
@@ -44,10 +51,12 @@ class AuthSchema {
   register = {
     body: Joi.object(baseAuthFields),
   }
+
   login = {
     body: Joi.object({
       email: baseAuthFields.email,
       password: baseAuthFields.password,
+      timeZone: baseAuthFields.timeZone,  // Include timeZone in the login schema
     }),
   }
 }

@@ -18,8 +18,7 @@ class AuthController extends BaseController {
 
   
   login = catchAsync(async (req, res) => {
-    const { email, password } = req.body;
-    const { accessToken, refreshToken } = await this.service.authenticateUser(email, password);
+    const { accessToken, refreshToken } = await this.service.authenticateUser(req.body);
     return this.sendSuccessResponse(res, HttpStatus.OK,{ accessToken, refreshToken });
   });
 

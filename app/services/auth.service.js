@@ -3,6 +3,7 @@ const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
 const GenericService = require('../services/generic.service');
 const { TokenProvider, PaswordHasher } = require('../shared/security');
+const paswordHasher = require('../shared/security/paswordHasher');
 
 class AuthService extends GenericService {
   constructor() {
@@ -25,34 +26,36 @@ class AuthService extends GenericService {
   }
 
   // Authenticate user and generate tokens
-  async authenticateUser(email, password) {
-
-    const user = await this.findOne({ email });
-    if (!user) {
-      throw new ApiError(HttpStatus.NOT_FOUND,'User not found');
-    }
-
-    // Use PasswordHasher to compare the password
-    const isMatch = await PaswordHasher.compare(password, user.password); // Password comparison logic encapsulated in PasswordHasher
-    if (!isMatch) {
-      throw new ApiError(HttpStatus.FORBIDDEN,'Invalid credentials');
-    }
-
-    // Generate tokens after successful authentication
-    const payload = { id: user.id, role: user.role };
-    const accessToken = TokenProvider.generateAccessToken(payload);
-    const refreshToken = TokenProvider.generateRefreshToken(payload);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-    };
+ async authenticateUser(body) {
+  const { email, password, timeZone } = body;
+  const user = await this.findOne({ email });
+  
+  if (!user) {
+    throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
+  }  const isMatch = await paswordHasher.compare(password, user.password); 
+  if (!isMatch) {
+    throw new ApiError(HttpStatus.FORBIDDEN, 'Invalid credentials');
   }
+  if (timeZone) {
+    user.timeZone = timeZone; 
+    await user.save(); 
+  }
+  const payload = { id: user.id, role: user.role };
+  const accessToken = TokenProvider.generateAccessToken(payload);
+  const refreshToken = TokenProvider.generateRefreshToken(payload);
+
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      timeZone: user.timeZone, 
+    },
+  };
+}
+
 
   // Get user profile
   async getProfile(userId) {
@@ -66,6 +69,7 @@ class AuthService extends GenericService {
       username: user.username,
       email: user.email,
       role: user.role,
+      timeZone:user.timeZone,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
