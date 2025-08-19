@@ -9,6 +9,7 @@ const transmissionModel = require('../models/specification/trasmission.model');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const GenericService = require('./generic.service');
 
+const { default: HttpStatus } = require('http-status');
 class FleetSpecificationService extends GenericService {
   constructor() {
     super(Specification);
@@ -37,7 +38,7 @@ class FleetSpecificationService extends GenericService {
 
   async update(fleetId, body) {
     if (!fleetId) {
-      throw new ApiError(400, 'Fleet ID is required');
+      throw new ApiError(HttpStatus.NOT_FOUND, 'Fleet ID is required');
     }
 
     const existingFleetSpec = await this.model.findOne({ fleetId });

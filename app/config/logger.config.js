@@ -44,9 +44,13 @@ module.exports = logger;
 
 
 // Function to create module-specific daily rotate file transport
+
 const createModuleTransport = (moduleName) => {
+  // Sanitize moduleName to avoid invalid characters for file paths
+  const sanitizedModuleName = moduleName.replace(/[:*?"<>|]/g, '_');  // Replace invalid characters
+
   return new DailyRotateFile({
-    filename: path.join(logsDir, `${moduleName}-%DATE%-error.log`),
+    filename: path.join(logsDir, `${sanitizedModuleName}-%DATE%-error.log`),  // Safe filename
     datePattern: 'YYYY-MM-DD',
     maxSize: '20m',
     maxFiles: '7d', // Keep files for 7 days

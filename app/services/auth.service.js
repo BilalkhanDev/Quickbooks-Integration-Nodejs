@@ -13,7 +13,7 @@ class AuthService extends GenericService {
   async register({ email, password }) {
     const existingUser = await this.findOne({ email });
     if (existingUser) {
-      throw new ApiError('User already exists');
+      throw new ApiError(HttpStatus.BAD_REQUEST,'User already exists');
     }
 
     // Use PasswordHasher to hash the password
@@ -29,13 +29,13 @@ class AuthService extends GenericService {
 
     const user = await this.findOne({ email });
     if (!user) {
-      throw new ApiError('User not found');
+      throw new ApiError(HttpStatus.NOT_FOUND,'User not found');
     }
 
     // Use PasswordHasher to compare the password
     const isMatch = await PaswordHasher.compare(password, user.password); // Password comparison logic encapsulated in PasswordHasher
     if (!isMatch) {
-      throw new ApiError('Invalid credentials');
+      throw new ApiError(HttpStatus.FORBIDDEN,'Invalid credentials');
     }
 
     // Generate tokens after successful authentication

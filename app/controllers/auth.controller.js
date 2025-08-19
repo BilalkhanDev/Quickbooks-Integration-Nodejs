@@ -13,14 +13,14 @@ class AuthController extends BaseController {
   
   register = catchAsync(async (req, res) => {
     const user = this.create(req,res); 
-    return this.sendSuccessResponse(res, HttpStatus.OK, 'User profile fetched successfully', user);
+    return this.sendSuccessResponse(res, HttpStatus.OK, user);
   });
 
   
   login = catchAsync(async (req, res) => {
     const { email, password } = req.body;
     const { accessToken, refreshToken } = await this.service.authenticateUser(email, password);
-    return this.sendSuccessResponse(res, HttpStatus.OK, 'Login successful', { accessToken, refreshToken });
+    return this.sendSuccessResponse(res, HttpStatus.OK,{ accessToken, refreshToken });
   });
 
  refreshAccessToken = catchAsync(async (req, res) => {
@@ -41,7 +41,7 @@ class AuthController extends BaseController {
 
   getProfile = catchAsync(async (req, res) => {
     const userProfile = await this.service.getProfile(req.user.id);
-    return this.sendSuccessResponse(res, HttpStatus.OK, 'User profile fetched successfully', userProfile);
+    return this.sendSuccessResponse(res, HttpStatus.OK, userProfile);
  
   });
 }

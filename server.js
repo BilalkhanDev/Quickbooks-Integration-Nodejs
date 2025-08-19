@@ -1,18 +1,18 @@
-require('dotenv').config({
-  path: `.env.${process.env.NODE_ENV || 'development'}`
-});
+const envPath = `.env.${process.env.NODE_ENV || 'development'}`;
+require('dotenv').config({ path: envPath });
 require("reflect-metadata");
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const routes=require('./app/routes/index')
+const routes = require('./app/routes/index');
 const connectDB = require('./app/config/db.config');
 const { ActivityLogger, errorHandler, morgan } = require('./app/middleware');
 
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true }));  
-app.use(cors());  
 
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use(morgan);
 

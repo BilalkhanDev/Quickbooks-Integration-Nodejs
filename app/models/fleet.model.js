@@ -12,11 +12,11 @@ const FleetSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  serviceAreas: {
+  serviceAreas: [{
     type: mongoose.Schema.Types.ObjectId,
     ref:'ServiceArea',
     required: true
-  },
+  }],
   los: {
     type: mongoose.Schema.Types.ObjectId,
     ref:'LOS',
@@ -47,16 +47,16 @@ const FleetSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  equipments: {
+  equipments: [{
     type: mongoose.Schema.Types.ObjectId,
     ref:'Equipment',
     required: true
-  },
-  fundingSources: {
+  }],
+  fundingSources: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Fundingsource', 
     required: true
-  },
+  }],
   vin: {
     type: String,
     required: true
@@ -105,7 +105,8 @@ const FleetSchema = new mongoose.Schema({
     type: String,
     enum: FLEET_STATUS,
     default: FLEET_STATUS[0]
-  }
+  },
+  isActive: { type: Boolean, default: true }
 }, {
   timestamps: true
 });

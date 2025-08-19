@@ -9,9 +9,9 @@
     "start:test": "cross-env NODE_ENV=test nodemon  server.js",
     "start:prod": "cross-env NODE_ENV=production node server.js",
     "dev": "cross-env NODE_ENV=test nodemon server.js",
-    "seed": "cross-env NODE_ENV=development node src/app/seeder/index.js",
-    "seed:test": "cross-env NODE_ENV=test node src/app/seeder/index.js",
-    "seed:prod": "cross-env NODE_ENV=production node src/app/seeder/index.js"
+    "seed": "cross-env NODE_ENV=development node app/seeder/index.js",
+    "seed:test": "cross-env NODE_ENV=test node app/seeder/index.js",
+    "seed:prod": "cross-env NODE_ENV=production node app/seeder/index.js"
   },
   "keywords": [],
   "author": "",

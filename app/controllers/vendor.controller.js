@@ -10,14 +10,24 @@ class VendorController extends BaseController {
   constructor() {
     super(vendorService);
   }
+create = catchAsync(async (req, res) => {
+    const result = await this.service.create(req);
+    return this.sendSuccessResponse(res, HttpStatus.OK, result);
 
+  })
+ 
+  update = catchAsync(async (req, res) => {
+          const result = await this.service.update(req.params.id,req.body);
+          return this.sendSuccessResponse(res, HttpStatus.OK, result);
+  
+  });
   getAll = catchAsync(async (req, res) => {
     const queryParams = pick(req.query, ['search', 'classification', 'isActive']);
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
 
     const paginatedData = await this.service.getAll(queryParams, options);
 
-    return this.sendSuccessResponse(res, HttpStatus.OK, 'Vendors fetched successfully', paginatedData);
+    return this.sendSuccessResponse(res, HttpStatus.OK, paginatedData);
   });
 
   bulkDelete = catchAsync(async (req, res) => {

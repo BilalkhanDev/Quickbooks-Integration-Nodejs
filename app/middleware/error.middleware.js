@@ -14,28 +14,26 @@ const errorHandler = (err, req, res, next) => {
     query: req.query
   });
 
-
   let errorMessage;
 
   if (err instanceof ApiError) {
-    errorMessage = typeof err === 'object' ? JSON.stringify(err.statusCode) : err.statusCode;
+    errorMessage = err?.message;
   } else if (typeof err === 'object' && err.message) {
-    errorMessage = JSON.stringify(err.message) || HttpStatus.INTERNAL_SERVER_ERROR;
+    // Fallback for other error types
+    errorMessage = err?.message || HttpStatus.INTERNAL_SERVER_ERROR;
   } else {
-    errorMessage = err.message || HttpStatus.INTERNAL_SERVER_ERROR;
+    // For general errors
+    errorMessage = err?.message || HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
+  // Respond with the formatted error
   res.status(statusCode).json({
     success: false,
-    message: process.env.NODE_ENV === 'production' ?
+    message: process.env.NODE_ENV === 'production' ? 
       (statusCode < 500 ? errorMessage : HttpStatus.INTERNAL_SERVER_ERROR) :
       errorMessage,
     statusCode,
     data: null,
-    // ...(process.env.NODE_ENV !== 'production' && { 
-    //   // stack: err.stack,
-    //   timestamp: new Date().toISOString()
-    // })
   });
 };
 

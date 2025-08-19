@@ -12,7 +12,7 @@ class ServiceAreaController extends BaseController {
     const queryParams = pick(req.query, ['search', 'role', 'isActive']);
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const result = await this.service.getAll(queryParams, options);
-    return this.sendSuccessResponse(res, HttpStatus.OK,"Succes", result);
+    return this.sendSuccessResponse(res, HttpStatus.OK, result);
 
   })
 }

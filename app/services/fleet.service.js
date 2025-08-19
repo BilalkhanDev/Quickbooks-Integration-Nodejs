@@ -29,7 +29,6 @@ class FleetService extends GenericService {
     } else if (Object.keys(filter).length > 0) {
       finalFilter = { $and: [{ user: userId }, filter] };
     }
-
     return this.model.paginate(finalFilter, {
       ...options,
       populate: [

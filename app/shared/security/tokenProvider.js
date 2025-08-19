@@ -15,7 +15,7 @@ class TokenProvider {
 
   // Generate access token
   generateAccessToken(payload) {
-    return jwt.sign(payload, this.#accessSecret, { expiresIn: '15m' });  // Using private secret
+    return jwt.sign(payload, this.#accessSecret, { expiresIn: '2d' });  // Using private secret
   }
 
   // Generate refresh token

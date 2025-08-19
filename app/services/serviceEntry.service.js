@@ -1,5 +1,6 @@
 // services/serviceEntry.service.js
 const mongoose = require('mongoose');
+const { default: HttpStatus } = require('http-status');
 const { ServiceEntry } = require('../models');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const GenericService = require('./generic.service');
@@ -12,10 +13,10 @@ class ServiceEntryService extends GenericService {
 
   async getByFleetId(queryParams, options, userId, fleetId) {
     if (!fleetId || !mongoose.Types.ObjectId.isValid(fleetId)) {
-      throw new ApiError('Invalid Fleet ID');
+      throw new ApiError(HttpStatus.BAD_REQUEST,'Invalid Fleet ID');
     }
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      throw new ApiError('Invalid User ID');
+      throw new ApiError(HttpStatus.BAD_REQUEST,'Invalid User ID');
     }
 
     const { search, ...filter } = queryParams;
@@ -62,7 +63,7 @@ class ServiceEntryService extends GenericService {
       .populate('issues', '-fleetId');
 
     if (!entry) {
-      throw new ApiError('Service entry not found or unauthorized');
+      throw new ApiError(HttpStatus.NOT_FOUND,'Service entry not found or unauthorized');
     }
 
     return entry;
@@ -79,7 +80,7 @@ class ServiceEntryService extends GenericService {
     );
 
     if (!updated) {
-      throw new ApiError('Service entry not found or unauthorized');
+      throw new ApiError(HttpStatus.NOT_FOUND,'Service entry not found or unauthorized');
     }
 
     return updated;

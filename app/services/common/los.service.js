@@ -43,8 +43,7 @@ class LOSService extends GenericService {
 
   async update(req) {
     const { body: updateBody = {}, s3Urls, params } = req;
-
-    const los = await this.getSingle(params.id);
+    const los = await this.findById(params.id);
     if (!los) {
       throw new ApiError(HttpStatus.NOT_FOUND, 'LOS not found');
     }

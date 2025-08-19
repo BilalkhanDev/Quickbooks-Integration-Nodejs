@@ -10,11 +10,16 @@ class GenericService {
   
 
   async findById(id) {
-    return await this.model.findById(id);
+    return this.model.findById(id);
   }
+
 
   async findOne(filter) {
     return await this.model.findOne(filter);
+  }
+  async getAll() {
+
+    return await this.model.find();
   }
 
   async update(id, update) {

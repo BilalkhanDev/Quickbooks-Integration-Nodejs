@@ -28,14 +28,13 @@ class EquipmentService extends GenericService {
 
 
   async update(id, updateBody) {
-    const equipment = await this.model.getById(id);
-
+    const equipment = await this.model.findById(id);
     if (updateBody.title && await this.model.isTitleTaken(updateBody.title, id)) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
     }
 
     Object.assign(equipment, updateBody);
-    await this.model.save();
+    await equipment.save();
     return equipment;
   }
 

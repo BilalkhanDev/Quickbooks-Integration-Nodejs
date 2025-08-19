@@ -1,6 +1,7 @@
 const { Driver } = require("../models");
 const GenericService = require("./generic.service");
 const ApiError = require("../shared/core/exceptions/ApiError"); // Optional, for consistent error handling
+const { default: HttpStatus } = require('http-status');
 
 class DriverService extends GenericService {
   constructor() {
@@ -35,7 +36,7 @@ class DriverService extends GenericService {
   async create(data, userId) {
     const existingDriver = await this.model.findOne({ email: data?.email, user: userId });
     if (existingDriver) {
-      throw new ApiError('Conflict', 'A driver with this email already exists.');
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'A driver with this email already exists.');
     }
     return this.model.create({ ...data, user: userId });
   }

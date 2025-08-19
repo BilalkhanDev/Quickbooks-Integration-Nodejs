@@ -2,6 +2,7 @@
 const { InspectionSubmission } = require('../models');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const GenericService = require('./generic.service');
+const { default: HttpStatus } = require('http-status');
 
 class InspectionSubmissionService extends GenericService {
   constructor() {
@@ -14,7 +15,7 @@ class InspectionSubmissionService extends GenericService {
     const uploads = req.s3Grouped || {};
 
     if (!inspectionId || !fleet) {
-      throw new ApiError("Missing required fields: inspectionId or fleetId");
+      throw new ApiError(HttpStatus.FORBIDDEN,"Missing required fields: inspectionId or fleetId");
     }
 
     const enrichedItemValues = (itemValues || []).map(item => {

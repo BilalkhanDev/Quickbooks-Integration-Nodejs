@@ -6,11 +6,6 @@ class ExpenseModel extends BaseModel {
   constructor() {
     super();  
     this.schema.add({
-      name: {
-        type: String,
-        required: true,
-        unique: true,
-      },
       usage: {
         type: Number,
         default: 0

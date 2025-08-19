@@ -47,7 +47,7 @@ class SpaceTypeService extends GenericService {
       title: updateBody.title?.trim() ?? this.model.title,
     });
 
-    await this.spaceType.save();
+    await spaceType.save();
     return spaceType;
   }
 

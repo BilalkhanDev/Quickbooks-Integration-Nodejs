@@ -17,8 +17,9 @@ class FundingSourceService  extends GenericService {
     }
 
     const isDuplicate = await this.model.isTitleTaken(title);
+    console.log(isDuplicate)
     if (isDuplicate) {
-      throw new ApiError(HttpStatus.BAD_REQUEST, 'Title already taken');
+      throw new ApiError(HttpStatus.BAD_REQUEST,'Title already taken');
     }
 
     const payload = {

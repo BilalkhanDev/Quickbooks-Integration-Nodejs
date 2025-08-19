@@ -12,7 +12,7 @@ class SpaceTypeController extends BaseController {
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const refFields = { los: ['title'] };
     const result = await this.service.getAll(queryParams, options, refFields);
-    return this.sendSuccessResponse(res, HttpStatus.OK, "Success",result);
+    return this.sendSuccessResponse(res, HttpStatus.OK,result);
 
   })
 

@@ -38,6 +38,7 @@ const seedFleet = async ({
           realOdometer: '50000',
           limitation: 'No smoking',
           notes: 'Primary city fleet',
+          isActive:true
         },
       ];
 

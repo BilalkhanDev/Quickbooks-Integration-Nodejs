@@ -12,56 +12,45 @@ function collectStringPaths(schema, prefix = '') {
     if (pathObj.instance === 'String') {
       stringPaths.push(fullPath);
     }
-    if (pathObj.instance === 'Array') {
-      if (pathObj.caster && pathObj.caster.instance === 'String') {
-        stringPaths.push(fullPath);
-      }
+    if (pathObj.instance === 'Array' && pathObj.caster?.instance === 'String') {
+      stringPaths.push(fullPath);
     }
-    // handle nested schemas (SingleNested or Subdocument)
     if (pathObj.schema) {
       stringPaths = stringPaths.concat(collectStringPaths(pathObj.schema, fullPath));
     }
   });
-
   return stringPaths;
 }
 
 module.exports = function searchPlugin(schema, options = {}) {
   const {
-    stringFields = [], // explicit string fields
+    stringFields = [],
     numberFields = [],
     dateFields = [],
-    refFields = {},    // static defaults
+    refFields = {}, // schema-level default ref fields
   } = options;
 
-  // collect all string fields automatically (including nested)
   const autoStringFields = collectStringPaths(schema);
-  const allStringFields = stringFields.length > 0 ? stringFields : autoStringFields;
+  const allStringFields = stringFields.length ? stringFields : autoStringFields;
 
-  // auto-detect top-level numeric/date fields
-  const allNumberFields = numberFields.length > 0
+  const allNumberFields = numberFields.length
     ? numberFields
     : Object.entries(schema.paths).filter(([_, p]) => p.instance === 'Number').map(([k]) => k);
 
-  const allDateFields = dateFields.length > 0
+  const allDateFields = dateFields.length
     ? dateFields
     : Object.entries(schema.paths).filter(([_, p]) => p.instance === 'Date').map(([k]) => k);
 
-
-  /**
-   * Main search function
-   */
-  schema.statics.search = async function (searchParams = {}, dynamicRefFields = null) {
+  schema.statics.search = async function (searchParams = {}, dynamicRefFields = {}) {
     const { search, field, startDate, endDate } = searchParams;
     const searchTerm = search ? search.toString().trim() : '';
-    const activeRefFields =
-      dynamicRefFields && Object.keys(dynamicRefFields).length > 0
-        ? dynamicRefFields
-        : refFields;
+
+    // Merge schema-level refFields with dynamic ones from params
+    const activeRefFields = { ...refFields, ...dynamicRefFields };
 
     const orFilters = [];
 
-    // ✅ STRING fields (auto includes nested)
+    // ✅ STRING fields
     if (searchTerm) {
       if (field && allStringFields.includes(field)) {
         orFilters.push({ [field]: { $regex: searchTerm, $options: 'i' } });
@@ -84,7 +73,7 @@ module.exports = function searchPlugin(schema, options = {}) {
       }
     }
 
-    // ✅ DATE fields (direct)
+    // ✅ DATE fields
     if (searchTerm) {
       const parsed = moment(searchTerm, ['MM/DD/YYYY', 'YYYY-MM-DD'], true);
       if (parsed.isValid()) {
@@ -96,7 +85,7 @@ module.exports = function searchPlugin(schema, options = {}) {
       }
     }
 
-    // ✅ DATE range
+    // ✅ DATE range filter
     const dateFilters = [];
     if (startDate || endDate) {
       const start = startDate ? moment(startDate).startOf('day').toDate() : null;
@@ -109,22 +98,25 @@ module.exports = function searchPlugin(schema, options = {}) {
       });
     }
 
-    // base filter from local fields
     let baseFilter = {};
-    if (orFilters.length > 0) baseFilter.$or = orFilters;
-    if (dateFilters.length > 0) {
+    if (orFilters.length) baseFilter.$or = orFilters;
+    if (dateFilters.length) {
       baseFilter = baseFilter.$or
         ? { $and: [{ $or: baseFilter.$or }, ...dateFilters] }
         : { $and: dateFilters };
     }
 
-  
-
-    // ✅ Ref fields (lookup)
+    // ✅ Ref fields filter (merged schema + params)
     let refMatchFilter = {};
-    if (searchTerm && Object.keys(activeRefFields).length > 0) {
+    if (searchTerm && Object.keys(activeRefFields).length) {
       const regex = { $regex: searchTerm, $options: 'i' };
       const refOrConditions = [];
+
+      // Debug logging
+      console.log('Active Ref Fields:', activeRefFields);
+      console.log('Search Term:', searchTerm);
+
+      // Build conditions for ref fields
       Object.entries(activeRefFields).forEach(([refField, subFields]) => {
         const arr = Array.isArray(subFields) ? subFields : [subFields];
         arr.forEach(sub => {
@@ -132,47 +124,77 @@ module.exports = function searchPlugin(schema, options = {}) {
         });
       });
 
-      if (refOrConditions.length > 0) {
+      console.log('Ref Or Conditions:', refOrConditions);
+
+      if (refOrConditions.length) {
         const pipeline = [];
-       
-        Object.entries(schema?.paths)?.forEach(([key, path]) => {
-          if (path.options && path.options.ref) {
-            const refModel = mongoose.model(path.options.ref);
-           
-            pipeline.push({
-              $lookup: {
-                from: refModel.collection.name,
-                localField: key,
-                foreignField: '_id',
-                as: key
-              }
-            });
-            pipeline.push({ $unwind: { path: `$${key}`, preserveNullAndEmptyArrays: true } });
+
+        // Only lookup for fields present in merged refFields
+        Object.keys(activeRefFields).forEach(refField => {
+          const pathObj = schema.paths[refField];
+          
+          // Check if the field exists in schema and has a ref
+          if (pathObj && pathObj.options && pathObj.options.ref) {
+            try {
+              const refModel = mongoose.model(pathObj.options.ref);
+              pipeline.push({
+                $lookup: {
+                  from: refModel.collection.name,
+                  localField: refField,
+                  foreignField: '_id',
+                  as: refField
+                }
+              });
+              pipeline.push({ 
+                $unwind: { 
+                  path: `$${refField}`, 
+                  preserveNullAndEmptyArrays: true 
+                } 
+              });
+            } catch (error) {
+              console.error(`Error looking up model for ref field ${refField}:`, error.message);
+              // Skip this ref field if model doesn't exist
+              return;
+            }
+          } else {
+            console.warn(`Warning: Field ${refField} is not a valid reference field in the schema`);
           }
         });
 
-        pipeline.push({ $match: { $or: refOrConditions } });
-        pipeline.push({ $project: { _id: 1 } });
-        const aggResult = await this.aggregate(pipeline).exec();
-        
+        // Only proceed if we have valid lookups
+        if (pipeline.length > 0) {
+          pipeline.push({ $match: { $or: refOrConditions } });
+          pipeline.push({ $project: { _id: 1 } });
 
-        const matchingIds = aggResult.map(doc => doc._id);
-        if (matchingIds.length > 0) {
-          refMatchFilter = { _id: { $in: matchingIds } };
+          console.log('Aggregation Pipeline:', JSON.stringify(pipeline, null, 2));
+
+          try {
+            const aggResult = await this.aggregate(pipeline).exec();
+            const matchingIds = aggResult.map(doc => doc._id);
+            console.log('Matching IDs from aggregation:', matchingIds);
+            
+            if (matchingIds.length) {
+              refMatchFilter = { _id: { $in: matchingIds } };
+            }
+          } catch (error) {
+            console.error('Aggregation error:', error.message);
+            // If aggregation fails, continue without ref field filtering
+          }
         }
       }
     }
 
-    // merge
+    // Merge baseFilter + refMatchFilter
     let finalFilter = {};
-    if (Object.keys(baseFilter).length > 0 && Object.keys(refMatchFilter).length > 0) {
+    if (Object.keys(baseFilter).length && Object.keys(refMatchFilter).length) {
       finalFilter = { $or: [baseFilter, refMatchFilter] };
-    } else if (Object.keys(refMatchFilter).length > 0) {
+    } else if (Object.keys(refMatchFilter).length) {
       finalFilter = refMatchFilter;
-    } else {
+    } else if (Object.keys(baseFilter).length) {
       finalFilter = baseFilter;
     }
 
+    console.log('Final Filter:', JSON.stringify(finalFilter, null, 2));
     return finalFilter;
   };
 };

@@ -14,7 +14,7 @@ class BaseController {
 
   
   getById= catchAsync(async (req, res) => {
-    const data = await this.service.getById(req.params.id);
+    const data = await this.service.findById(req.params.id);
     if (!data) {
       return this.sendErrorResponse(res, HttpStatus.NOT_FOUND, 'Not found');
     }
@@ -23,10 +23,11 @@ class BaseController {
 
   getAll = catchAsync(async (req, res) => {
     const data = await this.service.getAll();
-     return this.sendSuccessResponse(res, HttpStatus.OK, "Fetch Success", data);
+     return this.sendSuccessResponse(res, HttpStatus.OK, data);
   });
 
   update = catchAsync(async (req, res) => {
+    console.log(req.params.id, req.body)
     const data = await this.service.update(req.params.id, req.body);
     if (!data) {
       return this.sendErrorResponse(res, HttpStatus.NOT_FOUND, 'Not found');
@@ -41,8 +42,8 @@ class BaseController {
     }
     return this.sendSuccessResponse(res, HttpStatus.OK, data);
   });
-   sendSuccessResponse(res, statusCode, message="Success", data = null) {
-    res.status(statusCode).json({message,data});
+   sendSuccessResponse(res, statusCode,data = null) {
+    res.status(statusCode).json(data);
   }
 
   sendErrorResponse(res, statusCode, message) {

@@ -60,6 +60,14 @@ const VendorSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+VendorSchema.statics.isTitleTaken= async function(name, excludeId) {
+      const result = await this.findOne({ 
+        name, 
+        _id: { $ne: excludeId } 
+      });
+      return !!result;
+    };
 VendorSchema.plugin(search)
 VendorSchema.plugin(paginate)
 module.exports = mongoose.model('Vendor', VendorSchema);

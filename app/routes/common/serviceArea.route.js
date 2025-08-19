@@ -12,7 +12,7 @@ router
 
 router
   .route('/:id')
-  .get(useAuth,reqValidator(getServiceAreaValidation,'getById'),ServiceAreaController.getAll)
+  .get(useAuth,reqValidator(getServiceAreaValidation,'getById'),ServiceAreaController.getById)
   .patch(useAuth,reqValidator(getServiceAreaValidation,'update'), ServiceAreaController.update)
   .delete(useAuth,reqValidator(getServiceAreaValidation,'getById'),ServiceAreaController.delete);
 

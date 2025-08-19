@@ -11,7 +11,7 @@ class DocumentsController extends BaseController {
 
   add = catchAsync(async (req, res) => {
     const doc = await this.service.create(req);
-    this.sendResponse(res, HttpStatus.CREATED,"Document Added", doc);
+    this.sendSuccessResponse(res, HttpStatus.CREATED, doc);
   });
 
   getAll = catchAsync(async (req, res) => {
@@ -19,8 +19,9 @@ class DocumentsController extends BaseController {
     const queryParams = pick(req.query, ['search', 'documentType']);
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const docs = await this.service.getAll(queryParams, options, userId);
-    this.sendResponse(res, HttpStatus.OK,"Doecuments Fetched Success", docs);
+    this.sendSuccessResponse(res, HttpStatus.OK, docs);
   });
 }
+
 
 module.exports = new DocumentsController();
