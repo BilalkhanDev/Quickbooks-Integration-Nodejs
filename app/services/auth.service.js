@@ -10,24 +10,34 @@ class AuthService extends GenericService {
     super(User); 
   }
 
-  // Register user
-  async register({ email, password }) {
+  async register(data) {
+    const {email,password,username}=data
     const existingUser = await this.findOne({ email });
     if (existingUser) {
       throw new ApiError(HttpStatus.BAD_REQUEST,'User already exists');
     }
-
-    // Use PasswordHasher to hash the password
-    const hashedPassword = await PaswordHasher.hash(password); // Password hashing logic encapsulated in PasswordHasher
-    return await this.create({ 
+    const isDuplicate = await this.model.isTitleTaken(username);
+    if (isDuplicate) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
+    }
+    const hashedPassword = await PaswordHasher.hash(password);
+    const user = await this.create({
       email,
+      username,
       password: hashedPassword,
+      ...data
     });
+  
+    return {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      timeZone: user.timeZone
+    };
   }
 
-  // Authenticate user and generate tokens
  async authenticateUser(body) {
-  const { email, password, timeZone } = body;
+  const { email, password } = body;
   const user = await this.findOne({ email });
   
   if (!user) {
@@ -36,10 +46,7 @@ class AuthService extends GenericService {
   if (!isMatch) {
     throw new ApiError(HttpStatus.FORBIDDEN, 'Invalid credentials');
   }
-  if (timeZone) {
-    user.timeZone = timeZone; 
-    await user.save(); 
-  }
+  
   const payload = { id: user.id, role: user.role };
   const accessToken = TokenProvider.generateAccessToken(payload);
   const refreshToken = TokenProvider.generateRefreshToken(payload);
