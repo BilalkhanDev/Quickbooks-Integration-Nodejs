@@ -12,7 +12,8 @@ class AuthController extends BaseController {
   }
   
   register = catchAsync(async (req, res) => {
-    const user = this.create(req,res); 
+    const user =await  this.service.register(req.body); 
+    console.log("user", user)
     return this.sendSuccessResponse(res, HttpStatus.OK, user);
   });
 
@@ -29,13 +30,14 @@ class AuthController extends BaseController {
     throw new ApiError(res, HttpStatus.UNAUTHORIZED, 'Refresh token is required');
   }
 
+  
   const payload = tokenProvider.verifyRefreshToken(refreshToken);
 
   const tokens = await this.service.generateTokens({
     id: payload?.id,
     role: payload?.role
   });
- return this.sendSuccessResponse(res, HttpStatus.OK, 'Token refreshed successfully', tokens);
+ return this.sendSuccessResponse(res, HttpStatus.OK, tokens);
 });
 
   getProfile = catchAsync(async (req, res) => {

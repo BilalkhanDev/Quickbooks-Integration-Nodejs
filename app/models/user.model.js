@@ -39,4 +39,12 @@ const UserSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+UserSchema.statics.isTitleTaken = async function (username, excludeId) {
+  const result = await this.findOne({
+    username,
+    _id: { $ne: excludeId }
+  });
+  return !!result;
+};
+
 module.exports = mongoose.model('User', UserSchema);
