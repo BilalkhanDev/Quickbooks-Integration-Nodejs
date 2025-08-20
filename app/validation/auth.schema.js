@@ -56,7 +56,7 @@ class AuthSchema {
     body: Joi.object({
       email: baseAuthFields.email,
       password: baseAuthFields.password,
-      timeZone: baseAuthFields.timeZone,  // Include timeZone in the login schema
+      
     }),
   }
 }
