@@ -17,18 +17,11 @@ const seedFleet = require('./fleet.seeder.js');
 const seedDriver=require('./driver.seeder.js')
 const runSeeders = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ MongoDB connected");
-
     const userIds=await createAdminUser();
     await seedFleetStatuses();
-
     await seedExpenses();
-
     await seedVendors()
     await seedInspections()
     const { losId, spaceTypeId, fundingSourceId, serviceAreaId, equipmentId } = await seedCommon()
@@ -37,8 +30,6 @@ const runSeeders = async () => {
     const fleetTypeId = await seedFleetTypes();
     const fleetId=await seedFleet({userIds,losId, spaceTypeId, fundingSourceId, serviceAreaId, equipmentId, companyId, fuelTypeId, fleetTypeId})
     await seedDriver({userIds,fleetId,serviceAreaId})
-
-
     console.log("✅ All seeders executed successfully");
     mongoose.disconnect();
   } catch (err) {
