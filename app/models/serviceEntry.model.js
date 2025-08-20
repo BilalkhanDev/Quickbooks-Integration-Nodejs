@@ -12,6 +12,10 @@ const serviceEntrySchema = new mongoose.Schema(
       ref: 'Fleet',
       required: true,
     },
+    lineItems:{
+      type:mongoose.Types.ObjectId,
+      ref:'SpaceType'
+    },
     repairPriorityClass: {
       type: String,
       enum: [0, 1, 2],
@@ -45,7 +49,7 @@ const serviceEntrySchema = new mongoose.Schema(
       type: Number,
       enum: [0, 1, 2, 3],
     },
-   documents: [{ type: String }],
+    documents: [{ type: String }],
     comments: {
       type: String,
       default: '',
@@ -82,5 +86,4 @@ serviceEntrySchema.plugin(paginate);
 
 const ServiceEntry = mongoose.model('ServiceEntry', serviceEntrySchema);
 
-module.exports = ServiceEntry;
-
+module.exports = ServiceEntry

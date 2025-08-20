@@ -19,7 +19,7 @@ class GenericCommonModel {
         }, 
         isActive: { 
           type: Boolean, 
-          default: false, 
+          default: true, 
         }, 
       }, 
       { 

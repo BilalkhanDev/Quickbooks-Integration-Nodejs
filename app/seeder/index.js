@@ -14,7 +14,9 @@ const seedCompanies = require('./company.seeder.js');
 const seedFuelTypes = require('./fuelType.seeder.js')
 const seedCommon = require('./commonSeeder/index.js');
 const seedFleet = require('./fleet.seeder.js');
-const seedDriver=require('./driver.seeder.js')
+const seedDriver=require('./driver.seeder.js');
+const seedMaintanceCode = require('./maintanceCodeSeeder/index.js');
+const seedServiceTask = require('./serviceTask.seeder.js');
 const runSeeders = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -30,6 +32,8 @@ const runSeeders = async () => {
     const fleetTypeId = await seedFleetTypes();
     const fleetId=await seedFleet({userIds,losId, spaceTypeId, fundingSourceId, serviceAreaId, equipmentId, companyId, fuelTypeId, fleetTypeId})
     await seedDriver({userIds,fleetId,serviceAreaId})
+    await seedMaintanceCode()
+    await seedServiceTask()
     console.log("✅ All seeders executed successfully");
     mongoose.disconnect();
   } catch (err) {

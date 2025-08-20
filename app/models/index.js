@@ -37,3 +37,16 @@ module.exports.ActivityLogs = require('./shared/activityLogs.model');
 //file-upload
 
 module.exports.Documents = require('./document.model');
+  
+
+// maianteinae codes
+
+module.exports.CategoryCode = require('./maintenanceCode/categoryCode.model');
+module.exports.SystemCode = require('./maintenanceCode/systemCode.model');
+module.exports.AssemblyCode = require('./maintenanceCode/assemblyCode.model');
+module.exports.ReasonCode = require('./maintenanceCode/reasonCode.model');
+
+
+/// service Task 
+
+module.exports.ServiceTask = require('./serviceTask.model');
