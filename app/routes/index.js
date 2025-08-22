@@ -13,10 +13,11 @@ const commonRoutes = require('./common/common')
 const documentRoutes=require('./douments.route')
 const maintanceRoutes=require('./mantainenceCode/index')
 const serviceTaskRoutes=require('./serviceTask.route')
-
+const roleRoutes=require('./role.route')
 const router = express.Router();
 
 router.use('/auth', authRoutes);
+router.use('/role',roleRoutes)
 // router.use('/user', userRoutes);
 router.use('/fleet', fleetRoutes);
 

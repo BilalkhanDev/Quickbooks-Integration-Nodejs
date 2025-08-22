@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const { USER_ROLES } = require('../shared/constants/role');
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -28,8 +27,9 @@ const UserSchema = new mongoose.Schema({
     maxlength: 255,
   },
   role: {
-    type: Number,
-    default: USER_ROLES.USER, 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Role',
+    required: true
   },
   timeZone: {
     type: String,

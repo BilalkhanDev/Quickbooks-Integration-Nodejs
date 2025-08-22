@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const { USER_ROLES } = require('../shared/constants/role');
+const objectId = require('./objectId.schema');
+const BaseSchema = require('./base.schema');
 
 const baseAuthFields = {
   username: Joi.string()
@@ -30,7 +31,7 @@ const baseAuthFields = {
       'string.max': 'Password cannot exceed 255 characters',
       'any.required': 'Password is required',
     }),
-   timeZone: Joi.string()
+  timeZone: Joi.string()
     .pattern(/^[A-Za-z]+\/[A-Za-z_]+$/)  // Regex to allow time zones like "Asia/Kolkata", "Europe/London"
     .optional()
     .messages({
@@ -38,26 +39,29 @@ const baseAuthFields = {
       'string.pattern.base': 'Invalid time zone format. Use the format Region/City (e.g., Asia/Kolkata)',
     }),
 
-  role: Joi.number()
-    .valid(...Object.values(USER_ROLES))
-    .optional()
-    .messages({
-      'number.base': 'Role must be a number',
-      'any.only': 'Invalid role selected',
-    }),
+  role: objectId().required()
 };
 
-class AuthSchema {
-  register = {
-    body: Joi.object(baseAuthFields),
+class AuthSchema extends BaseSchema {
+  constructor() {
+    super(baseAuthFields)
   }
+  
+  register() {
+    return {
+      body: Joi.object(baseAuthFields)
+    }
+  }
+  login() {
+    return {
 
-  login = {
-    body: Joi.object({
-      email: baseAuthFields.email,
-      password: baseAuthFields.password,
-      
-    }),
+      body: Joi.object({
+        email: baseAuthFields.email,
+        password: baseAuthFields.password,
+
+      }),
+
+    }
   }
 }
 

@@ -1,5 +1,8 @@
 const Joi = require('joi');
-const objectId = require('../objectId.schema'); 
+const objectId = require('../objectId.schema');  // Assuming objectId schema is defined elsewhere
+const BaseSchema = require('../base.schema');  // Import BaseSchema
+
+// Base fields for the SpaceType schema
 const baseSpaceTypeFields = {
   title: Joi.string().required().min(3).messages({
     'string.empty': 'Title is required',
@@ -21,32 +24,12 @@ const baseSpaceTypeFields = {
   isActive: Joi.boolean().optional(),
 };
 
-const getSpaceTypeValidation= (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseSpaceTypeFields),
-      };
-
-    case 'update':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-        body: Joi.object(baseSpaceTypeFields),
-      };
-
-    case 'getById':
-    case 'delete':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    default:
-      return {};
+// Extend the BaseSchema for the SpaceType schema
+class SpaceTypeSchema extends BaseSchema {
+  constructor() {
+    super(baseSpaceTypeFields);  // Pass fields to the BaseSchema
   }
-};
 
-module.exports = getSpaceTypeValidation;
+}
+
+module.exports = new SpaceTypeSchema();

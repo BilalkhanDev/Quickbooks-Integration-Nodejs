@@ -1,4 +1,5 @@
 module.exports.User = require('./user.model');
+module.exports.Role = require('./roles.model');
 //fleets models
 module.exports.Fleet = require('./fleet.model');
 module.exports.Specification= require('./specification/index');
