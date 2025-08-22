@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
 const { search, paginate } = require('../shared/plugin');
 
 // Define the lineItemSchema
@@ -7,7 +6,7 @@ const lineItemSchema = new mongoose.Schema(
   {
     serviceTask: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceTask' },
     maintanceCategories: {
-      categoryCode: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
+      categoryCode: { type: mongoose.Schema.Types.ObjectId, ref: 'CategoryCode', default: null },
       systemCode: { type: mongoose.Schema.Types.ObjectId, ref: 'SystemCode', default: null },
       assemblyCode: { type: mongoose.Schema.Types.ObjectId, ref: 'AssemblyCode', default: null },
       reasonToRepair: { type: mongoose.Schema.Types.ObjectId, ref: 'ReasonCode', default: null },
@@ -16,7 +15,7 @@ const lineItemSchema = new mongoose.Schema(
     parts: { type: String, default: 0 },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
@@ -84,7 +83,6 @@ const serviceEntrySchema = new mongoose.Schema(
   }
 );
 
-// Post-find middleware to override maintanceCategories from lineItems to serviceTask
 serviceEntrySchema.post('findOne', async function(entry) {
   if (!entry) return; // If no entry is found, do nothing.
 

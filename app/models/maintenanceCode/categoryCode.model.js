@@ -8,6 +8,6 @@ class CategoryCodeModel extends BaseModel {
   }
 }
 
-const CategoryCode = mongoose.model('Category', new CategoryCodeModel().schema);
+const CategoryCode = mongoose.model('CategoryCode', new CategoryCodeModel().schema);
 
 module.exports = CategoryCode;

@@ -24,28 +24,23 @@ class ServiceEntryService extends GenericService {
 }
 
   // Update Service Entry - Ensure maintanceCategories is populated if not already set
-  async update(req) {
-    const { id } = req.params;
-    const user = req.user.id;
+  async update(id,updatedData) {
 
-    // Before update, ensure maintenanceCategories are populated for line items
-    const updatedData = req.body;
-
-    // Populate for each lineItem if maintanceCategories are missing
-    if (updatedData.lineItems) {
-      for (let li of updatedData.lineItems) {
-        if (li.serviceTask && !li.maintanceCategories) {
-          const serviceTask = await ServiceTask.findById(li.serviceTask);
-          if (serviceTask) {
-            li.maintanceCategories = serviceTask.maintanceCategories;
-          }
-        }
-      }
-    }
+    //  // Populate for each lineItem if maintanceCategories are missing
+    // if (updatedData.lineItems) {
+    //   for (let li of updatedData.lineItems) {
+    //     if (li.serviceTask && !li.maintanceCategories) {
+    //       const serviceTask = await ServiceTask.findById(li.serviceTask);
+    //       if (serviceTask) {
+    //         li.maintanceCategories = serviceTask.maintanceCategories;
+    //       }
+    //     }
+    //   }
+    // }
 
     // Perform update
     const updated = await this.model.findOneAndUpdate(
-      { _id: id, user },
+      { _id: id},
       updatedData,
       { new: true }
     );
@@ -98,55 +93,55 @@ class ServiceEntryService extends GenericService {
 
     return result;
   }
-async getById(id) {
-  const entry = await ServiceEntry.findOne({ _id: id })
-    .populate('vendor', '_id name')
-    .populate('issues', '-fleetId')
-    .populate({
-      path: 'lineItems', // Populate the lineItems with serviceTask and maintanceCategories
-      select: 'serviceTask maintanceCategories labor parts', // Only select relevant fields
-      populate: [
-        {
-          path: 'serviceTask', // Populate the serviceTask for each lineItem
-          select: 'title', // Only select title from serviceTask
-          populate: {
-            path: 'maintanceCategories', // Populate maintanceCategories for serviceTask
-            select: 'categoryCode systemCode assemblyCode reasonToRepair', // Select relevant fields
-            populate: [
-              {
-                path: 'categoryCode',
-                model: 'Category', // Populate categoryCode
-                select: 'title description', // Select specific fields for categoryCode
-              },
-              {
-                path: 'systemCode',
-                model: 'SystemCode', // Populate systemCode
-                select: 'code description', // Select specific fields for systemCode
-              },
-              {
-                path: 'assemblyCode',
-                model: 'AssemblyCode', // Populate assemblyCode
-                select: 'code description', // Select specific fields for assemblyCode
-              },
-              {
-                path: 'reasonToRepair',
-                model: 'ReasonCode', // Populate reasonToRepair
-                select: 'reason description', // Select specific fields for reasonToRepair
-              }
-            ]
+  async getById(id) {
+    const entry = await ServiceEntry.findOne({ _id: id })
+      .populate('vendor', '_id name')
+      .populate('issues', '-fleetId')
+      .populate({
+        path: 'lineItems', 
+        select: 'serviceTask maintanceCategories', 
+        populate: [
+          {
+            path: 'serviceTask', 
+            select: 'title', 
+            populate: {
+              path: 'maintanceCategories', 
+              select: 'categoryCode systemCode assemblyCode reasonToRepair', 
+              populate: [
+                {
+                  path: 'categoryCode',
+                  model: 'CategoryCode', 
+                  select: 'title description', 
+                },
+                {
+                  path: 'systemCode',
+                  model: 'SystemCode',
+                  select: 'code description', 
+                },
+                {
+                  path: 'assemblyCode',
+                  model: 'AssemblyCode', 
+                  select: 'code description', 
+                },
+                {
+                  path: 'reasonToRepair',
+                  model: 'ReasonCode', 
+                  select: 'reason description',
+                }
+              ]
+            }
           }
-        }
-      ]
-    })
-    .exec();
-  
+        ]
+      })
+      .exec();
 
-  if (!entry) {
-    throw new ApiError(HttpStatus.NOT_FOUND, 'Service entry not found or unauthorized');
+
+    if (!entry) {
+      throw new ApiError(HttpStatus.NOT_FOUND, 'Service entry not found or unauthorized');
+    }
+
+    return entry;
   }
-
-  return entry;
-}
 
 // here' we override the generic servive update to add custom 
   // async update(req) {
