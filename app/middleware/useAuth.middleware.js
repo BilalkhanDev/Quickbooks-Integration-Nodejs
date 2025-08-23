@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const { USER_ROLES } = require('../shared/constants/role');
 const { default: HttpStatus } = require('http-status');
+const { ROLES_TYPES } = require('../shared/constants/role');
 const useAuth = (req, res, next) => {
   try {
     const token = req.headers['authorization']?.split(' ')[1]; // Bearer token
@@ -33,7 +33,7 @@ const adminOrSelf = (req, res, next) => {
   const userIdFromToken = req?.user?.id;
   const userRole = req?.user?.role;
   const targetUserId = req.params.id;
-  if (userRole == USER_ROLES?.ADMIN || userIdFromToken == targetUserId) {
+  if (userRole == ROLES_TYPES.ADMIN|| userIdFromToken == targetUserId) {
     return next();
   }
 
