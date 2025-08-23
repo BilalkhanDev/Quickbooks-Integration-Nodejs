@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { search, paginate } = require('../shared/plugin');
 const { Schema } = mongoose;
 
 const ServiceTaskSchema = new mongoose.Schema({
@@ -34,9 +35,21 @@ const ServiceTaskSchema = new mongoose.Schema({
             default:null
 
         },
+    
+    },
+    isActive:{
+        type:Boolean,
+        default:true
     }
 }, {
     timestamps: true,
 });
-
+ServiceTaskSchema.plugin(search, {
+    refFields: {
+        'maintanceCategories.categoryCode': ['title'],
+        'maintanceCategories.systemCode': ['title'],
+        'maintanceCategories.assemblyCode': ['title']
+    }
+});
+ServiceTaskSchema.plugin(paginate);
 module.exports = mongoose.model('ServiceTask', ServiceTaskSchema);

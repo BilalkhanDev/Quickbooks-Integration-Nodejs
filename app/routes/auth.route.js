@@ -8,11 +8,11 @@ const AuthSchema = require('../validation/auth.schema');
 const router = express.Router();
 
 router.post('/register',
-    validate(AuthSchema.register),
+    validate(AuthSchema.register()),
     authController.register
 );
 router.post('/login',
-    validate(AuthSchema.login),
+    validate(AuthSchema.login()),
     authController.login
 );
 router.get('/me',

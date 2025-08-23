@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { search, paginate } = require('../shared/plugin');
+const { REPAIR_PRIORITY_CLASSES, SERVICE_ENTRY_LABLES } = require('../shared/constants/enum');
 
 // Define the lineItemSchema
 const lineItemSchema = new mongoose.Schema(
@@ -35,7 +36,7 @@ const serviceEntrySchema = new mongoose.Schema(
     lineItems: [lineItemSchema],
     repairPriorityClass: {
       type: String,
-      enum: [0, 1, 2],
+      enum:REPAIR_PRIORITY_CLASSES,
       required: true,
     },
     odometer: {
@@ -63,8 +64,8 @@ const serviceEntrySchema = new mongoose.Schema(
       default: '',
     },
     labels: {
-      type: Number,
-      enum: [0, 1, 2, 3],
+      type: String,
+      enum:SERVICE_ENTRY_LABLES,
     },
     documents: [{ type: String }],
     comments: {

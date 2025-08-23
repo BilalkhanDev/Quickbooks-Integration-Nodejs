@@ -9,6 +9,7 @@ const baseFleetFields = {
   vin: Joi.string().required(),
   capacity: Joi.string().required(),
   driverCarNumber: Joi.string().required(),
+  assigned_driver:objectId().optional().allow(null),
   driverCarModel: Joi.string().required(),
   driverCarYear: Joi.string().required(),
   driverCarColor: Joi.string().required(),
@@ -28,6 +29,7 @@ const baseFleetFields = {
   }),
   fundingSources: Joi.array().items(objectId()).optional(),
   equipments: Joi.array().items(objectId()).optional(),
+  isActive:Joi.boolean().optional().default(true)
 };
 
 class FleetSchema extends BaseSchema {

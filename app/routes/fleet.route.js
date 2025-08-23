@@ -8,14 +8,14 @@ const fleetSchema = require('../validation/fleet.schema');
 
 router
   .route('/')
-  .post(useAuth,validate(fleetSchema.create),fleetController.create)
+  .post(useAuth,validate(fleetSchema.create()),fleetController.create)
   .get(useAuth,fleetController.getAll);
 
 router
   .route('/:id')
-  .get(useAuth,validate(fleetSchema.getById),fleetController.getById)
-  .put(useAuth,validate(fleetSchema.update),fleetController.update)
-  .patch(useAuth,validate(fleetSchema.updateDriver),fleetController.update)
-  .delete(useAuth,validate(fleetSchema.delete),fleetController.delete);
+  .get(useAuth,validate(fleetSchema.getById()),fleetController.getById)
+  .put(useAuth,validate(fleetSchema.update()),fleetController.update)
+  .patch(useAuth,validate(fleetSchema.updateDriver()),fleetController.update)
+  .delete(useAuth,validate(fleetSchema.delete()),fleetController.delete);
 
 module.exports = router;

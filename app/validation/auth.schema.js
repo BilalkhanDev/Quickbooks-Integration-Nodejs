@@ -54,7 +54,6 @@ class AuthSchema extends BaseSchema {
   }
   login() {
     return {
-
       body: Joi.object({
         email: baseAuthFields.email,
         password: baseAuthFields.password,

@@ -13,7 +13,7 @@ router
   .route('/')
   .post(
     useAuth,
-    validate(issueSchema.create),
+    validate(issueSchema.create()),
     issueController.create
   )
   .get(useAuth, issueController.getAll);
@@ -28,19 +28,19 @@ router
   )
   .get(
     useAuth,
-    validate(issueSchema.getById),
+    validate(issueSchema.getById()),
     issueController.getById
   )
   .delete(
     useAuth,
-    validate(issueSchema.delete),
+    validate(issueSchema.delete()),
     issueController.delete
   );
 
 router.get(
   '/service/:serviceId',
   useAuth,
-  validate(issueSchema.getByServiceId),
+  validate(issueSchema.getByServiceId()),
   issueController.getIssuesByServiceId
 );
 

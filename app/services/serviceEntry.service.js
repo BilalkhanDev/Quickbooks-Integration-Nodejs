@@ -10,16 +10,16 @@ class ServiceEntryService extends GenericService {
     super(ServiceEntry);
   }
 
-  async create(data) {
-    // Loop through line items and populate maintanceCategories if needed
-    for (let li of data.lineItems) {
-      const serviceTask = await ServiceTask.findById(li.serviceTask); // Correctly using ObjectId for lookup
-      if (serviceTask && !li.maintanceCategories) {
-        li.maintanceCategories = serviceTask.maintanceCategories; // Populating maintanceCategories from the ServiceTask
-      }
-    }
-
-    const document = new this.model(data);
+  async create(req) {
+    // // Loop through line items and populate maintanceCategories if needed
+    // for (let li of data.lineItems) {
+    //   const serviceTask = await ServiceTask.findById(li.serviceTask); // Correctly using ObjectId for lookup
+    //   if (serviceTask && !li.maintanceCategories) {
+    //     li.maintanceCategories = serviceTask.maintanceCategories; // Populating maintanceCategories from the ServiceTask
+    //   }
+    // }
+   
+    const document = new this.model({user:req.user.id,...req.body});
     return await document.save();
   }
 

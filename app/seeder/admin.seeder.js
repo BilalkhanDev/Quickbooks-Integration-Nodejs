@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
-const { USER_ROLES } = require('../shared/constants/role');
 const User = require('../models/user.model');
+const { ROLES_TYPES } = require('../shared/constants/role');
 
 const createUsers = async () => {
   try {
@@ -9,13 +9,13 @@ const createUsers = async () => {
         username: 'admin',
         email: 'admin@gmail.com',
         password: 'admin1234',
-        role: USER_ROLES.ADMIN,
+        role: ROLES_TYPES.ADMIN,
       },
       {
         username: 'alexBrown',
         email: 'alex@gmail.com',
         password: 'alexBrown1234',
-        role: USER_ROLES.USER,
+        role:ROLES_TYPES.DRIVER,
       },
     ];
 

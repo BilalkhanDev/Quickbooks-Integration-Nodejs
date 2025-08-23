@@ -10,7 +10,7 @@ class ServiceEntryController extends BaseController {
     super(serviceEntryService);
   }
   create = catchAsync(async (req, res) => {
-    const result = await this.service.create(req.body);
+    const result = await this.service.create(req);
     return this.sendSuccessResponse(res, HttpStatus.CREATED, result);
   });
   update = catchAsync(async (req, res) => {

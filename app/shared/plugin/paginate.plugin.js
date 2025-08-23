@@ -1,14 +1,4 @@
-/* eslint-disable no-param-reassign */
-
 const paginate = (schema) => {
-  /**
-   * @typedef {Object} QueryResult
-   * @property {Document[]} results - Results found
-   * @property {number} page - Current page
-   * @property {number} limit - Maximum number of results per page
-   * @property {number} totalPages - Total number of pages
-   * @property {number} totalResults - Total number of documents
-   */
   /**
    * Query for documents with pagination
    * @param {Object} [filter] - Mongo filter
@@ -40,48 +30,26 @@ const paginate = (schema) => {
     const countPromise = this.countDocuments(filter).exec();
     let docsQuery = this.find(filter).sort(sort).skip(skip).limit(limit);
 
-    // Handle populate - Fixed version
+    // Handle populate - Fixed version for nested populate
     if (options.populate) {
-      const processPopulate = (populate) => {
-        if (typeof populate === 'string') {
-          // Handle nested populate like "user.profile" or simple "user"
-          if (populate.includes('.')) {
-            const parts = populate.split('.');
-            return parts.reverse().reduce((acc, part) => 
-              acc ? { path: part, populate: acc } : { path: part }
-            );
-          }
-          return { path: populate };
-        }
-        
-        if (typeof populate === 'object' && populate !== null) {
-          return populate;
-        }
-        
-        return null;
-      };
-
       let populateOptions = [];
 
       if (typeof options.populate === 'string') {
         // Handle comma-separated string like "user,fleet,service"
-        populateOptions = options.populate.split(',')
-          .map(p => p.trim())
-          .map(processPopulate)
-          .filter(Boolean);
+        populateOptions = options.populate.split(',').map(p => p.trim());
       } else if (Array.isArray(options.populate)) {
         // Handle array of strings or objects
-        populateOptions = options.populate
-          .map(processPopulate)
-          .filter(Boolean);
+        populateOptions = options.populate;
       } else if (typeof options.populate === 'object') {
         // Handle single object
-        populateOptions = [processPopulate(options.populate)].filter(Boolean);
+        populateOptions = [options.populate];
       }
-
-      // Apply populate options
       populateOptions.forEach((popOption) => {
-        docsQuery = docsQuery.populate(popOption);
+        if (typeof popOption === 'string') {
+          docsQuery = docsQuery.populate(popOption);
+        } else if (typeof popOption === 'object' && popOption !== null) {
+          docsQuery = docsQuery.populate(popOption);
+        }
       });
     }
 

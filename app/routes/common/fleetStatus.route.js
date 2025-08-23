@@ -1,7 +1,6 @@
 const express = require('express');
 const { useAuth } = require('../../middleware/useAuth.middleware');
-const { reqValidator } = require('../../middleware');
-const fleetStatusController=require('../../controllers/common/status.controller')
+const fleetStatusController=require('../../controllers/common/status.controller');
 const router = express.Router();
 
 router

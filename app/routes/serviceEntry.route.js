@@ -1,17 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const s3AssetUploader = require('../middleware/multer.middleware');
 const { useAuth } = require('../middleware/useAuth.middleware');
-const reqValidator = require('../middleware/validate.middleware');
 const serviceEntryController = require('../controllers/serviceEntry.controller');
-const getServiceEntrySchema = require('../validation/serviceEntry.schema');
+const validate = require('../middleware/validate.middleware');
+const serviceEntrySchema = require('../validation/serviceEntry.schema');
 
 router
   .route('/')
   .post(
     useAuth,
-    // s3AssetUploader("services", "documents"),
-    reqValidator(getServiceEntrySchema,'create'),
+    validate(serviceEntrySchema.create()),
     serviceEntryController.create
   );
 
@@ -19,20 +17,19 @@ router
   .route('/:id')
   .put(
     useAuth,
-    // s3AssetUploader("services", "documents"),
-    reqValidator(getServiceEntrySchema,'update'),
+    validate(serviceEntrySchema.update()),
     serviceEntryController.update
   )
   .get(
     useAuth,
-    reqValidator(getServiceEntrySchema,'getById'),
+    validate(serviceEntrySchema.getById()),
     serviceEntryController.getById
   );
 
 router.get(
   '/fleet/:fleetId',
   useAuth,
-  reqValidator(getServiceEntrySchema,'getByFleetId'),
+  validate(serviceEntrySchema.getByFleetId()),
   serviceEntryController.getByFleetId
 );
 

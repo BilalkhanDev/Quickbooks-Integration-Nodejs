@@ -6,14 +6,14 @@ const driverController = require('../controllers/driver.controller');
 const driverSchema = require('../validation/driver.schema');
 
 router.route('/')
-  .post(useAuth, validate(driverSchema.create), driverController.create)
+  .post(useAuth, validate(driverSchema.create()), driverController.create)
   .get(useAuth, driverController.getAll);
 
 router.route('/:id')
-  .put(useAuth, validate(driverSchema.update), driverController.update)
-  .get(useAuth, validate(driverSchema.getById), driverController.getById)
+  .put(useAuth, validate(driverSchema.update()), driverController.update)
+  .get(useAuth, validate(driverSchema.getById()), driverController.getById)
  
 
-router.get('/fleet/:fleetId', validate(driverSchema.getByFleetId), driverController.getByFleetId);
+router.get('/fleet/:fleetId', validate(driverSchema.getByFleetId()), driverController.getByFleetId);
 
 module.exports = router;

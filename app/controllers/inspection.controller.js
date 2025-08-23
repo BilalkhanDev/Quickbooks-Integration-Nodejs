@@ -11,11 +11,7 @@ class InspectionController extends BaseController {
 
   getName = catchAsync(async (req, res) => {
     const inspections = await this.service.getNames();
-    return this.sendSuccessResponse(res, {
-      statusCode: HttpStatus.OK,
-      message: 'Inspection names fetched',
-      data: inspections,
-    });
+    return this.sendSuccessResponse(res,  HttpStatus.OK, inspections);
   });
 
 }

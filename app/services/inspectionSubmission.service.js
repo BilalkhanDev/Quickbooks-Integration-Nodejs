@@ -12,23 +12,23 @@ class InspectionSubmissionService extends GenericService {
   async createOrUpdate(req) {
     const userId = req.user.id;
     const { inspectionId, fleet, inspectedBy, inspectionDate, itemValues, status } = req.body;
-    const uploads = req.s3Grouped || {};
+    // const uploads = req.s3Grouped || {};
 
     if (!inspectionId || !fleet) {
       throw new ApiError(HttpStatus.FORBIDDEN,"Missing required fields: inspectionId or fleetId");
     }
 
     const enrichedItemValues = (itemValues || []).map(item => {
-      const itemId = String(item.itemId).trim();
-      const fileUrls = uploads[itemId];
+      // const itemId = String(item.itemId).trim();
+      // const fileUrls = uploads[itemId];
 
-      if (fileUrls && fileUrls.length > 0) {
-        return {
-          ...item,
-          value: fileUrls.length === 1 ? fileUrls[0] : fileUrls,
-          type: "file"
-        };
-      }
+      // if (fileUrls && fileUrls.length > 0) {
+      //   return {
+      //     ...item,
+      //     value: fileUrls.length === 1 ? fileUrls[0] : fileUrls,
+      //     type: "file"
+      //   };
+      // }
 
       return item;
     });
