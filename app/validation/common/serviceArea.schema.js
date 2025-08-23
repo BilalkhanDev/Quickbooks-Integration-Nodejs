@@ -1,6 +1,6 @@
 const Joi = require('joi');
-const objectId = require('../objectId.schema'); // Assuming you have an objectId schema for validating ObjectId
-
+const objectId = require('../objectId.schema');  // Assuming objectId schema is defined elsewhere
+const BaseSchema = require('../base.schema');  
 const baseServiceAreaFields = {
   title: Joi.string().required().min(3).messages({
     'string.empty': 'Title is required',
@@ -16,32 +16,12 @@ const baseServiceAreaFields = {
   isActive: Joi.boolean().optional(),
 };
 
-const getServiceAreaValidation = (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseServiceAreaFields),
-      };
-
-    case 'update':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-        body: Joi.object(baseServiceAreaFields),
-      };
-
-    case 'getById':
-    case 'delete':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    default:
-      return {};
+class ServiceAreaSchema extends BaseSchema {
+  constructor() {
+    super(baseServiceAreaFields);  
   }
-};
 
-module.exports = getServiceAreaValidation;
+
+}
+
+module.exports = new ServiceAreaSchema();

@@ -1,9 +1,10 @@
-// src/app/validation/schemas/driver.schema.js
 const Joi = require('joi');
 const objectId = require('./objectId.schema');
+const BaseSchema = require('./base.schema');  // Import the BaseSchema
 
-const GENDERS = ['Male', 'Female', 'Other'];
+const GENDERS = ['Male', 'Female', 'Other'];  // Allowed genders
 
+// Fields specific to Driver
 const baseDriverFields = {
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
@@ -18,40 +19,21 @@ const baseDriverFields = {
   serviceArea: Joi.string().required(),
   garageAddress: Joi.string().required(),
   fleet: objectId().optional(),
-  isActive: Joi.boolean().optional()
+  isActive: Joi.boolean().optional(),
 };
 
-const getDriverSchema = (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseDriverFields),
-      };
-
-    case 'update':
-      return {
-          params: Joi.object({
-          id: objectId().required(),
-        }),
-      body: Joi.object(baseDriverFields),
-      };
-
-    case 'getById':
-    case 'delete':
-      return {
-          params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    case 'getByFleetId':
-      return {
-        params: Joi.object({ fleetId: objectId().required() }),
-      };
-
-    default:
-      return {};
+class DriverSchema extends BaseSchema {
+  constructor() {
+    super(baseDriverFields);  // Pass the driver-specific fields to the base schema
   }
-};
 
-module.exports = getDriverSchema;
+  getByFleetId() {
+    return {
+      params: Joi.object({
+        fleetId: objectId().required(),
+      }),
+    };
+  }
+}
+
+module.exports = new DriverSchema();

@@ -1,5 +1,7 @@
 const Joi = require('joi');
-const objectId = require('../objectId.schema'); // Assuming you have an objectId schema for validating ObjectId
+const objectId = require('../objectId.schema'); 
+const BaseSchema = require('../base.schema');
+
 
 const addressSchema = Joi.object({
   name: Joi.string().required(),
@@ -32,32 +34,18 @@ const baseFundingSourceFields = {
   isActive: Joi.boolean().optional(),
 };
 
-const getFundingSourceValidation = (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseFundingSourceFields),
-      };
-
-    case 'update':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-        body: Joi.object(baseFundingSourceFields),
-      };
-
-    case 'getById':
-    case 'delete':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    default:
-      return {};
+class FundingSourceSchema extends BaseSchema {
+  constructor() {
+    super(baseFundingSourceFields);  
   }
-};
 
-module.exports = getFundingSourceValidation;
+  bulkDelete() {
+    return {
+      body: Joi.object({
+        vendorIds: Joi.array().items(objectId().required()).required(), 
+      }),
+    };
+  }
+}
+
+module.exports = new FundingSourceSchema();

@@ -1,7 +1,8 @@
 const Joi = require('joi');
-const objectId = require('../objectId.schema'); 
+const objectId = require('../objectId.schema');  // Assuming objectId schema is defined elsewhere
+const BaseSchema = require('../base.schema');  
 
-const baseLOSTitleFields = {
+const baseLOSFields = {
   title: Joi.string().required().min(3).messages({
     'string.empty': 'Title is required',
     'string.min': 'Title must be at least 3 characters long',
@@ -16,32 +17,17 @@ const baseLOSTitleFields = {
   isActive: Joi.boolean().optional(),
 };
 
-const getLOSValidationSchema = (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseLOSTitleFields),
-      };
-
-    case 'update':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-        body: Joi.object(baseLOSTitleFields),
-      };
-
-    case 'getById':
-    case 'delete':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    default:
-      return {};
+class LOSSchema extends BaseSchema {
+  constructor() {
+    super(baseLOSFields);  // Pass fields to the BaseSchema
   }
-};
+  getById() {
+    return {
+      params: Joi.object({
+        id: objectId().required(),
+      }),
+    };
+  }
+}
 
-module.exports = getLOSValidationSchema;
+module.exports = new LOSSchema();

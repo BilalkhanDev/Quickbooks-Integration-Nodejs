@@ -1,59 +1,38 @@
 const Joi = require('joi');
-const objectId = require('./objectId.schema');
+const objectId = require('./objectId.schema');  
+const BaseSchema = require('./base.schema');  
 
-// Enums
 const REPAIR_PRIORITY_CLASSES = [0, 1, 2];
 const LABELS = [0, 1, 2, 3];
 
 const baseServiceEntryFields = {
-  fleet: objectId().required(),
+  fleet: objectId().required(),  // Fleet ID is required
   repairPriorityClass: Joi.number()
     .valid(...REPAIR_PRIORITY_CLASSES)
-    .required(),
-  odometer: Joi.number().default(0),
-  void: Joi.boolean().default(false),
-  completionDate: Joi.date().required(),
-  startDate: Joi.date().allow(null).optional(),
-  vendor: objectId().optional(),
-  reference: Joi.string().allow('').optional(),
-  labels: Joi.number().valid(...LABELS).optional(),
-  documents: Joi.array().items(Joi.string()).optional().default([]),
-  comments: Joi.string().allow('').optional(),
+    .required(),  // Repair priority class is required with enum validation
+  odometer: Joi.number().default(0),  // Default to 0 if not provided
+  void: Joi.boolean().default(false),  // Default to false if not provided
+  completionDate: Joi.date().required(),  // Completion date is required
+  startDate: Joi.date().allow(null).optional(),  // Start date is optional
+  vendor: objectId().optional(),  // Vendor is optional
+  reference: Joi.string().allow('').optional(),  // Reference is optional and can be an empty string
+  labels: Joi.number().valid(...LABELS).optional(),  // Labels are optional with validation
+  documents: Joi.array().items(Joi.string()).optional().default([]),  // Documents is an array of strings
+  comments: Joi.string().allow('').optional(),  // Comments is optional and can be an empty string
 };
 
-const getServiceEntrySchema = (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseServiceEntryFields),
-      };
-
-    case 'update':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-         body: Joi.object(baseServiceEntryFields),
-      };
-
-    case 'getById':
-    case 'delete':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    case 'getByFleetId':
-      return {
-        params: Joi.object({
-          fleetId: objectId().required(),
-        }),
-      };
-
-    default:
-      return {};
+class ServiceEntrySchema extends BaseSchema {
+  constructor() {
+    super(baseServiceEntryFields);  
   }
-};
 
-module.exports = getServiceEntrySchema;
+  getByServiceId() {
+    return {
+      params: Joi.object({
+        serviceId: objectId().required(),
+      }),
+    };
+  }
+}
+
+module.exports = new ServiceEntrySchema();

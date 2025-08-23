@@ -1,6 +1,8 @@
 const Joi = require('joi');
-const objectId = require('../objectId.schema');  // Assuming you have a reusable objectId schema
+const BaseSchema = require('../base.schema');
 
+
+// Base Equipment Fields
 const baseEquipmentFields = {
   title: Joi.string().required().trim(),
   description: Joi.string().required().trim(),
@@ -8,39 +10,11 @@ const baseEquipmentFields = {
   isActive: Joi.boolean().default(false),
 };
 
-// Schema for different actions
-const getEquipmentSchema = (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseEquipmentFields),
-      };
-
-    case 'update':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-         body: Joi.object(baseEquipmentFields),
-      };
-
-    case 'delete':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    case 'getById':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    default:
-      return {};
+class EquipmentSchema extends BaseSchema {
+  constructor() {
+    super(baseEquipmentFields);  
   }
-};
 
-module.exports = getEquipmentSchema;
+}
+
+module.exports = new EquipmentSchema();

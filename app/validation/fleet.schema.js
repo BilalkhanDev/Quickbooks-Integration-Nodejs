@@ -1,5 +1,6 @@
 const Joi = require('joi');
-const objectId = require('./objectId.schema');
+const objectId = require('./objectId.schema');  
+const BaseSchema = require('./base.schema');  // Import the BaseSchema
 
 const baseFleetFields = {
   setiDecall: Joi.string().required(),
@@ -23,55 +24,27 @@ const baseFleetFields = {
   spaceType: objectId().required().messages({
     'string.base': 'Space Type must be a string',
     'any.required': 'SpaceType is required',
-    'any.invalid': 'Invalid SpacetYpe format'
+    'any.invalid': 'Invalid SpaceType format'
   }),
   fundingSources: Joi.array().items(objectId()).optional(),
   equipments: Joi.array().items(objectId()).optional(),
 };
 
-
-// ✅ Schema Generator Function
-const getFleetSchema = (mode = 'create') => {
-  switch (mode) {
-    case 'create':
-      return {
-        body: Joi.object(baseFleetFields), // ✅ no .fork
-      };
-
-    case 'update':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-        body: Joi.object(
-          Object.fromEntries(
-            Object.entries(baseFleetFields).map(([key, schema]) => [key, schema.optional()])
-          )
-        ),
-      };
-      case 'updateDriver':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-        body: Joi.object({
-          assigned_driver:objectId().required()
-        }),
-      };
-
-
-    case 'delete':
-    case 'getById':
-      return {
-        params: Joi.object({
-          id: objectId().required(),
-        }),
-      };
-
-    default:
-      return {};
+class FleetSchema extends BaseSchema {
+  constructor() {
+    super(baseFleetFields); 
   }
-};
 
+  updateDriver() {
+    return {
+      params: Joi.object({
+        id: objectId().required(),
+      }),
+      body: Joi.object({
+        assigned_driver: objectId().required(), // Ensure assigned_driver is required
+      }),
+    };
+  }
+}
 
-module.exports = getFleetSchema;
+module.exports = new FleetSchema();
