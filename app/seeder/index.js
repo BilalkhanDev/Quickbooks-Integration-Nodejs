@@ -17,11 +17,14 @@ const seedFleet = require('./fleet.seeder.js');
 const seedDriver=require('./driver.seeder.js');
 const seedMaintanceCode = require('./maintanceCodeSeeder/index.js');
 const seedServiceTask = require('./serviceTask.seeder.js');
+const seedRoles = require('./roles.seeder.js');
 const runSeeders = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ MongoDB connected");
-    const userIds=await createAdminUser();
+    const roles=await seedRoles()
+    console.log("Roles",roles)
+    const userIds=await createAdminUser(roles);
     await seedFleetStatuses();
     await seedExpenses();
     await seedVendors()

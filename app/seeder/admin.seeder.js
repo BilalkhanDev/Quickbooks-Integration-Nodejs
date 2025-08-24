@@ -1,21 +1,20 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
-const { ROLES_TYPES } = require('../shared/constants/role');
 
-const createUsers = async () => {
+const createUsers = async (roles) => {
   try {
     const usersToSeed = [
       {
         username: 'admin',
         email: 'admin@gmail.com',
         password: 'admin1234',
-        role: ROLES_TYPES.ADMIN,
+        role: roles[0],
       },
       {
         username: 'alexBrown',
         email: 'alex@gmail.com',
         password: 'alexBrown1234',
-        role:ROLES_TYPES.DRIVER,
+        role: roles[1],
       },
     ];
 

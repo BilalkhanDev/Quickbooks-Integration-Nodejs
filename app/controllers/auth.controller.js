@@ -5,6 +5,7 @@ const BaseController = require('./base.controller');
 const authService = require('../services/auth.service'); 
 const ApiError = require('../shared/core/exceptions/ApiError');
 const tokenProvider = require('../shared/security/tokenProvider');
+const pick = require('../shared/core/utils/pick');
 
 class AuthController extends BaseController {
   constructor() {
@@ -13,7 +14,6 @@ class AuthController extends BaseController {
   
   register = catchAsync(async (req, res) => {
     const user =await  this.service.register(req.body); 
-    console.log("user", user)
     return this.sendSuccessResponse(res, HttpStatus.OK, user);
   });
 
@@ -45,6 +45,12 @@ class AuthController extends BaseController {
     return this.sendSuccessResponse(res, HttpStatus.OK, userProfile);
  
   });
+    getAll = catchAsync(async (req, res) => {
+      const queryParams = pick(req.query, ['search', 'isActive']);
+      const options = pick(req.query, ['sortBy', 'limit', 'page']);
+      const result = await this.service.getAll(queryParams, options);
+      return this.sendSuccessResponse(res, HttpStatus.OK, result);
+    });
 }
 
 module.exports = new AuthController();

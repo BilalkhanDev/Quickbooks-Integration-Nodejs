@@ -2,7 +2,7 @@ const { User } = require('../models');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
 const GenericService = require('../services/generic.service');
-const { TokenProvider, PaswordHasher } = require('../shared/security');
+const { TokenProvider} = require('../shared/security');
 const paswordHasher = require('../shared/security/paswordHasher');
 
 class AuthService extends GenericService {
@@ -11,19 +11,20 @@ class AuthService extends GenericService {
   }
 
   async register(data) {
-    const {email,password,username}=data
-    const existingUser = await this.findOne({ email });
-    if (existingUser) {
-      throw new ApiError(HttpStatus.BAD_REQUEST,'User already exists');
+    const {email,password,username,role}=data
+    const isEmailDuplicate = await this.model.isEmailTaken(email);
+    if (isEmailDuplicate) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Email already Exist');
     }
     const isDuplicate = await this.model.isTitleTaken(username);
     if (isDuplicate) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
     }
-    const hashedPassword = await PaswordHasher.hash(password);
+    const hashedPassword = await paswordHasher.hash(password);
     const user = await this.create({
       email,
       username,
+      role,
       password: hashedPassword,
       ...data
     });
@@ -32,6 +33,7 @@ class AuthService extends GenericService {
       id: user._id,
       username: user.username,
       email: user.email,
+      role:user.role,
       timeZone: user.timeZone
     };
   }
@@ -62,26 +64,64 @@ class AuthService extends GenericService {
     },
   };
 }
+  async update(id, data) {
+    const { email, password, username} = data;
 
+    const isUsernameDuplicate = await this.model.isTitleTaken(username, id);
+    if (isUsernameDuplicate) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
+    }
+    const isEmailDuplicate = await this.model.isEmailTaken(email, id);
+    if (isEmailDuplicate) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, 'Email already taken');
+    }
 
-  // Get user profile
-  async getProfile(userId) {
-    const user = await this.findById(userId);
+    const updatedData = { ...data };
+
+    if (password) {
+      const hashedPassword = await paswordHasher.hash(password);
+      updatedData.password = hashedPassword;
+    }
+
+    const user = await this.model.findByIdAndUpdate(id, updatedData, { new: true });
+
     if (!user) {
       throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
     }
-
     return {
-      id: user.id,
+      id: user._id,
       username: user.username,
       email: user.email,
       role: user.role,
-      timeZone:user.timeZone,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      timeZone: user.timeZone,
     };
   }
+  // Get user profile
+  async getProfile(userId) {
+    const user = await this.model.findById(userId).populate('role', 'name').select('-password');
+    if (!user) {
+      throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
+    }
+   return user
+  }
+  async getAll(queryParams, options) {
+        const { search, ...finalFilter } = queryParams;
 
+        let filter = { ...finalFilter };
+        const searchFilter = await this.model.search({ search });
+        if (searchFilter && Object.keys(searchFilter).length > 0) {
+            filter = { $and: [finalFilter, searchFilter] };
+        }
+        const populate = [
+            { path: 'role', select: '_id name' },
+
+        ];
+        return this.model.paginate(filter, {
+            ...options,
+            populate,
+            select: '-password',
+        });
+    }
   // Generate access and refresh tokens using TokenProvider
   generateTokens(payload) {
     const accessToken = TokenProvider.generateAccessToken(payload);

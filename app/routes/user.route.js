@@ -1,20 +1,22 @@
 const express = require('express');
-const reqValidator = require('../middleware/reqValidator.middleware');
-const { adminOnly, useAuth, adminOrSelf } = require('../middleware/useAuth.middleware');
-const userController=require('../controllers/user.controller')
-const { USER_ROLES } = require('../shared/constants/role');
-
+const { useAuth, adminOrSelf, adminOnly } = require('../middleware/useAuth.middleware');
 const router = express.Router();
+const validate = require('../middleware/validate.middleware');
 
-router.get('/',
-    useAuth,
-    adminOnly(USER_ROLES.ADMIN),
-    userController.getAllUsers);
+const AuthSchema = require('../validation/auth.schema');
+const AuthController = require('../controllers/auth.controller');
 
-// single user 
-router.get('/:id',
-    useAuth,
-    
-    adminOrSelf,
-    userController.getSingleUser);
+
+router
+    .route('/')
+    .post(useAuth,adminOnly(),validate(AuthSchema.create()),AuthController.register)
+    .get(useAuth,adminOnly(),validate(AuthSchema.getAll()),AuthController.getAll);
+
+router
+    .route('/:id')
+    .put(useAuth,adminOnly(),validate(AuthSchema.update()), AuthController.update)
+    .get(useAuth,adminOnly(),validate(AuthSchema.getById()), AuthController.getProfile)
+    .delete(useAuth,adminOnly(),validate(AuthSchema.delete()),AuthController.delete)
+
 module.exports = router;
+

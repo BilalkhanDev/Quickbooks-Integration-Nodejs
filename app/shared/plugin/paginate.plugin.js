@@ -52,7 +52,9 @@ const paginate = (schema) => {
         }
       });
     }
-
+  if (options.select) {
+    docsQuery = docsQuery.select(options.select);
+  }
     const docsPromise = docsQuery.exec();
 
     return Promise.all([countPromise, docsPromise]).then(([totalResults, results]) => {

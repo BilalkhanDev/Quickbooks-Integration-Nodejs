@@ -1,5 +1,6 @@
 const express = require('express');
 const authRoutes = require('./auth.route');
+const userRoutes=require('./user.route')
 const fleetRoutes = require('./fleet.route')
 const vendorRoutes = require('./vendor.route')
 const specficationRoutes = require('./fleetSpecification.route')
@@ -18,7 +19,7 @@ const router = express.Router();
 
 router.use('/auth', authRoutes);
 router.use('/role',roleRoutes)
-// router.use('/user', userRoutes);
+router.use('/user', userRoutes);
 router.use('/fleet', fleetRoutes);
 
 router.use("/vendor", vendorRoutes)

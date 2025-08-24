@@ -18,7 +18,6 @@ router.post('/',
 router.get('/single',useAuth,inspectionSubmissionController.getSingle);
 router.get('/aggregated/:id',
      useAuth,
-    
      inspectionSubmissionController.getAggregatedFormForFleet);
 
 router.get('/:id',
