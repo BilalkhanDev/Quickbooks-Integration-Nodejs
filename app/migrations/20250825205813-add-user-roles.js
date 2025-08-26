@@ -6,12 +6,9 @@ module.exports = {
     const usersCol = db.collection('users');
     const rolesCol = db.collection('roles');
 
-    process.stdout.write("🟢 Starting round-robin role assignment...\n");
-    console.log("Bilal - Debug point reached");
 
     try {
       await session.withTransaction(async () => {
-        console.log("📍 Inside transaction");
         
         // 1. Get all roles
         const roles = await rolesCol.find({}, { session }).toArray();
@@ -28,9 +25,7 @@ module.exports = {
           return;
         }
 
-        // 3. Assign roles one by one
-        console.log("🔄 Starting role assignment loop");
-        for (let i = 0; i < users.length; i++) {
+        for (let i = 0; i < users?.length; i++) {
           const user = users[i];
           const roleToAssign = roles[i % roles.length];
 
@@ -49,7 +44,6 @@ module.exports = {
         console.log("🏁 Loop completed");
       });
 
-      process.stdout.write("✅ Round-robin role assignment complete.\n");
       console.log("✅ Migration completed successfully");
       
     } catch (error) {

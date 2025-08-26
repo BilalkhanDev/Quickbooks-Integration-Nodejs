@@ -98,30 +98,30 @@ class AuthService extends GenericService {
   }
   // Get user profile
   async getProfile(userId) {
-    const user = await this.model.findById(userId).populate('role', 'name').select('-password');
+    const user = await this.model.findById(userId).populate('role', 'name type').select('-password');
     if (!user) {
       throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
     }
    return user
   }
   async getAll(queryParams, options) {
-        const { search, ...finalFilter } = queryParams;
+    const { search, ...finalFilter } = queryParams;
 
-        let filter = { ...finalFilter };
-        const searchFilter = await this.model.search({ search });
-        if (searchFilter && Object.keys(searchFilter).length > 0) {
-            filter = { $and: [finalFilter, searchFilter] };
-        }
-        const populate = [
-            { path: 'role', select: '_id name' },
-
-        ];
-        return this.model.paginate(filter, {
-            ...options,
-            populate,
-            select: '-password',
-        });
+    let filter = { ...finalFilter };
+    const searchFilter = await this.model.search({ search });
+    if (searchFilter && Object.keys(searchFilter).length > 0) {
+      filter = { $and: [finalFilter, searchFilter] };
     }
+    const populate = [
+      { path: 'role', select: '_id name' },
+
+    ];
+    return this.model.paginate(filter, {
+      ...options,
+      populate,
+      select: '-password',
+    });
+  }
   // Generate access and refresh tokens using TokenProvider
   generateTokens(payload) {
     const accessToken = TokenProvider.generateAccessToken(payload);
