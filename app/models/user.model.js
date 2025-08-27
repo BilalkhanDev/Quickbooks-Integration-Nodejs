@@ -36,6 +36,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: 'America/New_York', 
   },
+  contactNumber: {type:String, default:null},
+  address: {
+  name: { type: String,default:null },
+  coords: { type: [Number], default: [0, 0] },
+  city: { type: String ,default:null},
+  state: { type: String ,default:null},
+  },
+
 }, {
   timestamps: true,
 });
@@ -64,6 +72,7 @@ UserSchema.statics.isEmailTaken = async function (email, excludeId) {
 UserSchema.plugin(search,{
   refFields: {
     role:['name'],
+    address:['name','city','state']
    
   }
 });

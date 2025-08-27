@@ -4,78 +4,96 @@ const GenericService = require('./generic.service');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
 const { InspectionSchedule, Inspection } = require('../models');
+const { default: mongoose } = require('mongoose');
 
 
 class InspectionScheduleService extends GenericService {
     constructor() {
         super(InspectionSchedule);
     }
-
-    async create(req) {
-        const data = req.body;
-        const userId = req.user.id;
-        const payload = {
-            user: userId,
-            ...data
-        }
-        const result = new this.model(payload);
-        await result.save();
-        return result;
-    }
-
-
-
     async getAll(fleetId) {
+        const fleetObjectId = mongoose.isValidObjectId(fleetId)
+            ? new mongoose.Types.ObjectId(fleetId)
+            : (() => { throw new Error('Invalid fleetId'); })();
+
+        const schedulesColl = this.model.collection.name;
+
+        const defaultSchedule = {
+            frequency: null,
+            frequency_count: 0,
+            submission_schedule: [],
+            status: 'non-scheduled',
+            createdAt: null,
+            updatedAt: null,
+        };
+
         const inspections = await Inspection.aggregate([
             {
                 $lookup: {
-                    from: 'inspectionschedules',
-                    let: { inspectionId: '$_id' },
+                    from: schedulesColl,
+                    let: { inspection: '$_id', fleetId: fleetObjectId },
                     pipeline: [
                         {
                             $match: {
                                 $expr: {
                                     $and: [
-                                        { $eq: ['$inspection', '$$inspectionId'] },
-                                        { $eq: ['$fleet', new ObjectId(fleetId)] }
-                                    ]
-                                }
-                            }
+                                        { $eq: ['$inspection', '$$inspection'] },
+                                        { $eq: ['$fleet', '$$fleetId'] },
+                                    ],
+                                },
+                            },
                         },
                         {
                             $project: {
+                                _id: 0,
                                 frequency: 1,
                                 frequency_count: 1,
                                 submission_schedule: 1,
                                 status: 1,
                                 createdAt: 1,
-                                updatedAt: 1
-                            }
-                        }
+                                updatedAt: 1,
+                            },
+                        },
                     ],
-                    as: 'schedule'
-                }
+                    as: 'scheduleDocs',
+                },
             },
             {
-                $unwind: {
-                    path: '$schedule',
-                    preserveNullAndEmptyArrays: true
-                }
+                $addFields: {
+                    schedule: {
+                        $ifNull: [{ $first: '$scheduleDocs' }, defaultSchedule],
+                    },
+                },
             },
+            { $project: { scheduleDocs: 0 } },
+
+            // ✨ Only return id, name, description, schedule
             {
                 $project: {
+                    _id: 0,
+                    id: '$_id',
                     name: 1,
                     description: 1,
-                    status: 1,
-                    sections: 1,
-                    items: 1,
-                    schedule: 1
-                }
-            }
+                    schedule: 1,
+                },
+            },
         ]);
 
         return inspections;
     }
+    async createOrUpdate(req) {
+        const { fleet, inspection } = req.body
+        return await this.model.findOneAndUpdate(
+            { fleet, inspection },
+            { $set: req.body },
+            { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+        );
+    }
+    async getById(id) {
+        const data = await this.model.findOne({ inspection: id });
+        return data
+    }
+
 
 
 

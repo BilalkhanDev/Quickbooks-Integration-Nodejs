@@ -15,6 +15,7 @@ const documentRoutes=require('./douments.route')
 const maintanceRoutes=require('./mantainenceCode/index')
 const serviceTaskRoutes=require('./serviceTask.route')
 const roleRoutes=require('./role.route')
+const inspectionScheduleRoutes=require('./inspectionSchedule.route')
 const router = express.Router();
 
 router.use('/auth', authRoutes);
@@ -28,6 +29,8 @@ router.use("/service", serviceRoutes)
 router.use("/issue", issuesRoutes)
 router.use("/inspection", inspectionRoutes)
 router.use("/inspection-submission", inspectionSubmissionRoutes)
+router.use('/inspection-schedule', inspectionScheduleRoutes)
+
 router.use("/driver", driverRoutes)
 router.use("/company", companyRoutes)
 
