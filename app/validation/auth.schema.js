@@ -39,7 +39,26 @@ const baseAuthFields = {
       'string.pattern.base': 'Invalid time zone format. Use the format Region/City (e.g., Asia/Kolkata)',
     }),
 
-  role: objectId().required()
+  role: objectId().required(),
+  contactNumber: Joi.string()
+    .pattern(/^\+?[1-9]\d{1,14}$/)
+    .optional()
+    .messages({
+      'string.base': 'Contact number must be a string',
+      'string.pattern.base': 'Invalid contact number format. Use an international format (+1234567890)',
+    }),
+
+  address: Joi.object({
+    name: Joi.string().required().messages({
+      'string.base': 'Address name must be a string',
+      'any.required': 'Address name is required',
+    }),
+    coords: Joi.array().items(Joi.number()).default([0, 0]),
+    city: Joi.string().optional(),
+    state: Joi.string().optional(),
+  }).optional().messages({
+    'object.base': 'Address must be an object with name, coords, city, and state',
+  }),
 };
 
 class AuthSchema extends BaseSchema {
@@ -49,7 +68,14 @@ class AuthSchema extends BaseSchema {
   
   register() {
     return {
-      body: Joi.object(baseAuthFields)
+      body: Joi.object({
+        email: baseAuthFields.email,
+        password: baseAuthFields.password,
+        timeZone:baseAuthFields.timeZone,
+        username:baseAuthFields.username,
+        role:baseAuthFields.role
+
+      }),
     }
   }
   login() {

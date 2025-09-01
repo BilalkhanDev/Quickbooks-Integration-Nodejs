@@ -14,7 +14,7 @@
     "seed:prod": "cross-env NODE_ENV=production node app/seeder/index.js",
     "migrate:create:test": "cross-env NODE_ENV=test app/config/migration.config create",
     "migrate:create": "cross-env NODE_ENV=development migrate-mongo create -f app/config/migration.config.js",
-    "migrate:up": "migrate-mongo up -f app/config/migration.config.js",
+    "migrate:up": "cross-env NODE_ENV=development DEBUG=* migrate-mongo up -f app/config/migration.config.js",
     "migrate:down": "migrate-mongo down -f app/config/migration.config.js",
     "migrate:status": "migrate-mongo status -f app/config/migration.config.js"
   },

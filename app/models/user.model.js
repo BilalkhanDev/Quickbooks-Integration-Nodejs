@@ -36,11 +36,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: 'America/New_York', 
   },
-  
   profileImageURL: {
     type: String,
     default: '',
   },
+  contactNumber: {type:String, default:''},
+
 }, {
   timestamps: true,
 });
@@ -69,6 +70,7 @@ UserSchema.statics.isEmailTaken = async function (email, excludeId) {
 UserSchema.plugin(search,{
   refFields: {
     role:['name'],
+    address:['name','city','state']
    
   }
 });

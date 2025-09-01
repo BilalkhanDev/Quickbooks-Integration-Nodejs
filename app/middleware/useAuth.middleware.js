@@ -40,8 +40,8 @@ const adminOnly = () => {
 const adminOrSelf = (req, res, next) => {
   const userIdFromToken = req?.user?.id;
   const userRole = req?.user?.role;
-  const targetUserId = req.params.id;
-  if (userRole == ROLES_TYPES.ADMIN|| userIdFromToken == targetUserId) {
+  const {id} = req.params;
+  if (userRole == ROLES_TYPES.ADMIN|| userIdFromToken ==id) {
     return next();
   }
 

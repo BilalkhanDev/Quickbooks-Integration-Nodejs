@@ -5,7 +5,7 @@ module.exports.Fleet = require('./fleet.model');
 module.exports.Specification= require('./specification/index');
 module.exports.Inspection=require('./inspection/inspection.model')
 module.exports.InspectionSubmission = require('./inspection/inspectionSubmission.model');
-
+module.exports.InspectionSchedule= require('./inspection/inspectionSchedule');
 //drivers
 
 module.exports.Driver = require('./driver.model');

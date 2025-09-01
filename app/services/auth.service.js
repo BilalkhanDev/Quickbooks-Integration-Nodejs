@@ -2,8 +2,8 @@ const { User } = require('../models');
 const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
 const GenericService = require('../services/generic.service');
-const { TokenProvider} = require('../shared/security');
-const paswordHasher = require('../shared/security/paswordHasher');
+const { TokenProvider, PaswordHasher} = require('../shared/security');
+
 
 class AuthService extends GenericService {
   constructor() {
@@ -20,31 +20,33 @@ class AuthService extends GenericService {
     if (isDuplicate) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
     }
-    const hashedPassword = await paswordHasher.hash(password);
-    const user = await this.create({
-      email,
-      username,
-      role,
-      password: hashedPassword,
-      ...data
-    });
-  
-    return {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      role:user.role,
-      timeZone: user.timeZone
+    const hashedPassword =await PaswordHasher.hash(password);
+    
+    const userData = {
+        email,
+        username,
+        role,
+        password: hashedPassword,
+        timeZone: data.timeZone || 'America/New_York',
+      
     };
+    const user = await this.create(userData)
+  
+  return {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    timeZone: user.timeZone
+  };
   }
 
  async authenticateUser(body) {
   const { email, password } = body;
   const user = await this.findOne({ email });
-  
   if (!user) {
     throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
-  }  const isMatch = await paswordHasher.compare(password, user.password); 
+  }  const isMatch = await PaswordHasher.compare(password, user.password); 
   if (!isMatch) {
     throw new ApiError(HttpStatus.FORBIDDEN, 'Invalid credentials');
   }
@@ -79,7 +81,7 @@ class AuthService extends GenericService {
     const updatedData = { ...data };
 
     if (password) {
-      const hashedPassword = await paswordHasher.hash(password);
+      const hashedPassword = await PaswordHasher.hash(password);
       updatedData.password = hashedPassword;
     }
 
@@ -94,34 +96,36 @@ class AuthService extends GenericService {
       email: user.email,
       role: user.role,
       timeZone: user.timeZone,
+      address:user?.address,
+      contactNumber:user?.contactNumber
     };
   }
   // Get user profile
   async getProfile(userId) {
-    const user = await this.model.findById(userId).populate('role', 'name').select('-password');
+    const user = await this.model.findById(userId).populate('role', 'name type').select('-password');
     if (!user) {
       throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
     }
    return user
   }
   async getAll(queryParams, options) {
-        const { search, ...finalFilter } = queryParams;
+    const { search, ...finalFilter } = queryParams;
 
-        let filter = { ...finalFilter };
-        const searchFilter = await this.model.search({ search });
-        if (searchFilter && Object.keys(searchFilter).length > 0) {
-            filter = { $and: [finalFilter, searchFilter] };
-        }
-        const populate = [
-            { path: 'role', select: '_id name' },
-
-        ];
-        return this.model.paginate(filter, {
-            ...options,
-            populate,
-            select: '-password',
-        });
+    let filter = { ...finalFilter };
+    const searchFilter = await this.model.search({ search });
+    if (searchFilter && Object.keys(searchFilter).length > 0) {
+      filter = { $and: [finalFilter, searchFilter] };
     }
+    const populate = [
+      { path: 'role', select: '_id name' },
+
+    ];
+    return this.model.paginate(filter, {
+      ...options,
+      populate,
+      select: '-password',
+    });
+  }
   // Generate access and refresh tokens using TokenProvider
   generateTokens(payload) {
     const accessToken = TokenProvider.generateAccessToken(payload);

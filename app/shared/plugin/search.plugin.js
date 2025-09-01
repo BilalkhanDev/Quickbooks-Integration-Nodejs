@@ -112,9 +112,7 @@ module.exports = function searchPlugin(schema, options = {}) {
       const regex = { $regex: searchTerm, $options: 'i' };
       const refOrConditions = [];
 
-      // Debug logging
-      console.log('Active Ref Fields:', activeRefFields);
-      console.log('Search Term:', searchTerm);
+   
 
       // Build conditions for ref fields
       Object.entries(activeRefFields).forEach(([refField, subFields]) => {
@@ -124,7 +122,6 @@ module.exports = function searchPlugin(schema, options = {}) {
         });
       });
 
-      console.log('Ref Or Conditions:', refOrConditions);
 
       if (refOrConditions.length) {
         const pipeline = [];
@@ -166,12 +163,10 @@ module.exports = function searchPlugin(schema, options = {}) {
           pipeline.push({ $match: { $or: refOrConditions } });
           pipeline.push({ $project: { _id: 1 } });
 
-          console.log('Aggregation Pipeline:', JSON.stringify(pipeline, null, 2));
 
           try {
             const aggResult = await this.aggregate(pipeline).exec();
             const matchingIds = aggResult.map(doc => doc._id);
-            console.log('Matching IDs from aggregation:', matchingIds);
             
             if (matchingIds.length) {
               refMatchFilter = { _id: { $in: matchingIds } };
@@ -194,7 +189,6 @@ module.exports = function searchPlugin(schema, options = {}) {
       finalFilter = baseFilter;
     }
 
-    console.log('Final Filter:', JSON.stringify(finalFilter, null, 2));
     return finalFilter;
   };
 };

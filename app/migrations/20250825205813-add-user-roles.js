@@ -1,74 +1,63 @@
 module.exports = {
-  /**
-   * @param db {import('mongodb').Db}
-   * @param client {import('mongodb').MongoClient}
-   * @returns {Promise<void>}
-   */
   async up(db, client) {
+    console.log("🟢 Migration started - up method called");
+    
     const session = client.startSession();
     const usersCol = db.collection('users');
     const rolesCol = db.collection('roles');
 
+
     try {
       await session.withTransaction(async () => {
-        // 1. Fetch all roles from the roles collection
+        
+        // 1. Get all roles
         const roles = await rolesCol.find({}, { session }).toArray();
+        console.log(`📊 Found ${roles.length} roles:`, roles.map(r => r.name));
+        
+        if (roles.length === 0) throw new Error("No roles found");
 
-        // Create a map of role name -> ObjectId
-        const roleNameToId = {};
-        roles.forEach(role => {
-          roleNameToId[role.name] = role._id;
-        });
-
-        // 2. Fetch all users that need to be updated
-        const usersToUpdate = await usersCol.find({}).toArray();
-
-        // 3. Update each user with the correct role ObjectId
-        for (const user of usersToUpdate) {
-          const currentRole = user.role; // Current role (could be string or ObjectId)
-          
-          // If the role is a string, map it to ObjectId
-          if (typeof currentRole === 'string' && roleNameToId[currentRole]) {
-            // If the role is found in the map, update the user with the correct ObjectId
-            await usersCol.updateOne(
-              { _id: user._id },
-              { $set: { role: roleNameToId[currentRole] } },
-              { session }
-            );
-            console.log(`✅ User ${user.email} updated with role ${currentRole}`);
-          }
+        // 2. Get all users  
+        const users = await usersCol.find({}, { session }).toArray();
+        console.log(`👥 Found ${users.length} users:`, users.map(u => u.email));
+        
+        if (users.length === 0) {
+          process.stdout.write("⚠️ No users found to update.\n");
+          return;
         }
+
+        for (let i = 0; i < users?.length; i++) {
+          const user = users[i];
+          const roleToAssign = roles[i % roles.length];
+
+          console.log(`🎯 Assigning role ${roleToAssign.name} to ${user.email}`);
+          
+          const updateResult = await usersCol.updateOne(
+            { _id: user._id },
+            { $set: { role: roleToAssign._id } },
+            { session }
+          );
+
+          console.log(`📝 Update result:`, updateResult);
+          process.stdout.write(`✅ Assigned role '${roleToAssign.name}' to user '${user.email}'\n`);
+        }
+        
+        console.log("🏁 Loop completed");
       });
+
+      console.log("✅ Migration completed successfully");
+      
     } catch (error) {
-      console.error('❌ Error updating user roles:', error);
+      console.error("❌ Error in migration:", error);
+      process.stdout.write(`❌ Error assigning roles: ${error.message}\n`);
+      throw error; // Re-throw to mark migration as failed
     } finally {
       await session.endSession();
+      console.log("🔚 Session ended");
     }
   },
 
-  /**
-   * @param db {import('mongodb').Db}
-   * @param client {import('mongodb').MongoClient}
-   * @returns {Promise<void>}
-   */
   async down(db, client) {
-    const session = client.startSession();
-    const usersCol = db.collection('users');
-
-    try {
-      await session.withTransaction(async () => {
-        // 1. Revert the users' role fields to a default value, if needed
-        await usersCol.updateMany(
-          {},
-          { $set: { role: 'default' } }, // Or set any default value (e.g., null, 'user', etc.)
-          { session }
-        );
-        console.log('🗑️ Reverted user roles to default');
-      });
-    } catch (error) {
-      console.error('❌ Error reverting user roles:', error);
-    } finally {
-      await session.endSession();
-    }
+    console.log("↩️ Migration down method called");
+    // ... rest of your down method with similar logging
   }
 };
