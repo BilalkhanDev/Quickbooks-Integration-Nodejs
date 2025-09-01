@@ -1,5 +1,5 @@
 const express = require('express');
-const { useAuth, adminOrSelf, adminOnly } = require('../middleware/useAuth.middleware');
+const { useAuth, adminOnly } = require('../middleware/useAuth.middleware');
 const router = express.Router();
 const validate = require('../middleware/validate.middleware');
 
@@ -13,8 +13,8 @@ router
 
 router
     .route('/:id')
-    .put(useAuth,adminOrSelf,validate(AuthSchema.update()), AuthController.update)
-    .get(useAuth,adminOrSelf,validate(AuthSchema.getById()), AuthController.getProfile)
+    .put(useAuth,validate(AuthSchema.update()), AuthController.update)
+    .get(useAuth,validate(AuthSchema.getById()), AuthController.getProfile)
     .delete(useAuth,adminOnly(),validate(AuthSchema.delete()),AuthController.delete)
 
 module.exports = router;

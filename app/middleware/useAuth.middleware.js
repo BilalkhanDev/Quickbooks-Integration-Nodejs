@@ -37,15 +37,6 @@ const adminOnly = () => {
     }
   };
 };
-const adminOrSelf = (req, res, next) => {
-  const userIdFromToken = req?.user?.id;
-  const userRole = req?.user?.role;
-  const {id} = req.params;
-  if (userRole == ROLES_TYPES.ADMIN|| userIdFromToken ==id) {
-    return next();
-  }
 
-  return res.status(HttpStatus.FORBIDDEN).json({ message: 'Access denied' });
-};
 
 module.exports = { useAuth, adminOnly, adminOrSelf };
