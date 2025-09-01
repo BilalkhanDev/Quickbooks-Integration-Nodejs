@@ -53,13 +53,6 @@ UserSchema.statics.isTitleTaken = async function (username, excludeId) {
   });
   return !!result;
 };
-UserSchema.statics.isTitleTaken = async function (username, excludeId) {
-  const result = await this.findOne({
-    username,
-    _id: { $ne: excludeId }
-  });
-  return !!result;
-};
 UserSchema.statics.isEmailTaken = async function (email, excludeId) {
   const result = await this.findOne({
     email,
@@ -70,7 +63,6 @@ UserSchema.statics.isEmailTaken = async function (email, excludeId) {
 UserSchema.plugin(search,{
   refFields: {
     role:['name'],
-    address:['name','city','state']
    
   }
 });

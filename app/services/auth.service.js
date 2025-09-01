@@ -25,9 +25,8 @@ class AuthService extends GenericService {
     const userData = {
         email,
         username,
-        role,
         password: hashedPassword,
-        timeZone: data.timeZone || 'America/New_York',
+       ...data
       
     };
     const user = await this.create(userData)

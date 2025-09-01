@@ -31,6 +31,7 @@ const baseAuthFields = {
       'string.max': 'Password cannot exceed 255 characters',
       'any.required': 'Password is required',
     }),
+  profileImageURL:Joi.string().optional().allow(null),
   timeZone: Joi.string()
     .pattern(/^[A-Za-z]+\/[A-Za-z_]+$/)  // Regex to allow time zones like "Asia/Kolkata", "Europe/London"
     .optional()
@@ -48,17 +49,7 @@ const baseAuthFields = {
       'string.pattern.base': 'Invalid contact number format. Use an international format (+1234567890)',
     }),
 
-  address: Joi.object({
-    name: Joi.string().required().messages({
-      'string.base': 'Address name must be a string',
-      'any.required': 'Address name is required',
-    }),
-    coords: Joi.array().items(Joi.number()).default([0, 0]),
-    city: Joi.string().optional(),
-    state: Joi.string().optional(),
-  }).optional().messages({
-    'object.base': 'Address must be an object with name, coords, city, and state',
-  }),
+
 };
 
 class AuthSchema extends BaseSchema {
@@ -73,7 +64,10 @@ class AuthSchema extends BaseSchema {
         password: baseAuthFields.password,
         timeZone:baseAuthFields.timeZone,
         username:baseAuthFields.username,
-        role:baseAuthFields.role
+        role:baseAuthFields.role,
+        profileImageURL:baseAuthFields.profileImageURL
+        
+
 
       }),
     }
