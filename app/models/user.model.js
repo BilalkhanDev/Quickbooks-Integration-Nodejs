@@ -36,6 +36,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: 'America/New_York', 
   },
+  
+  profileImageURL: {
+    type: String,
+    default: '',
+  },
 }, {
   timestamps: true,
 });
