@@ -20,17 +20,10 @@ class AuthService extends GenericService {
     if (isDuplicate) {
       throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
     }
-    const hashedPassword =await PaswordHasher.hash(password);
+   
     
-    const userData = {
-        email,
-        username,
-        role,
-        password: hashedPassword,
-        timeZone: data.timeZone || 'America/New_York',
-      
-    };
-    const user = await this.create(userData)
+ 
+    const user = await this.create(data)
   
   return {
     id: user._id,
@@ -43,6 +36,7 @@ class AuthService extends GenericService {
 
  async authenticateUser(body) {
   const { email, password } = body;
+
   const user = await this.findOne({ email });
   if (!user) {
     throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
@@ -50,7 +44,7 @@ class AuthService extends GenericService {
   if (!isMatch) {
     throw new ApiError(HttpStatus.FORBIDDEN, 'Invalid credentials');
   }
-  
+ 
   const payload = { id: user.id, role: user.role };
   const accessToken = TokenProvider.generateAccessToken(payload);
   const refreshToken = TokenProvider.generateRefreshToken(payload);
@@ -79,11 +73,6 @@ class AuthService extends GenericService {
     }
 
     const updatedData = { ...data };
-
-    if (password) {
-      const hashedPassword = await PaswordHasher.hash(password);
-      updatedData.password = hashedPassword;
-    }
 
     const user = await this.model.findByIdAndUpdate(id, updatedData, { new: true });
 

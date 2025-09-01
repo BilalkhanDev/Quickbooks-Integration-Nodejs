@@ -1,4 +1,4 @@
-const FLEET_STATUS = ["active", "unaassigned", "assigned", "archived"]
+const FLEET_STATUS = ["active", "unassigned", "assigned", "archived"]
 const REPAIR_PRIORITY_CLASSES = ["scheduled", "non-scheduled", "emergency"];
 const SERVICE_ENTRY_LABLES = ['CA01-Santa Fe Springs', 'CA10-SanDiego Country', 'CA20-Orange Country', 'CA35-Sacramento Country']
 
