@@ -39,4 +39,4 @@ const adminOnly = () => {
 };
 
 
-module.exports = { useAuth, adminOnly, adminOrSelf };
+module.exports = { useAuth, adminOnly };
