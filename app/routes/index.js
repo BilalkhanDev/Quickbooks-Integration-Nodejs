@@ -1,49 +1,20 @@
 const express = require('express');
 const authRoutes = require('./auth.route');
 const userRoutes=require('./user.route')
-const fleetRoutes = require('./fleet.route')
-const vendorRoutes = require('./vendor.route')
-const specficationRoutes = require('./fleetSpecification.route')
-const serviceRoutes = require("./serviceEntry.route")
-const issuesRoutes = require("./issue.route")
-const inspectionRoutes = require("./inspection.route")
-const inspectionSubmissionRoutes = require("./inspectionSubmission.route")
-const driverRoutes = require('./driver.route')
-const companyRoutes = require('./company.route')
 const commonRoutes = require('./common/common')
-const documentRoutes=require('./douments.route')
-const maintanceRoutes=require('./mantainenceCode/index')
-const serviceTaskRoutes=require('./serviceTask.route')
+
 const roleRoutes=require('./role.route')
-const inspectionScheduleRoutes=require('./inspectionSchedule.route')
+
 const router = express.Router();
 
 router.use('/auth', authRoutes);
 router.use('/role',roleRoutes)
 router.use('/user', userRoutes);
-router.use('/fleet', fleetRoutes);
 
-router.use("/vendor", vendorRoutes)
-router.use("/specification", specficationRoutes)
-router.use("/service", serviceRoutes)
-router.use("/issue", issuesRoutes)
-router.use("/inspection", inspectionRoutes)
-router.use("/inspection-submission", inspectionSubmissionRoutes)
-router.use('/inspection-schedule', inspectionScheduleRoutes)
 
-router.use("/driver", driverRoutes)
-router.use("/company", companyRoutes)
+
 
 router.use("/common", commonRoutes)
-
-router.use("/uploads", documentRoutes )
-
-
-router.use('/maintance',maintanceRoutes)
-
-router.use('/serviceTask',serviceTaskRoutes)
-
-
 
 
 
