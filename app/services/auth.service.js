@@ -40,7 +40,9 @@ class AuthService extends GenericService {
   const user = await this.findOne({ email });
   if (!user) {
     throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
-  }  const isMatch = await PaswordHasher.compare(password, user.password); 
+
+  } 
+   const isMatch = await PaswordHasher.compare(password, user.password); 
   if (!isMatch) {
     throw new ApiError(HttpStatus.FORBIDDEN, 'Invalid credentials');
   }

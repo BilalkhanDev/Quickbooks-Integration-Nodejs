@@ -1,19 +1,19 @@
-const bcrypt = require('bcryptjs');
-const User = require('../models/user.model');
+const bcrypt = require('bcryptjs'); // or your PasswordHasher
+const { User } = require('../models');
 
-const createUsers = async (roles) => {
+const createAdminUser  = async (roles) => {
   try {
     const usersToSeed = [
       {
         username: 'admin',
         email: 'admin@gmail.com',
-        password: 'admin1234',
+        password: 'admin1234',  // raw password
         role: roles[0],
       },
       {
         username: 'alexBrown',
         email: 'alex@gmail.com',
-        password: 'alexBrown1234',
+        password: 'alexBrown1234',  // raw password
         role: roles[1],
       },
     ];
@@ -28,12 +28,10 @@ const createUsers = async (roles) => {
         continue;
       }
 
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      const newUser = await User.create({
-        ...user,
-        password: hashedPassword,
-      });
+      // Hash the password before saving
+      user.password = await bcrypt.hash(user.password, 10);
 
+      const newUser = await User.create(user);
       console.log(`✅ User ${user.email} created`);
       createdUserIds.push(newUser._id);
     }
@@ -44,5 +42,4 @@ const createUsers = async (roles) => {
     return [];
   }
 };
-
-module.exports = createUsers;
+module.exports=createAdminUser 

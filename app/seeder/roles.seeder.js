@@ -11,15 +11,11 @@ const seedRoles = async () => {
         type: ROLES_TYPES.ADMIN,
       },
       {
-        name: 'operator',
-        description: 'Operator Role with operating permissions',
-        type: ROLES_TYPES.OPERTAOR,  // Fixed typo from "OPERATIOR" to "OPERATOR"
+        name: 'user',
+        description: 'User Role with operating permissions',
+        type: ROLES_TYPES.USER,  // Fixed typo from "OPERATIOR" to "OPERATOR"
       },
-      {
-        name: 'technician',
-        description: 'Technician Role',
-        type: ROLES_TYPES.TECHNICIAN,
-      }
+     
     ];
 
     const createdRolesIds = []; // Array to store created role IDs
