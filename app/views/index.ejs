@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickBooks App Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f3f4f6;
+            --lighter: #f9fafb;
+            --text: #374151;
+            --text-light: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(31, 41, 55, 0.8);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            background: rgba(17, 24, 39, 0.9);
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: linear-gradient(to right, var(--primary), var(--secondary)) !important;
+           
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .app-info {
+            padding: 30px;
+            background: rgba(17, 24, 39, 0.7);
+        }
+
+        .welcome {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+  
+            font-weight: 700;
+        }
+
+        .description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .features {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .features li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features i {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 15px;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        .app-stats {
+            padding: 30px;
+            background: rgba(31, 41, 55, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.8) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background: rgba(17, 24, 39, 0.9);
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="logo-icon fas fa-code"></i>
+                <div class="logo-text">QuickBooks Integration App</div>
+            </div>
+            <div class="status">
+                <i class="fas fa-circle-check"></i> Running
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="app-info">
+                <h1 class="welcome">Hello! <span>👋</span></h1>
+                <p class="description">
+                    Welcome to QuikBook application dashboard. This app is built with Express.js and provides a robust API backend with modern features.
+                </p>
+                
+                <ul class="features">
+                    <li><i class="fas fa-check-circle"></i> RESTful API endpoints</li>
+                    <li><i class="fas fa-check-circle"></i> MongoDB integration</li>
+                    <li><i class="fas fa-check-circle"></i> User authentication</li>
+                    <li><i class="fas fa-check-circle"></i> Real-time notifications</li>
+                    <li><i class="fas fa-check-circle"></i> File upload capabilities</li>
+                </ul>
+                
+                <div class="actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Get Started
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-book"></i> Documentation
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-stats">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--primary);">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="stat-value">24/7</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--secondary);">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-value">128</div>
+                        <div class="stat-label">Database Records</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--accent);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--primary);">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="stat-value">0.8s</div>
+                        <div class="stat-label">Avg. Response Time</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 QuickBooks App Dashboard | Developed By Muhamamd Bilal Khan</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple animation for stat cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.transition = 'transform 0.3s ease';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Update uptime (just for demonstration)
+            setInterval(() => {
+                const uptimeElement = document.querySelector('.stat-value');
+                if (uptimeElement && uptimeElement.parentElement.querySelector('.stat-label').textContent === 'Uptime') {
+                    // This would normally come from your server
+                    const days = Math.floor(Math.random() * 10);
+                    const hours = Math.floor(Math.random() * 24);
+                    const mins = Math.floor(Math.random() * 60);
+                    uptimeElement.textContent = `${days}d ${hours}h ${mins}m`;
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

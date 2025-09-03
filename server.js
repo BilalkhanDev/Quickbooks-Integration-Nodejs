@@ -14,8 +14,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+app.set('view engine', 'ejs'); 
+app.set('views', './app/views')
 app.use(morgan);
 
+app.get('/', (req, res) => {
+        res.render('index');
+    });
 app.use("/api", routes);
 
 app.use(ActivityLogger);

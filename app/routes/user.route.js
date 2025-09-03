@@ -8,13 +8,13 @@ const AuthController = require('../controllers/auth.controller');
 
 router
     .route('/')
-    .post(useAuth,adminOnly(),validate(AuthSchema.create()),AuthController.register)
-    .get(useAuth,adminOnly(),validate(AuthSchema.getAll()),AuthController.getAll);
+    // .post(useAuth,adminOnly(),validate(AuthSchema.create()),AuthController.register)
+    // .get(useAuth,adminOnly(),validate(AuthSchema.getAll()),AuthController.getAll);
 
 router
     .route('/:id')
     .put(useAuth,validate(AuthSchema.update()), AuthController.update)
-    .get(useAuth,validate(AuthSchema.getById()), AuthController.getProfile)
+    // .get(useAuth,validate(AuthSchema.getById()), AuthController.getProfile)
     .delete(useAuth,adminOnly(),validate(AuthSchema.delete()),AuthController.delete)
 
 module.exports = router;

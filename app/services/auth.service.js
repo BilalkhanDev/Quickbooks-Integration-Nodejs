@@ -3,126 +3,155 @@ const ApiError = require('../shared/core/exceptions/ApiError');
 const { default: HttpStatus } = require('http-status');
 const GenericService = require('../services/generic.service');
 const { TokenProvider, PaswordHasher} = require('../shared/security');
+const { initializeQuickBooks, oauth2Client } = require('../config/quickbook.config');
 
 
 class AuthService extends GenericService {
   constructor() {
     super(User); 
   }
+ async saveQuickBooksTokens(accessToken, refreshToken, realmId) {
+    const tokens = { accessToken, refreshToken, realmId };
 
-  async register(data) {
-    const {email,password,username,role}=data
-    const isEmailDuplicate = await this.model.isEmailTaken(email);
-    if (isEmailDuplicate) {
-      throw new ApiError(HttpStatus.BAD_REQUEST, 'Email already Exist');
+    // const user = await User.findById(req.user.id); 
+    // if (!user) {
+    //   throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
+    // }
+
+    // user.quickBooksTokens = tokens;
+    // await user.save();
+
+    return tokens;
+  }
+
+  async refreshAccessToken(refreshToken) {
+    const tokenConfig = { refresh_token: refreshToken };
+    const authResponse = await oauth2Client.refreshToken(tokenConfig);
+    const { access_token, refresh_token } = authResponse.getJson();
+    return { access_token, refresh_token };
+  }
+
+  async verifyTokens() {
+    if (!qbo) {
+      throw new ApiError(HttpStatus.UNAUTHORIZED, 'QuickBooks not authenticated');
     }
-    const isDuplicate = await this.model.isTitleTaken(username);
-    if (isDuplicate) {
-      throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
-    }
+
+    return true; // Assume tokens are valid for now
+  }
+
+//   async register(data) {
+//     const {email,password,username,role}=data
+//     const isEmailDuplicate = await this.model.isEmailTaken(email);
+//     if (isEmailDuplicate) {
+//       throw new ApiError(HttpStatus.BAD_REQUEST, 'Email already Exist');
+//     }
+//     const isDuplicate = await this.model.isTitleTaken(username);
+//     if (isDuplicate) {
+//       throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
+//     }
    
     
  
-    const user = await this.create(data)
+//     const user = await this.create(data)
   
-  return {
-    id: user._id,
-    username: user.username,
-    email: user.email,
-    role: user.role,
-    timeZone: user.timeZone
-  };
-  }
+//   return {
+//     id: user._id,
+//     username: user.username,
+//     email: user.email,
+//     role: user.role,
+//     timeZone: user.timeZone
+//   };
+//   }
 
- async authenticateUser(body) {
-  const { email, password } = body;
+//  async authenticateUser(body) {
+//   const { email, password } = body;
 
-  const user = await this.findOne({ email });
-  if (!user) {
-    throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
+//   const user = await this.findOne({ email });
+//   if (!user) {
+//     throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
 
-  } 
-   const isMatch = await PaswordHasher.compare(password, user.password); 
-  if (!isMatch) {
-    throw new ApiError(HttpStatus.FORBIDDEN, 'Invalid credentials');
-  }
+//   } 
+//    const isMatch = await PaswordHasher.compare(password, user.password); 
+//   if (!isMatch) {
+//     throw new ApiError(HttpStatus.FORBIDDEN, 'Invalid credentials');
+//   }
  
-  const payload = { id: user.id, role: user.role };
-  const accessToken = TokenProvider.generateAccessToken(payload);
-  const refreshToken = TokenProvider.generateRefreshToken(payload);
+//   const payload = { id: user.id, role: user.role };
+//   const accessToken = TokenProvider.generateAccessToken(payload);
+//   const refreshToken = TokenProvider.generateRefreshToken(payload);
 
-  return {
-    accessToken,
-    refreshToken,
-    user: {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      timeZone: user.timeZone, 
-    },
-  };
-}
-  async update(id, data) {
-    const { email, password, username} = data;
+//   return {
+//     accessToken,
+//     refreshToken,
+//     user: {
+//       id: user.id,
+//       email: user.email,
+//       role: user.role,
+//       timeZone: user.timeZone, 
+//     },
+//   };
+// }
+//   async update(id, data) {
+//     const { email, password, username} = data;
 
-    const isUsernameDuplicate = await this.model.isTitleTaken(username, id);
-    if (isUsernameDuplicate) {
-      throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
-    }
-    const isEmailDuplicate = await this.model.isEmailTaken(email, id);
-    if (isEmailDuplicate) {
-      throw new ApiError(HttpStatus.BAD_REQUEST, 'Email already taken');
-    }
+//     const isUsernameDuplicate = await this.model.isTitleTaken(username, id);
+//     if (isUsernameDuplicate) {
+//       throw new ApiError(HttpStatus.BAD_REQUEST, 'Username already taken');
+//     }
+//     const isEmailDuplicate = await this.model.isEmailTaken(email, id);
+//     if (isEmailDuplicate) {
+//       throw new ApiError(HttpStatus.BAD_REQUEST, 'Email already taken');
+//     }
 
-    const updatedData = { ...data };
+//     const updatedData = { ...data };
 
-    const user = await this.model.findByIdAndUpdate(id, updatedData, { new: true });
+//     const user = await this.model.findByIdAndUpdate(id, updatedData, { new: true });
 
-    if (!user) {
-      throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
-    }
-    return {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      timeZone: user.timeZone,
-      address:user?.address,
-      contactNumber:user?.contactNumber
-    };
-  }
-  // Get user profile
-  async getProfile(userId) {
-    const user = await this.model.findById(userId).populate('role', 'name type').select('-password');
-    if (!user) {
-      throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
-    }
-   return user
-  }
-  async getAll(queryParams, options) {
-    const { search, ...finalFilter } = queryParams;
+//     if (!user) {
+//       throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
+//     }
+//     return {
+//       id: user._id,
+//       username: user.username,
+//       email: user.email,
+//       role: user.role,
+//       timeZone: user.timeZone,
+//       address:user?.address,
+//       contactNumber:user?.contactNumber
+//     };
+//   }
+//   // Get user profile
+//   async getProfile(userId) {
+//     const user = await this.model.findById(userId).populate('role', 'name type').select('-password');
+//     if (!user) {
+//       throw new ApiError(HttpStatus.NOT_FOUND, 'User not found');
+//     }
+//    return user
+//   }
+//   async getAll(queryParams, options) {
+//     const { search, ...finalFilter } = queryParams;
 
-    let filter = { ...finalFilter };
-    const searchFilter = await this.model.search({ search });
-    if (searchFilter && Object.keys(searchFilter).length > 0) {
-      filter = { $and: [finalFilter, searchFilter] };
-    }
-    const populate = [
-      { path: 'role', select: '_id name' },
+//     let filter = { ...finalFilter };
+//     const searchFilter = await this.model.search({ search });
+//     if (searchFilter && Object.keys(searchFilter).length > 0) {
+//       filter = { $and: [finalFilter, searchFilter] };
+//     }
+//     const populate = [
+//       { path: 'role', select: '_id name' },
 
-    ];
-    return this.model.paginate(filter, {
-      ...options,
-      populate,
-      select: '-password',
-    });
-  }
-  // Generate access and refresh tokens using TokenProvider
-  generateTokens(payload) {
-    const accessToken = TokenProvider.generateAccessToken(payload);
-    const refreshToken = TokenProvider.generateRefreshToken(payload);
-    return { accessToken, refreshToken };
-  }
+//     ];
+//     return this.model.paginate(filter, {
+//       ...options,
+//       populate,
+//       select: '-password',
+//     });
+//   }
+//   // Generate access and refresh tokens using TokenProvider
+//   generateTokens(payload) {
+//     const accessToken = TokenProvider.generateAccessToken(payload);
+//     const refreshToken = TokenProvider.generateRefreshToken(payload);
+//     return { accessToken, refreshToken };
+//   }
 }
 
 module.exports = new AuthService();
