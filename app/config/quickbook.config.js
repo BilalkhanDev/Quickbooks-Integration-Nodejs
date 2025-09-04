@@ -31,7 +31,8 @@ const initializeQuickBooks = (accessToken, refreshToken, realmId) => {
 
 const getAuthorizationUrl = () => {
   return oauth2Client.authorizeUri({
-    scope:  [OAuthClient.scopes.Accounting],
+    // scopees are the permsiions to app 
+    scope:  [OAuthClient.scopes.Accounting,OAuthClient.scopes.OpenId,OAuthClient.scopes.Profile],
     state: 'test_quickBook', 
   });
 };
